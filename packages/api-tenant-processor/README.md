@@ -1,11 +1,11 @@
-# TWIN API Tenant Processor
+# 3Sixty API Tenant Processor
 
 This package provides tenant resolution services and route handlers that derive tenant context from API keys.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-tenant-processor
+npm install @3sixty/api-tenant-processor
 ```
 
 ## Examples

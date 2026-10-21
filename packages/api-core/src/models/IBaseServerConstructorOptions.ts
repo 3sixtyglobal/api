@@ -1,6 +1,6 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IMimeTypeProcessor } from "@twin.org/api-models";
+import type { IMimeTypeProcessor } from "@3sixty/api-models";
 
 /**
  * Options for constructing a base server.

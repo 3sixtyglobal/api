@@ -4,10 +4,10 @@ import type {
 	IBaseRestClientConfig,
 	IRestClientProcessor,
 	IRestClientProcessorContext
-} from "@twin.org/api-models";
-import { RestClientProcessorFactory } from "@twin.org/api-models";
-import { GeneralError } from "@twin.org/core";
-import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@twin.org/web";
+} from "@3sixty/api-models";
+import { RestClientProcessorFactory } from "@3sixty/api-models";
+import { GeneralError } from "@3sixty/core";
+import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import { BaseRestClient } from "../src/clients/baseRestClient.js";
 
 let calls: string[] = [];

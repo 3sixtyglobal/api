@@ -5,21 +5,21 @@ import {
 	HealthStatus,
 	type IPlatformComponent,
 	type ITenant
-} from "@twin.org/api-models";
-import { ContextIdKeys, ContextIdStore, type IContextIds } from "@twin.org/context";
+} from "@3sixty/api-models";
+import { ContextIdKeys, ContextIdStore, type IContextIds } from "@3sixty/context";
 import {
 	AlreadyExistsError,
 	ComponentFactory,
 	Converter,
 	LfuCache,
 	NotFoundError
-} from "@twin.org/core";
-import { Blake2b } from "@twin.org/crypto";
-import { ComparisonOperator } from "@twin.org/entity";
+} from "@3sixty/core";
+import { Blake2b } from "@3sixty/crypto";
+import { ComparisonOperator } from "@3sixty/entity";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
-} from "@twin.org/entity-storage-models";
+} from "@3sixty/entity-storage-models";
 import type { Tenant } from "../../src/entities/tenant.js";
 import { TenantAdminService } from "../../src/tenantAdminService.js";
 

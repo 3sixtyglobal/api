@@ -9,8 +9,8 @@ import {
 	type ITenant,
 	type ITenantAdminComponent,
 	HttpContextIdKeys
-} from "@twin.org/api-models";
-import { ContextIdKeys, type IContextIds } from "@twin.org/context";
+} from "@3sixty/api-models";
+import { ContextIdKeys, type IContextIds } from "@3sixty/context";
 import {
 	BaseError,
 	ComponentFactory,
@@ -18,9 +18,9 @@ import {
 	Is,
 	NotFoundError,
 	UnauthorizedError
-} from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HttpStatusCode } from "@3sixty/web";
 import type { ITenantProcessorConstructorOptions } from "./models/ITenantProcessorConstructorOptions.js";
 
 /**

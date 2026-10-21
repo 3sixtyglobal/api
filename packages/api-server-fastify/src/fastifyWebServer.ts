@@ -1,8 +1,6 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import FastifyCompress from "@fastify/compress";
-import FastifyCors from "@fastify/cors";
-import { BaseServer } from "@twin.org/api-core";
+import { BaseServer } from "@3sixty/api-core";
 import {
 	HttpBodyLimit,
 	HttpErrorHelper,
@@ -16,11 +14,13 @@ import {
 	type ISocketRouteProcessor,
 	type ISocketServerRequest,
 	type IWebServerOptions
-} from "@twin.org/api-models";
-import type { IContextIds } from "@twin.org/context";
-import { BaseError, GeneralError, type IError, Is, StringHelper } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HttpMethod, HttpStatusCode, type IHttpHeaders } from "@twin.org/web";
+} from "@3sixty/api-models";
+import type { IContextIds } from "@3sixty/context";
+import { BaseError, GeneralError, type IError, Is, StringHelper } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HttpMethod, HttpStatusCode, type IHttpHeaders } from "@3sixty/web";
+import FastifyCompress from "@fastify/compress";
+import FastifyCors from "@fastify/cors";
 import Fastify, {
 	type FastifyInstance,
 	type FastifyReply,

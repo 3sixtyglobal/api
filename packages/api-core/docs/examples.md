@@ -5,7 +5,7 @@ Use these snippets as a starting point when building custom clients, overriding 
 ## BaseSocketClient
 
 ```typescript
-import { BaseSocketClient } from '@twin.org/api-core';
+import { BaseSocketClient } from '@3sixty/api-core';
 
 class NotificationsSocketClient extends BaseSocketClient {
   public constructor() {
@@ -49,7 +49,7 @@ socketClient.disconnect();
 ```
 
 ```typescript
-import { BaseSocketClient } from '@twin.org/api-core';
+import { BaseSocketClient } from '@3sixty/api-core';
 
 class MetricsSocketClient extends BaseSocketClient {
   public constructor() {
@@ -86,7 +86,7 @@ metrics.clearTelemetryHandlers();
 ## BaseRestClient
 
 ```typescript
-import { BaseRestClient } from '@twin.org/api-core';
+import { BaseRestClient } from '@3sixty/api-core';
 
 class CatalogueRestClient extends BaseRestClient {
   public constructor() {

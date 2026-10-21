@@ -1,7 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IBaseRestClientConfig, IHttpRequest, IHttpResponse } from "@twin.org/api-models";
-import { HeaderTypes, HttpStatusCode, MimeTypes } from "@twin.org/web";
+import type { IBaseRestClientConfig, IHttpRequest, IHttpResponse } from "@3sixty/api-models";
+import { HeaderTypes, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import { BaseRestClient } from "../src/clients/baseRestClient.js";
 
 class TestRestClient extends BaseRestClient {

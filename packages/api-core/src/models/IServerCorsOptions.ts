@@ -1,6 +1,6 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { HttpMethod } from "@twin.org/web";
+import type { HttpMethod } from "@3sixty/web";
 
 /**
  * The resolved CORS options for a server.

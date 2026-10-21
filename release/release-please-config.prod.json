@@ -8,6 +8,7 @@
 	"release-type": "node",
 	"initial-version": "0.0.1",
 	"versioning": "default",
+	"last-release-sha": "86b74e4f4248b7973b692b1f0464107b179e2de3",
 	"packages": {
 		"packages/api-models": {
 			"package-name": "api-models",

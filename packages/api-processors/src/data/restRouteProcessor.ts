@@ -8,10 +8,10 @@ import {
 	type IRestRoute,
 	type IRestRouteProcessor,
 	type IRestRouteResponseOptions
-} from "@twin.org/api-models";
-import { Is, NotFoundError } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HeaderTypes, HttpStatusCode, MimeTypes } from "@twin.org/web";
+} from "@3sixty/api-models";
+import { Is, NotFoundError } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HeaderTypes, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import type { IRestRouteProcessorConstructorOptions } from "../models/IRestRouteProcessorConstructorOptions.js";
 
 /**

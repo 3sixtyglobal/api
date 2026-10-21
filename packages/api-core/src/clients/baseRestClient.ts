@@ -6,8 +6,8 @@ import type {
 	IHttpResponse,
 	IRestClientProcessor,
 	IRestClientProcessorContext
-} from "@twin.org/api-models";
-import { HttpUrlHelper, RestClientProcessorFactory } from "@twin.org/api-models";
+} from "@3sixty/api-models";
+import { HttpUrlHelper, RestClientProcessorFactory } from "@3sixty/api-models";
 import {
 	BaseError,
 	Coerce,
@@ -16,8 +16,8 @@ import {
 	Is,
 	StringHelper,
 	type IKeyValue
-} from "@twin.org/core";
-import { nameof, nameofCamelCase } from "@twin.org/nameof";
+} from "@3sixty/core";
+import { nameof, nameofCamelCase } from "@3sixty/nameof";
 import {
 	FetchError,
 	FetchHelper,
@@ -26,7 +26,7 @@ import {
 	HttpStatusCode,
 	MimeTypes,
 	type IHttpHeaders
-} from "@twin.org/web";
+} from "@3sixty/web";
 
 /**
  * Abstract client class for common REST processing.

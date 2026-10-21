@@ -1,7 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IError } from "@twin.org/core";
-import type { IHttpHeaders } from "@twin.org/web";
+import type { IError } from "@3sixty/core";
+import type { IHttpHeaders } from "@3sixty/web";
 
 /**
  * Definition for the configuration of a rest client.

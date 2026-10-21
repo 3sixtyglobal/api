@@ -5,10 +5,10 @@ import type {
 	IBaseRouteProcessor,
 	IHttpResponse,
 	IHttpServerRequest
-} from "@twin.org/api-models";
-import { ContextIdStore, ContextIdHelper, type IContextIds } from "@twin.org/context";
-import { Guards, Is } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/api-models";
+import { ContextIdStore, ContextIdHelper, type IContextIds } from "@3sixty/context";
+import { Guards, Is } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
 import type { IContextIdProcessorConfig } from "../models/IContextIdProcessorConfig.js";
 import type { IContextIdProcessorConstructorOptions } from "../models/IContextIdProcessorConstructorOptions.js";
 

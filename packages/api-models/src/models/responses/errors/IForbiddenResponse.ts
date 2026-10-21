@@ -1,7 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IError } from "@twin.org/core";
-import type { HttpStatusCode } from "@twin.org/web";
+import type { IError } from "@3sixty/core";
+import type { HttpStatusCode } from "@3sixty/web";
 
 /**
  * The operation that you tried to perform is not possible, see the content for more details.

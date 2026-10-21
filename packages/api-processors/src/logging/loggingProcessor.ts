@@ -5,12 +5,12 @@ import type {
 	IBaseRouteProcessor,
 	IHttpResponse,
 	IHttpServerRequest
-} from "@twin.org/api-models";
-import type { IContextIds } from "@twin.org/context";
-import { Coerce, ComponentFactory, Is, ObjectHelper } from "@twin.org/core";
-import type { ILoggingComponent } from "@twin.org/logging-models";
-import { nameof } from "@twin.org/nameof";
-import { HeaderTypes, HttpStatusCode, MimeTypes } from "@twin.org/web";
+} from "@3sixty/api-models";
+import type { IContextIds } from "@3sixty/context";
+import { Coerce, ComponentFactory, Is, ObjectHelper } from "@3sixty/core";
+import type { ILoggingComponent } from "@3sixty/logging-models";
+import { nameof } from "@3sixty/nameof";
+import { HeaderTypes, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import type { ILoggingProcessorConstructorOptions } from "../models/ILoggingProcessorConstructorOptions.js";
 
 /**

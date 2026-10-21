@@ -1,4 +1,4 @@
-# @twin.org/api-core
+# @3sixty/api-core
 
 ## Classes
 

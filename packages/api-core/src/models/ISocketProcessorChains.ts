@@ -1,6 +1,6 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { ISocketRouteProcessor } from "@twin.org/api-models";
+import type { ISocketRouteProcessor } from "@3sixty/api-models";
 
 /**
  * The socket processor phase chains, bound to their processors when the server is built.

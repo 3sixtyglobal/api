@@ -1,11 +1,11 @@
-# TWIN API Models
+# 3Sixty API Models
 
 This package provides shared API contracts, route types, and response models used across services and clients.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-models
+npm install @3sixty/api-models
 ```
 
 ## Examples

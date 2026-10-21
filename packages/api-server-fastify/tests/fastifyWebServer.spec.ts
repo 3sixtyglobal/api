@@ -9,15 +9,15 @@ import {
 	type IHttpResponse,
 	type IRestRoute,
 	type IRestRouteProcessor
-} from "@twin.org/api-models";
+} from "@3sixty/api-models";
 import {
 	JwtMimeTypeProcessor,
 	LoggingProcessor,
 	SocketRouteProcessor
-} from "@twin.org/api-processors";
-import { ComponentFactory, Mutex, NotImplementedError } from "@twin.org/core";
-import type { ILogEntry, ILoggingComponent } from "@twin.org/logging-models";
-import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@twin.org/web";
+} from "@3sixty/api-processors";
+import { ComponentFactory, Mutex, NotImplementedError } from "@3sixty/core";
+import type { ILogEntry, ILoggingComponent } from "@3sixty/logging-models";
+import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import { io } from "socket.io-client";
 import { getFreePort } from "./setupTestEnv.js";
 import { FastifyWebServer } from "../src/fastifyWebServer.js";

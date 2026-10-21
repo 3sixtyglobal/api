@@ -1,4 +1,4 @@
-# @twin.org/api-models
+# @3sixty/api-models
 
 ## Classes
 

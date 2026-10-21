@@ -11,8 +11,8 @@ import {
 	UnauthorizedError,
 	UnprocessableError,
 	ValidationError
-} from "@twin.org/core";
-import { HeaderTypes, HttpStatusCode, MimeTypes } from "@twin.org/web";
+} from "@3sixty/core";
+import { HeaderTypes, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import { ForbiddenError } from "../errors/forbiddenError.js";
 import { TooManyRequestsError } from "../errors/tooManyRequestsError.js";
 import type { IHttpResponse } from "../models/protocol/IHttpResponse.js";

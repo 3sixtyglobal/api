@@ -12,10 +12,10 @@ import type {
 	IServerRootResponse,
 	IServerSpecResponse,
 	ITag
-} from "@twin.org/api-models";
-import { ComponentFactory, Is } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HeaderTypes, HttpStatusCode, MimeTypes } from "@twin.org/web";
+} from "@3sixty/api-models";
+import { ComponentFactory, Is } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HeaderTypes, HttpStatusCode, MimeTypes } from "@3sixty/web";
 
 /**
  * The tag to associate with the routes.

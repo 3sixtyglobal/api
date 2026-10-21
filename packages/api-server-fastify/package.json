@@ -1,10 +1,10 @@
 {
-	"name": "@twin.org/api-server-fastify",
-	"version": "0.11.1-next.0",
+	"name": "@3sixty/api-server-fastify",
+	"version": "0.20.0-next.0",
 	"description": "Fastify web server integration for exposing API routes with consistent runtime behaviour.",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/3sixtyglobal/twin-api.git",
+		"url": "git+https://github.com/3sixtyglobal/api.git",
 		"directory": "packages/api-server-fastify"
 	},
 	"author": "martyn.janes@iota.org",
@@ -14,12 +14,12 @@
 		"node": ">=24.0.0"
 	},
 	"scripts": {
-		"clean": "rimraf dist coverage",
-		"build": "tspc",
+		"clean": "rimraf dist coverage .cache",
+		"build": "tspc --incremental --tsBuildInfoFile .cache/tsconfig.tsbuildinfo",
 		"dev": "nodemon --watch src --ext ts --exec \"pnpm run build\"",
 		"test": "vitest --run --config ./vitest.config.ts --no-cache",
 		"test:coverage": "vitest --run --coverage --config ./vitest.config.ts --no-cache",
-		"test:build": "tspc -p ./tests/tsconfig.json --noEmit",
+		"test:build": "tspc -p ./tests/tsconfig.json --noEmit --incremental --tsBuildInfoFile .cache/tests.tsbuildinfo",
 		"validate-locales": "validate-locales",
 		"docs:clean": "rimraf docs/reference",
 		"docs:generate": "typedoc --options typedoc.config.mjs",
@@ -30,22 +30,22 @@
 	"dependencies": {
 		"@fastify/compress": "9.2.0",
 		"@fastify/cors": "11.3.0",
-		"@twin.org/api-core": "0.11.1-next.0",
-		"@twin.org/api-models": "0.11.1-next.0",
-		"@twin.org/api-processors": "0.11.1-next.0",
-		"@twin.org/context": "next",
-		"@twin.org/core": "next",
-		"@twin.org/logging-models": "next",
-		"@twin.org/nameof": "next",
-		"@twin.org/web": "next",
+		"@3sixty/api-core": "0.20.0-next.0",
+		"@3sixty/api-models": "0.20.0-next.0",
+		"@3sixty/api-processors": "0.20.0-next.0",
+		"@3sixty/context": "next",
+		"@3sixty/core": "next",
+		"@3sixty/logging-models": "next",
+		"@3sixty/nameof": "next",
+		"@3sixty/web": "next",
 		"fastify": "5.12.5",
 		"fastify-plugin": "6.0.0",
 		"socket.io": "4.8.3"
 	},
 	"devDependencies": {
-		"@twin.org/nameof-transformer": "next",
-		"@twin.org/nameof-vitest-plugin": "next",
-		"@twin.org/validate-locales": "next",
+		"@3sixty/nameof-transformer": "next",
+		"@3sixty/nameof-vitest-plugin": "next",
+		"@3sixty/validate-locales": "next",
 		"@types/node": "26.6.2",
 		"@vitest/coverage-v8": "5.0.1",
 		"concurrently": "10.0.5",
@@ -83,7 +83,7 @@
 		"api"
 	],
 	"bugs": {
-		"url": "git+https://github.com/3sixtyglobal/twin-api/issues"
+		"url": "git+https://github.com/3sixtyglobal/api/issues"
 	},
-	"homepage": "https://twindev.org"
+	"homepage": "https://3sixty.global"
 }

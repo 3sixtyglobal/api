@@ -1,6 +1,6 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { Is } from "@twin.org/core";
+import { Is } from "@3sixty/core";
 
 /**
  * Class to help with handling http parameters.

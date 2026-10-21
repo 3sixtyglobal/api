@@ -1,9 +1,9 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IBaseSocketClientConfig, IHttpRequest, IHttpResponse } from "@twin.org/api-models";
-import { BaseError, Guards, Is, StringHelper, type IError } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HttpStatusCode } from "@twin.org/web";
+import type { IBaseSocketClientConfig, IHttpRequest, IHttpResponse } from "@3sixty/api-models";
+import { BaseError, Guards, Is, StringHelper, type IError } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HttpStatusCode } from "@3sixty/web";
 import lookup, { type Socket } from "socket.io-client";
 
 /**

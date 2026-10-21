@@ -1,11 +1,11 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { HealthStatus, type IHealth } from "@twin.org/api-models";
-import type { IBackgroundTask } from "@twin.org/background-task-models";
-import { TaskStatus } from "@twin.org/background-task-models";
-import { ContextIdStore } from "@twin.org/context";
-import { ComponentFactory, Factory, GeneralError } from "@twin.org/core";
-import { ModuleHelper } from "@twin.org/modules";
+import { HealthStatus, type IHealth } from "@3sixty/api-models";
+import type { IBackgroundTask } from "@3sixty/background-task-models";
+import { TaskStatus } from "@3sixty/background-task-models";
+import { ContextIdStore } from "@3sixty/context";
+import { ComponentFactory, Factory, GeneralError } from "@3sixty/core";
+import { ModuleHelper } from "@3sixty/modules";
 import { HealthService } from "../src/healthService.js";
 
 function makeComponent(...healthEntries: IHealth[]): {
@@ -347,7 +347,7 @@ describe("HealthService", () => {
 				await service.start();
 
 				expect(ModuleHelper.execModuleMethod).toHaveBeenCalledWith(
-					"@twin.org/engine-models",
+					"@3sixty/engine-models",
 					"EngineCloneHelper.verifyExcludeCloneComponents",
 					[["^rightsManagement", "^messaging"]]
 				);

@@ -11,8 +11,8 @@ import {
 	UnauthorizedError,
 	UnprocessableError,
 	ValidationError
-} from "@twin.org/core";
-import { HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/core";
+import { HttpStatusCode } from "@3sixty/web";
 import { ForbiddenError } from "../../src/errors/forbiddenError.js";
 import { TooManyRequestsError } from "../../src/errors/tooManyRequestsError.js";
 import { HttpErrorHelper } from "../../src/helpers/httpErrorHelper.js";

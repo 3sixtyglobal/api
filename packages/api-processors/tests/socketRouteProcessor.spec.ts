@@ -1,7 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IHttpResponse, ISocketRoute, ISocketServerRequest } from "@twin.org/api-models";
-import { HttpMethod, HttpStatusCode } from "@twin.org/web";
+import type { IHttpResponse, ISocketRoute, ISocketServerRequest } from "@3sixty/api-models";
+import { HttpMethod, HttpStatusCode } from "@3sixty/web";
 import { SocketRouteProcessor } from "../src/data/socketRouteProcessor.js";
 
 function makeRequest(body?: unknown): ISocketServerRequest {

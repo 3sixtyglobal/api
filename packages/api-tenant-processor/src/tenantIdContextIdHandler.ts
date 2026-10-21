@@ -1,8 +1,8 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IContextIdHandler } from "@twin.org/context";
-import { Converter, Guards, Is } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
+import type { IContextIdHandler } from "@3sixty/context";
+import { Converter, Guards, Is } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
 
 /**
  * Context ID handler that treats a tenant ID as a compact base64url-encoded hex string.

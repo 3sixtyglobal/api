@@ -1,11 +1,11 @@
-# TWIN API REST Client
+# 3Sixty API REST Client
 
 This package provides a REST client implementation for consuming information and hosting endpoints.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-rest-client
+npm install @3sixty/api-rest-client
 ```
 
 ## Examples

@@ -5,7 +5,7 @@ These snippets demonstrate request and response processors that can be composed 
 ## SocketRouteProcessor
 
 ```typescript
-import { SocketRouteProcessor } from '@twin.org/api-processors';
+import { SocketRouteProcessor } from '@3sixty/api-processors';
 
 const socketProcessor = new SocketRouteProcessor();
 
@@ -52,7 +52,7 @@ await socketProcessor.disconnected(socketRequest, socketRoute);
 ## ContextIdProcessor
 
 ```typescript
-import { ContextIdProcessor } from '@twin.org/api-processors';
+import { ContextIdProcessor } from '@3sixty/api-processors';
 
 const contextProcessor = new ContextIdProcessor({
   config: {
@@ -77,7 +77,7 @@ console.log(typeof contextIds.node); // string
 ## LoggingProcessor
 
 ```typescript
-import { LoggingProcessor } from '@twin.org/api-processors';
+import { LoggingProcessor } from '@3sixty/api-processors';
 
 const logging = new LoggingProcessor();
 
@@ -103,7 +103,7 @@ await logging.post(request, response, undefined, {}, processorState);
 ## JsonLdMimeTypeProcessor
 
 ```typescript
-import { JsonLdMimeTypeProcessor } from '@twin.org/api-processors';
+import { JsonLdMimeTypeProcessor } from '@3sixty/api-processors';
 
 const jsonLd = new JsonLdMimeTypeProcessor();
 
@@ -118,7 +118,7 @@ console.log(typeof handled); // object
 ## JwtMimeTypeProcessor
 
 ```typescript
-import { JwtMimeTypeProcessor } from '@twin.org/api-processors';
+import { JwtMimeTypeProcessor } from '@3sixty/api-processors';
 
 const jwt = new JwtMimeTypeProcessor();
 
@@ -133,7 +133,7 @@ console.log(typeof handled); // string
 ## RestRouteProcessor
 
 ```typescript
-import { RestRouteProcessor } from '@twin.org/api-processors';
+import { RestRouteProcessor } from '@3sixty/api-processors';
 
 const restProcessor = new RestRouteProcessor();
 
@@ -154,7 +154,7 @@ const route = {
   path: '/info',
   handler: async () => ({
     body: {
-      name: 'Twin API'
+      name: '3Sixty API'
     }
   })
 };
@@ -166,7 +166,7 @@ console.log(response.statusCode ?? 200); // 200
 ## StaticContextIdProcessor
 
 ```typescript
-import { StaticContextIdProcessor } from '@twin.org/api-processors';
+import { StaticContextIdProcessor } from '@3sixty/api-processors';
 
 const staticContext = new StaticContextIdProcessor({
   config: {

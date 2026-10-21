@@ -1,9 +1,9 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { HealthStatus, type IHealth } from "@twin.org/api-models";
-import type { IContextIds } from "@twin.org/context";
-import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
-import { ModuleHelper } from "@twin.org/modules";
+import { HealthStatus, type IHealth } from "@3sixty/api-models";
+import type { IContextIds } from "@3sixty/context";
+import { ContextIdKeys, ContextIdStore } from "@3sixty/context";
+import { ModuleHelper } from "@3sixty/modules";
 import {
 	healthApplicationTask,
 	healthApplicationTaskEnd,
@@ -39,7 +39,7 @@ describe("healthApplicationTask", () => {
 		// so the mock has to respond per module.
 		vi.spyOn(ModuleHelper, "execModuleMethod").mockImplementation(
 			async <T>(module: string): Promise<T> =>
-				(module === "@twin.org/engine-models" ? FILTERED_CLONE_DATA : mockEngine) as T
+				(module === "@3sixty/engine-models" ? FILTERED_CLONE_DATA : mockEngine) as T
 		);
 		vi.spyOn(ContextIdStore, "getContextIds").mockResolvedValue({});
 		vi.spyOn(ContextIdStore, "run").mockImplementation(async (contextIds, fn) => fn());
@@ -61,7 +61,7 @@ describe("healthApplicationTask", () => {
 		await healthApplicationTask(ENGINE_CLONE_DATA);
 
 		expect(ModuleHelper.execModuleMethod).toHaveBeenCalledWith(
-			"@twin.org/engine-core",
+			"@3sixty/engine-core",
 			"EngineCoreBuilder.fromClone",
 			expect.arrayContaining(["engine", ENGINE_CLONE_DATA])
 		);
@@ -111,7 +111,7 @@ describe("healthApplicationTask", () => {
 			await healthApplicationTaskStart(CLONE_WITH_TYPES, ["^rightsManagement"]);
 
 			expect(ModuleHelper.execModuleMethod).toHaveBeenCalledWith(
-				"@twin.org/engine-models",
+				"@3sixty/engine-models",
 				"EngineCloneHelper.filterCloneComponents",
 				[CLONE_WITH_TYPES, ["^rightsManagement"]]
 			);

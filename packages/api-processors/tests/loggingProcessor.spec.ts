@@ -1,9 +1,9 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IHttpResponse, IHttpServerRequest } from "@twin.org/api-models";
-import { ComponentFactory } from "@twin.org/core";
-import type { ILogEntry, ILoggingComponent } from "@twin.org/logging-models";
-import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@twin.org/web";
+import type { IHttpResponse, IHttpServerRequest } from "@3sixty/api-models";
+import { ComponentFactory } from "@3sixty/core";
+import type { ILogEntry, ILoggingComponent } from "@3sixty/logging-models";
+import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@3sixty/web";
 import { LoggingProcessor } from "../src/logging/loggingProcessor.js";
 
 function makeLogger(logEntries: ILogEntry[]): ILoggingComponent {

@@ -5,14 +5,14 @@ import {
 	type IHealthComponent,
 	HealthStatus,
 	type IHealthProviderComponent
-} from "@twin.org/api-models";
-import type { IBackgroundTask, IBackgroundTaskComponent } from "@twin.org/background-task-models";
-import { TaskStatus } from "@twin.org/background-task-models";
-import type { IContextIds } from "@twin.org/context";
-import { BaseError, ComponentFactory, Factory, type IComponent, Is } from "@twin.org/core";
-import type { ILoggingComponent } from "@twin.org/logging-models";
-import { ModuleHelper } from "@twin.org/modules";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/api-models";
+import type { IBackgroundTask, IBackgroundTaskComponent } from "@3sixty/background-task-models";
+import { TaskStatus } from "@3sixty/background-task-models";
+import type { IContextIds } from "@3sixty/context";
+import { BaseError, ComponentFactory, Factory, type IComponent, Is } from "@3sixty/core";
+import type { ILoggingComponent } from "@3sixty/logging-models";
+import { ModuleHelper } from "@3sixty/modules";
+import { nameof } from "@3sixty/nameof";
 import type { IHealthServiceConstructorOptions } from "./models/IHealthServiceConstructorOptions.js";
 
 /**
@@ -156,7 +156,7 @@ export class HealthService implements IHealthComponent {
 			// with no configured exclusions never has to resolve it.
 			if (Is.arrayValue(this._excludeCloneComponents)) {
 				this._excludeCloneComponents = await ModuleHelper.execModuleMethod<string[] | undefined>(
-					"@twin.org/engine-models",
+					"@3sixty/engine-models",
 					"EngineCloneHelper.verifyExcludeCloneComponents",
 					[this._excludeCloneComponents]
 				);

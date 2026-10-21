@@ -4,12 +4,12 @@ import type {
 	HealthApplicationCallback,
 	IHealth,
 	IHealthProviderComponent
-} from "@twin.org/api-models";
-import { ContextIdKeys, ContextIdStore } from "@twin.org/context";
-import type { IContextIds } from "@twin.org/context";
-import { GeneralError, Is } from "@twin.org/core";
-import type { IComponent } from "@twin.org/core";
-import { ModuleHelper } from "@twin.org/modules";
+} from "@3sixty/api-models";
+import { ContextIdKeys, ContextIdStore } from "@3sixty/context";
+import type { IContextIds } from "@3sixty/context";
+import { GeneralError, Is } from "@3sixty/core";
+import type { IComponent } from "@3sixty/core";
+import { ModuleHelper } from "@3sixty/modules";
 
 let engine:
 	| {
@@ -39,7 +39,7 @@ export async function healthApplicationTaskStart(
 			const cloneData =
 				Is.object(engineCloneData) && Is.arrayValue(excludeComponents)
 					? await ModuleHelper.execModuleMethod<unknown>(
-							"@twin.org/engine-models",
+							"@3sixty/engine-models",
 							"EngineCloneHelper.filterCloneComponents",
 							[engineCloneData, excludeComponents]
 						)
@@ -49,7 +49,7 @@ export async function healthApplicationTaskStart(
 				stop: () => Promise<void>;
 				getContextIds: () => IContextIds | undefined;
 				getRegisteredComponents: () => Promise<{ instanceType: string; component: IComponent }[]>;
-			}>("@twin.org/engine-core", "EngineCoreBuilder.fromClone", [
+			}>("@3sixty/engine-core", "EngineCoreBuilder.fromClone", [
 				"engine",
 				cloneData,
 				await ContextIdStore.getContextIds(),

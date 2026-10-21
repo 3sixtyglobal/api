@@ -1,11 +1,11 @@
-# TWIN API Processors
+# 3Sixty API Processors
 
 This package provides reusable request and route processors for logging, context handling, and content negotiation.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-processors
+npm install @3sixty/api-processors
 ```
 
 ## Examples

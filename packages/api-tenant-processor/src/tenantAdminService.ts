@@ -10,8 +10,8 @@ import {
 	type ITenant,
 	type ITenantAdminComponent,
 	TenantEventType
-} from "@twin.org/api-models";
-import { ContextIdKeys, ContextIdStore, type IContextIds } from "@twin.org/context";
+} from "@3sixty/api-models";
+import { ContextIdKeys, ContextIdStore, type IContextIds } from "@3sixty/context";
 import {
 	AlreadyExistsError,
 	BaseError,
@@ -24,14 +24,14 @@ import {
 	LfuCache,
 	NotFoundError,
 	Url
-} from "@twin.org/core";
-import { Blake2b } from "@twin.org/crypto";
-import { ComparisonOperator, type EntityCondition } from "@twin.org/entity";
+} from "@3sixty/core";
+import { Blake2b } from "@3sixty/crypto";
+import { ComparisonOperator, type EntityCondition } from "@3sixty/entity";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
-} from "@twin.org/entity-storage-models";
-import { nameof } from "@twin.org/nameof";
+} from "@3sixty/entity-storage-models";
+import { nameof } from "@3sixty/nameof";
 import { Tenant } from "./entities/tenant.js";
 import type { ITenantAdminServiceConstructorOptions } from "./models/ITenantAdminServiceConstructorOptions.js";
 import { TenantIdHelper } from "./utils/tenantIdHelper.js";

@@ -1,4 +1,4 @@
-# @twin.org/api-tenant-processor
+# @3sixty/api-tenant-processor
 
 ## Classes
 

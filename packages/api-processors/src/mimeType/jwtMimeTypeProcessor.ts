@@ -1,9 +1,9 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import type { IMimeTypeProcessor } from "@twin.org/api-models";
-import { Converter } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { MimeTypes } from "@twin.org/web";
+import type { IMimeTypeProcessor } from "@3sixty/api-models";
+import { Converter } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { MimeTypes } from "@3sixty/web";
 
 /**
  * Process the JWT mime type.

@@ -10,6 +10,7 @@
 	"versioning": "prerelease",
 	"prerelease": true,
 	"prerelease-type": "next",
+	"last-release-sha": "8bb8bdbfaa4ffe68b39832e176726864a6bde6ad",
 	"packages": {
 		"packages/api-models": {
 			"package-name": "api-models",

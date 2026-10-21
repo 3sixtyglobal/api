@@ -5,7 +5,7 @@ These snippets show practical helpers for URL manipulation, request parameter co
 ## HttpUrlHelper
 
 ```typescript
-import { HttpUrlHelper } from '@twin.org/api-models';
+import { HttpUrlHelper } from '@3sixty/api-models';
 
 const fullUrl = 'https://tenant.example.org/orders?page=2';
 
@@ -16,7 +16,7 @@ console.log(HttpUrlHelper.extractPathAndSearch(fullUrl)); // /orders?page=2
 ```
 
 ```typescript
-import { HttpUrlHelper } from '@twin.org/api-models';
+import { HttpUrlHelper } from '@3sixty/api-models';
 
 const combined = HttpUrlHelper.combineParts('https://tenant.example.org/', '/api/v1/orders');
 const replaced = HttpUrlHelper.replaceOrigin(combined ?? '', 'https://edge.example.org');
@@ -28,7 +28,7 @@ console.log(replaced); // https://edge.example.org/api/v1/orders
 ## HttpParameterHelper
 
 ```typescript
-import { HttpParameterHelper } from '@twin.org/api-models';
+import { HttpParameterHelper } from '@3sixty/api-models';
 
 const ids = HttpParameterHelper.arrayFromString('id-1,id-2,id-3');
 const idsAsString = HttpParameterHelper.arrayToString(ids);
@@ -44,7 +44,7 @@ console.log(filterString); // {"status":"active"}
 ## HttpErrorHelper
 
 ```typescript
-import { HttpErrorHelper } from '@twin.org/api-models';
+import { HttpErrorHelper } from '@3sixty/api-models';
 
 try {
   throw new Error('Invalid request');
@@ -67,8 +67,8 @@ try {
 When working with the hosting component, you can encrypt and decrypt query parameters for secure transmission. The encryption mechanism automatically handles salt generation to prevent rainbow table attacks.
 
 ```typescript
-import type { IComponent, IHttpRequestQuery } from '@twin.org/api-models';
-import { ComponentFactory } from '@twin.org/core';
+import type { IComponent, IHttpRequestQuery } from '@3sixty/api-models';
+import { ComponentFactory } from '@3sixty/core';
 
 interface IHostingComponent extends IComponent {
   addEncryptedParamsToUrl(url: string, params: IHttpRequestQuery): Promise<string>;
@@ -93,8 +93,8 @@ console.log(encrypted); // https://api.example.com/callback?x-enc-token=...&x-en
 ```
 
 ```typescript
-import type { IHttpRequestQuery } from '@twin.org/api-models';
-import { ComponentFactory } from '@twin.org/core';
+import type { IHttpRequestQuery } from '@3sixty/api-models';
+import { ComponentFactory } from '@3sixty/core';
 
 interface IHostingComponent {
   addEncryptedParamsToUrl(url: string, params: IHttpRequestQuery): Promise<string>;
@@ -126,8 +126,8 @@ console.log(decrypted); // { token: 'secret-token-123', userId: 'user-456' }
 ```
 
 ```typescript
-import type { IHttpRequestQuery } from '@twin.org/api-models';
-import { ComponentFactory } from '@twin.org/core';
+import type { IHttpRequestQuery } from '@3sixty/api-models';
+import { ComponentFactory } from '@3sixty/core';
 
 interface IHostingComponent {
   addTenantTokenToUrl(url: string, tenantId: string): Promise<string>;
@@ -148,8 +148,8 @@ console.log(urlWithTenant); // https://tenant.example.com/dashboard?x-enc-tenant
 ```
 
 ```typescript
-import type { IHttpRequestQuery } from '@twin.org/api-models';
-import { ComponentFactory } from '@twin.org/core';
+import type { IHttpRequestQuery } from '@3sixty/api-models';
+import { ComponentFactory } from '@3sixty/core';
 
 interface IHostingComponent {
   encryptQueryParams(
@@ -180,7 +180,7 @@ console.log(query); // { token: 'secret-123', apiKey: 'key-456', status: 'active
 ```
 
 ```typescript
-import { ComponentFactory } from '@twin.org/core';
+import { ComponentFactory } from '@3sixty/core';
 
 interface IHostingComponent {
   encryptParam(paramValue: string): Promise<string>;

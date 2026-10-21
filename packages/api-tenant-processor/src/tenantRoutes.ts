@@ -12,11 +12,11 @@ import {
 	type ITag,
 	type ITenantAdminComponent,
 	type IRouteAuthorization
-} from "@twin.org/api-models";
-import { ContextIdStore } from "@twin.org/context";
-import { Coerce, ComponentFactory, Guards, Is } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@twin.org/web";
+} from "@3sixty/api-models";
+import { ContextIdStore } from "@3sixty/context";
+import { Coerce, ComponentFactory, Guards, Is } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@3sixty/web";
 import type { ITenantCreateRequest } from "./models/api/ITenantCreateRequest.js";
 import type { ITenantGetByApiKeyRequest } from "./models/api/ITenantGetByApiKeyRequest.js";
 import type { ITenantGetByIdRequest } from "./models/api/ITenantGetByIdRequest.js";
@@ -82,7 +82,7 @@ export function generateRestRoutesTenants(
 						description: "The response for the list tenants request.",
 						response: {
 							headers: {
-								[HeaderTypes.Link]: '<https://api.twin.org/tenants/1>; rel="next"'
+								[HeaderTypes.Link]: '<https://api.3sixty.global/tenants/1>; rel="next"'
 							},
 							body: [
 								{

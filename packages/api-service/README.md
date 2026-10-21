@@ -1,11 +1,11 @@
-# TWIN API Service
+# 3Sixty API Service
 
 This package provides information and hosting service implementations with generated REST route handlers.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-service
+npm install @3sixty/api-service
 ```
 
 ## Examples

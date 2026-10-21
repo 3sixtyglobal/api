@@ -1,11 +1,11 @@
-# TWIN API Server Fastify
+# 3Sixty API Server Fastify
 
 This package provides Fastify web server integration for exposing API routes with consistent runtime behaviour. It builds on the Fastify framework to offer a predictable hosting layer for API services.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-server-fastify
+npm install @3sixty/api-server-fastify
 ```
 
 ## Examples

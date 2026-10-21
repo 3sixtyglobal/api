@@ -5,7 +5,7 @@ These snippets show tenant lifecycle management and request context routing for 
 ## TenantAdminService
 
 ```typescript
-import { TenantAdminService } from '@twin.org/api-tenant-processor';
+import { TenantAdminService } from '@3sixty/api-tenant-processor';
 
 const tenantAdmin = new TenantAdminService();
 
@@ -27,7 +27,7 @@ console.log(byKey.id.length); // 32
 ```
 
 ```typescript
-import { TenantAdminService } from '@twin.org/api-tenant-processor';
+import { TenantAdminService } from '@3sixty/api-tenant-processor';
 
 const tenantAdmin = new TenantAdminService();
 
@@ -44,7 +44,7 @@ console.log(page.tenants.length); // 1
 ## TenantIdContextIdHandler
 
 ```typescript
-import { TenantIdContextIdHandler } from '@twin.org/api-tenant-processor';
+import { TenantIdContextIdHandler } from '@3sixty/api-tenant-processor';
 
 const handler = new TenantIdContextIdHandler();
 
@@ -57,7 +57,7 @@ handler.guard('0123456789abcdef0123456789abcdef');
 ## TenantProcessor
 
 ```typescript
-import { TenantProcessor } from '@twin.org/api-tenant-processor';
+import { TenantProcessor } from '@3sixty/api-tenant-processor';
 
 const tenantProcessor = new TenantProcessor();
 

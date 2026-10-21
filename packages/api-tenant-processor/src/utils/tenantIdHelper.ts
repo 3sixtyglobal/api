@@ -1,6 +1,6 @@
 // Copyright 2025 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { RandomHelper } from "@twin.org/core";
+import { RandomHelper } from "@3sixty/core";
 
 /**
  * Helper class for tenant id related operations.

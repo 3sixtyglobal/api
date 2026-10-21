@@ -1,11 +1,11 @@
-# TWIN API Core
+# 3Sixty API Core
 
 This package provides base client classes and common helpers for building HTTP and socket integrations.
 
 ## Installation
 
 ```shell
-npm install @twin.org/api-core
+npm install @3sixty/api-core
 ```
 
 ## Examples

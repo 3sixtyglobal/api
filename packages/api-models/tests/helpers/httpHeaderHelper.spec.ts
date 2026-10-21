@@ -1,7 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
-import { GeneralError } from "@twin.org/core";
-import { MimeTypes, type IHttpHeaders } from "@twin.org/web";
+import { GeneralError } from "@3sixty/core";
+import { MimeTypes, type IHttpHeaders } from "@3sixty/web";
 import { HttpHeaderHelper } from "../../src/helpers/httpHeaderHelper.js";
 
 describe("HttpHeaderHelper", () => {

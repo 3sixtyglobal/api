@@ -5,7 +5,7 @@ Use these snippets to build and run the Fastify server with explicit lifecycle c
 ## FastifyWebServer
 
 ```typescript
-import { FastifyWebServer } from '@twin.org/api-server-fastify';
+import { FastifyWebServer } from '@3sixty/api-server-fastify';
 
 const webServer = new FastifyWebServer();
 
@@ -23,7 +23,7 @@ await webServer.stop();
 ```
 
 ```typescript
-import { FastifyWebServer } from '@twin.org/api-server-fastify';
+import { FastifyWebServer } from '@3sixty/api-server-fastify';
 
 const webServer = new FastifyWebServer();
 

@@ -5,7 +5,7 @@ Use these snippets to call health, metadata, and specification endpoints from op
 ## InformationRestClient
 
 ```typescript
-import { InformationRestClient } from '@twin.org/api-rest-client';
+import { InformationRestClient } from '@3sixty/api-rest-client';
 
 const client = new InformationRestClient({
   endpoint: 'https://api.example.org',
@@ -18,13 +18,13 @@ const root = await client.root();
 const info = await client.info();
 const icon = await client.favicon();
 
-console.log(root); // twin-api - 1.2.0
+console.log(root); // 3sixty-api - 1.2.0
 console.log(info.version); // 1.2.0
 console.log((icon?.byteLength ?? 0) > 0); // true
 ```
 
 ```typescript
-import { InformationRestClient } from '@twin.org/api-rest-client';
+import { InformationRestClient } from '@3sixty/api-rest-client';
 
 const client = new InformationRestClient({
   endpoint: 'https://api.example.org',
@@ -41,7 +41,7 @@ console.log(health.status); // ok
 ```
 
 ```typescript
-import { InformationRestClient } from '@twin.org/api-rest-client';
+import { InformationRestClient } from '@3sixty/api-rest-client';
 
 const client = new InformationRestClient({
   endpoint: 'https://api.example.org',

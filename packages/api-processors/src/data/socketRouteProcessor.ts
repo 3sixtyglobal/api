@@ -8,10 +8,10 @@ import {
 	type ISocketRoute,
 	type ISocketRouteProcessor,
 	type ISocketServerRequest
-} from "@twin.org/api-models";
-import { Is, NotFoundError } from "@twin.org/core";
-import { nameof } from "@twin.org/nameof";
-import { HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/api-models";
+import { Is, NotFoundError } from "@3sixty/core";
+import { nameof } from "@3sixty/nameof";
+import { HttpStatusCode } from "@3sixty/web";
 import type { ISocketRouteProcessorConstructorOptions } from "../models/ISocketRouteProcessorConstructorOptions.js";
 
 /**

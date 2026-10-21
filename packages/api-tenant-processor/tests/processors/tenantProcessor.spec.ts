@@ -5,16 +5,16 @@ import {
 	type IHttpResponse,
 	type ITenant,
 	type ITenantAdminComponent
-} from "@twin.org/api-models";
-import { ContextIdKeys, type IContextIds } from "@twin.org/context";
+} from "@3sixty/api-models";
+import { ContextIdKeys, type IContextIds } from "@3sixty/context";
 import {
 	ComponentFactory,
 	GeneralError,
 	GuardError,
 	type IError,
 	NotFoundError
-} from "@twin.org/core";
-import { HttpStatusCode } from "@twin.org/web";
+} from "@3sixty/core";
+import { HttpStatusCode } from "@3sixty/web";
 import { TenantProcessor } from "../../src/tenantProcessor.js";
 
 const LOGIN_URL = "/api/login";
