@@ -1,0 +1,23 @@
+{
+	"error": {
+		"honoWebServer": {
+			"badRequest": "The web server could not handle the request",
+			"unknownBodyLimit": "The route \"{route}\" uses the body limit named \"{bodyLimit}\", which is not configured",
+			"bodyTooLarge": "The request body is larger than the limit of {bodyLimit} bytes",
+			"invalidJsonBody": "The request body is not valid JSON",
+			"prototypePoisoning": "The request body contains a key which is not allowed",
+			"unsupportedMediaType": "The content type \"{contentType}\" is not supported"
+		}
+	},
+	"warn": {
+		"honoWebServer": {
+			"additionalBindingFailed": "The Web Server could not bind to the additional address \"{host}\" on port \"{port}\""
+		}
+	},
+	"info": {
+		"honoWebServer": {
+			"restRouteAdded": "Added REST route \"{route}\" \"{method}\"",
+			"socketRouteAdded": "Added socket route: handshake path \"{handshakePath}\", namespace \"{namespace}\", event name \"{eventName}\""
+		}
+	}
+}

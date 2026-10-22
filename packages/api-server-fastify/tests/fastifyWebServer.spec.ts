@@ -1,7 +1,9 @@
 // Copyright 2024 IOTA Stiftung.
 // Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
+import { lookup } from "node:dns/promises";
 import http from "node:http";
+import { createServer as createNetServer } from "node:net";
 import {
 	HealthCategory,
 	HealthStatus,
@@ -9,17 +11,18 @@ import {
 	HttpErrorHelper,
 	type IHttpResponse,
 	type IRestRoute,
-	type IRestRouteProcessor
+	type IRestRouteProcessor,
+	type ISocketRoute
 } from "@3sixty/api-models";
 import {
 	JwtMimeTypeProcessor,
 	LoggingProcessor,
 	SocketRouteProcessor
 } from "@3sixty/api-processors";
-import { ComponentFactory, Mutex, NotImplementedError } from "@3sixty/core";
+import { ComponentFactory, Is, Mutex, NotImplementedError } from "@3sixty/core";
 import type { ILogEntry, ILoggingComponent } from "@3sixty/logging-models";
 import { HeaderTypes, HttpMethod, HttpStatusCode, MimeTypes } from "@3sixty/web";
-import { io } from "socket.io-client";
+import { io, type ManagerOptions, type Socket, type SocketOptions } from "socket.io-client";
 import { getFreePort } from "./setupTestEnv.js";
 import { FastifyWebServer } from "../src/fastifyWebServer.js";
 
@@ -103,6 +106,92 @@ async function postDeclaredLength(
 		request.setTimeout(5000, () => request.destroy(new Error("Timed out waiting for response")));
 		request.flushHeaders();
 	});
+}
+
+/**
+ * Create a route processor which runs the route handler and copies its response.
+ * @returns The processor.
+ */
+function createHandlerProcessor(): IRestRouteProcessor {
+	return {
+		className: () => "HandlerProcessor",
+		process: async (request, response, route, processorState) => {
+			if (!route) {
+				response.statusCode = HttpStatusCode.notFound;
+				response.body = { url: request.url };
+				return;
+			}
+			const routeResponse = await route.handler(
+				{ serverRequest: request, processorState },
+				{ pathParams: request.pathParams, query: request.query, body: request.body }
+			);
+			response.headers = routeResponse?.headers;
+			response.statusCode = routeResponse?.statusCode ?? HttpStatusCode.ok;
+			response.body = routeResponse?.body;
+		}
+	};
+}
+
+/**
+ * Create a route with a handler.
+ * @param path The route path.
+ * @param handler The route handler.
+ * @param method The route method.
+ * @returns The route.
+ */
+function createRoute(
+	path: string,
+	handler: IRestRoute["handler"],
+	method: HttpMethod = HttpMethod.GET
+): IRestRoute {
+	return { operationId: path, path, method, tag: "test", summary: "", handler };
+}
+
+/**
+ * Create a socket route which echoes the request body back on the echo topic.
+ * @returns The route.
+ */
+function createEchoSocketRoute(): ISocketRoute {
+	return {
+		operationId: "echo",
+		path: "/test-namespace/echo",
+		handler: async (socketRequestContext, request, responseEmitter) => {
+			await responseEmitter("echo", { body: request.body });
+		}
+	};
+}
+
+/**
+ * Wait for a condition to become true.
+ * @param condition The condition to wait for.
+ * @param timeoutMs The maximum time to wait.
+ */
+async function waitFor(condition: () => boolean, timeoutMs: number = 5000): Promise<void> {
+	const start = Date.now();
+	while (!condition()) {
+		if (Date.now() - start > timeoutMs) {
+			throw new Error("Timed out waiting for condition");
+		}
+		await new Promise(resolve => setTimeout(resolve, 10));
+	}
+}
+
+/**
+ * Connect a socket client and wait for the connection to be established.
+ * @param url The namespace url to connect to.
+ * @param options Additional client options.
+ * @returns The connected socket.
+ */
+async function connectSocket(
+	url: string,
+	options?: Partial<ManagerOptions & SocketOptions>
+): Promise<Socket> {
+	const socket = io(url, { path: "/socket", transports: ["websocket"], ...options });
+	await new Promise<void>((resolve, reject) => {
+		socket.once("connect", () => resolve());
+		socket.once("connect_error", reject);
+	});
+	return socket;
 }
 
 describe("api-server-fastify", () => {
@@ -1227,5 +1316,517 @@ describe("api-server-fastify", () => {
 			message: "baseServer.invalidBodyLimit",
 			properties: { bodyLimit: "tiny", value: 1.5 }
 		});
+	});
+
+	test("Can stop promptly when clients have not read their responses", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			[createHandlerProcessor()],
+			[
+				createRoute("/", async () => ({ body: { ok: true } })),
+				createRoute("/", async () => ({ body: { ok: true } }), HttpMethod.POST)
+			],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		await fetch(`http://localhost:${port}/`);
+		await fetch(`http://localhost:${port}/`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ data: 1 })
+		});
+
+		const start = Date.now();
+		await server.stop();
+
+		expect(Date.now() - start).toBeLessThan(1000);
+	});
+
+	test("Can serve concurrent websocket clients without crossing their responses", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			undefined,
+			undefined,
+			[new SocketRouteProcessor()],
+			[createEchoSocketRoute()],
+			{ port }
+		);
+		await server.start();
+
+		const clientCount = 10;
+		const messageCount = 25;
+		const sockets = await Promise.all(
+			Array.from({ length: clientCount }, async () =>
+				connectSocket(`http://localhost:${port}/test-namespace`)
+			)
+		);
+
+		const received: string[][] = sockets.map(() => []);
+		for (let client = 0; client < clientCount; client++) {
+			sockets[client].on("echo", (payload: IHttpResponse<{ client: number; seq: number }>) => {
+				received[client].push(`${payload.body?.client}:${payload.body?.seq}`);
+			});
+		}
+
+		for (let seq = 0; seq < messageCount; seq++) {
+			for (let client = 0; client < clientCount; client++) {
+				sockets[client].emit("echo", { body: { client, seq } });
+			}
+		}
+
+		await waitFor(() => received.every(r => r.length === messageCount));
+
+		for (const socket of sockets) {
+			socket.close();
+		}
+		await server.stop();
+
+		for (let client = 0; client < clientCount; client++) {
+			expect(received[client]).toEqual(
+				Array.from({ length: messageCount }, (v, seq) => `${client}:${seq}`)
+			);
+		}
+	});
+
+	test("Can exchange a large payload over a websocket", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			undefined,
+			undefined,
+			[new SocketRouteProcessor()],
+			[createEchoSocketRoute()],
+			{ port }
+		);
+		await server.start();
+
+		const socket = await connectSocket(`http://localhost:${port}/test-namespace`);
+		let result: IHttpResponse<{ data: string }> | undefined;
+		socket.on("echo", payload => {
+			result = payload;
+		});
+
+		const data = "x".repeat(512 * 1024);
+		socket.emit("echo", { body: { data } });
+
+		await waitFor(() => !Is.empty(result));
+
+		socket.close();
+		await server.stop();
+
+		expect(result?.statusCode).toEqual(HttpStatusCode.ok);
+		expect(result?.body?.data).toEqual(data);
+	});
+
+	test("Can serve REST and websockets on every address localhost resolves to", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			[createHandlerProcessor()],
+			[createRoute("/info", async () => ({ body: { ok: true } }))],
+			[new SocketRouteProcessor()],
+			[createEchoSocketRoute()],
+			{ port }
+		);
+		await server.start();
+
+		const hosts = [
+			...new Set(
+				(await lookup("localhost", { all: true })).map(a => {
+					const isIPv6 = a.family === 6;
+					return isIPv6 ? `[${a.address}]` : a.address;
+				})
+			)
+		];
+
+		const results: { host: string; status: number; echo: unknown }[] = [];
+		for (const host of hosts) {
+			const response = await fetch(`http://${host}:${port}/info`);
+			await response.arrayBuffer();
+			const socket = await connectSocket(`http://${host}:${port}/test-namespace`);
+			let echo: unknown;
+			socket.on("echo", (payload: IHttpResponse) => {
+				echo = payload.body;
+			});
+			socket.emit("echo", { body: { host } });
+			await waitFor(() => !Is.empty(echo));
+			socket.close();
+			results.push({ host, status: response.status, echo });
+		}
+
+		await server.stop();
+
+		expect(results.length).toBeGreaterThan(0);
+		for (const result of results) {
+			expect(result).toEqual({
+				host: result.host,
+				status: HttpStatusCode.ok,
+				echo: { host: result.host }
+			});
+		}
+	});
+
+	test("Can upgrade a polling socket connection to a websocket", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			undefined,
+			undefined,
+			[new SocketRouteProcessor()],
+			[createEchoSocketRoute()],
+			{ port }
+		);
+		await server.start();
+
+		const socket = await connectSocket(`http://localhost:${port}/test-namespace`, {
+			transports: ["polling", "websocket"]
+		});
+		await waitFor(() => socket.io.engine.transport.name === "websocket");
+
+		let result: IHttpResponse | undefined;
+		socket.on("echo", payload => {
+			result = payload;
+		});
+		socket.emit("echo", { body: { value: 1 } });
+
+		await waitFor(() => !Is.empty(result));
+
+		socket.close();
+		await server.stop();
+
+		expect(result?.body).toEqual({ value: 1 });
+	});
+
+	test("Can disconnect websocket clients when the server stops", async () => {
+		const server = new FastifyWebServer();
+		let connectedCount = 0;
+		let disconnectedCount = 0;
+		await server.build(
+			undefined,
+			undefined,
+			[
+				{
+					className: () => "RouteProcessor",
+					connected: async () => {
+						connectedCount++;
+					},
+					disconnected: async () => {
+						disconnectedCount++;
+					}
+				}
+			],
+			[createEchoSocketRoute()],
+			{ port }
+		);
+		await server.start();
+
+		const socket = await connectSocket(`http://localhost:${port}/test-namespace`, {
+			reconnection: false
+		});
+		let clientDisconnected = false;
+		socket.on("disconnect", () => {
+			clientDisconnected = true;
+		});
+
+		await waitFor(() => connectedCount === 1);
+		await server.stop();
+		await waitFor(() => clientDisconnected && disconnectedCount === 1);
+
+		socket.close();
+
+		expect(await server.health()).toEqual([
+			expect.objectContaining({ status: HealthStatus.Error, message: "unreachable" })
+		]);
+	});
+
+	test("Can reject a body with an unsupported content type", async () => {
+		const server = new FastifyWebServer();
+		await server.build([createOkProcessor()], [createPostRoute("/")], undefined, undefined, {
+			port
+		});
+		await server.start();
+
+		const response = await fetch(`http://localhost:${port}/`, {
+			method: "POST",
+			headers: { "Content-Type": "application/xml" },
+			body: "<a/>"
+		});
+		const json = await response.json();
+
+		await server.stop();
+
+		expect(response.status).toEqual(HttpStatusCode.unsupportedMediaType);
+		expect(json.error.message).toContain("FST_ERR_CTP_INVALID_MEDIA_TYPE");
+	});
+
+	test("Can reject a malformed JSON body", async () => {
+		const server = new FastifyWebServer();
+		await server.build([createOkProcessor()], [createPostRoute("/")], undefined, undefined, {
+			port
+		});
+		await server.start();
+
+		const response = await fetch(`http://localhost:${port}/`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: "{ not json"
+		});
+		const json = await response.json();
+
+		await server.stop();
+
+		expect(response.status).toEqual(HttpStatusCode.badRequest);
+		expect(json.error.message).toContain("FST_ERR_CTP_INVALID_JSON_BODY");
+	});
+
+	test("Can reject JSON bodies which attempt prototype poisoning", async () => {
+		const server = new FastifyWebServer();
+		let body: unknown;
+		await server.build(
+			[createHandlerProcessor()],
+			[
+				createRoute(
+					"/",
+					async (context, request) => {
+						body = request.body;
+						return { body: {} };
+					},
+					HttpMethod.POST
+				)
+			],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const post = async (payload: string): Promise<number> => {
+			const response = await fetch(`http://localhost:${port}/`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: payload
+			});
+			await response.arrayBuffer();
+			return response.status;
+		};
+
+		const protoStatus = await post('{"a":{"__proto__":{"polluted":true}}}');
+		const constructorStatus = await post('{"constructor":{"prototype":{"polluted":true}}}');
+		const plainConstructorStatus = await post('{"constructor":"allowed"}');
+
+		await server.stop();
+
+		expect(protoStatus).toEqual(HttpStatusCode.badRequest);
+		expect(constructorStatus).toEqual(HttpStatusCode.badRequest);
+		expect(plainConstructorStatus).toEqual(HttpStatusCode.ok);
+		expect(body).toEqual({ constructor: "allowed" });
+	});
+
+	test("Can parse a plain text body", async () => {
+		const server = new FastifyWebServer();
+		let body: unknown;
+		await server.build(
+			[createHandlerProcessor()],
+			[
+				createRoute(
+					"/",
+					async (context, request) => {
+						body = request.body;
+						return { body: {} };
+					},
+					HttpMethod.POST
+				)
+			],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const response = await fetch(`http://localhost:${port}/`, {
+			method: "POST",
+			headers: { "Content-Type": "text/plain" },
+			body: "hello"
+		});
+		await response.arrayBuffer();
+
+		await server.stop();
+
+		expect(response.status).toEqual(HttpStatusCode.ok);
+		expect(body).toEqual("hello");
+	});
+
+	test("Can decode path params and query values", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			[createHandlerProcessor()],
+			[
+				createRoute("/items/:id", async (context, request) => ({
+					body: { id: request.pathParams?.id, q: request.query?.q }
+				}))
+			],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const response = await fetch(`http://localhost:${port}/items/a%20b?q=c%20d`);
+		const json = await response.json();
+
+		await server.stop();
+
+		expect(json).toEqual({ id: "a b", q: "c d" });
+	});
+
+	test("Can run the processors for a request which matches no route", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			[createHandlerProcessor()],
+			[createRoute("/known", async () => ({ body: {} }))],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const response = await fetch(`http://localhost:${port}/missing?x=1`);
+		const json = await response.json();
+
+		await server.stop();
+
+		expect(response.status).toEqual(HttpStatusCode.notFound);
+		expect(json).toEqual({ url: `http://localhost:${port}/missing?x=1` });
+	});
+
+	test("Can only allow the configured CORS origins", async () => {
+		const server = new FastifyWebServer();
+		await server.build([createOkProcessor()], [createPostRoute("/")], undefined, undefined, {
+			port,
+			corsOrigins: ["http://allowed.test"]
+		});
+		await server.start();
+
+		const preflight = async (origin: string): Promise<Response> => {
+			const response = await fetch(`http://localhost:${port}/`, {
+				method: "OPTIONS",
+				headers: {
+					Origin: origin,
+					"Access-Control-Request-Method": "POST"
+				}
+			});
+			await response.arrayBuffer();
+			return response;
+		};
+
+		const allowed = await preflight("http://allowed.test");
+		const denied = await preflight("http://denied.test");
+
+		await server.stop();
+
+		expect(allowed.status).toEqual(HttpStatusCode.noContent);
+		expect(allowed.headers.get("access-control-allow-origin")).toEqual("http://allowed.test");
+		expect(allowed.headers.get("access-control-allow-credentials")).toEqual("true");
+		expect(allowed.headers.get("access-control-allow-methods")).toContain("POST");
+		expect(denied.headers.get("access-control-allow-origin")).toBeNull();
+	});
+
+	test("Can compress large responses and leave small ones uncompressed", async () => {
+		const server = new FastifyWebServer();
+		const items = Array.from({ length: 2000 }, (v, i) => ({ id: i, name: `item-${i}` }));
+		await server.build(
+			[createHandlerProcessor()],
+			[
+				createRoute("/large", async () => ({ body: { items } })),
+				createRoute("/small", async () => ({ body: { ok: true } }))
+			],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const large = await fetch(`http://localhost:${port}/large`, {
+			headers: { "Accept-Encoding": "gzip" }
+		});
+		const largeJson = await large.json();
+		const small = await fetch(`http://localhost:${port}/small`, {
+			headers: { "Accept-Encoding": "gzip" }
+		});
+		const smallJson = await small.json();
+
+		await server.stop();
+
+		expect(large.headers.get("content-encoding")).toEqual("gzip");
+		expect(largeJson).toEqual({ items });
+		expect(small.headers.get("content-encoding")).toBeNull();
+		expect(small.headers.get("content-length")).toEqual("11");
+		expect(smallJson).toEqual({ ok: true });
+	});
+
+	test("Can send binary, text and HEAD responses", async () => {
+		const server = new FastifyWebServer();
+		await server.build(
+			[createHandlerProcessor()],
+			[
+				createRoute("/binary", async () => ({ body: new Uint8Array([1, 2, 3]) })),
+				createRoute("/text", async () => ({ body: "hello" }))
+			],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const binary = await fetch(`http://localhost:${port}/binary`);
+		const binaryBody = new Uint8Array(await binary.arrayBuffer());
+		const text = await fetch(`http://localhost:${port}/text`);
+		const textBody = await text.text();
+		const head = await fetch(`http://localhost:${port}/text`, { method: "HEAD" });
+		const headBody = await head.text();
+
+		await server.stop();
+
+		expect(binary.headers.get("content-type")).toEqual(MimeTypes.OctetStream);
+		expect(binaryBody).toEqual(new Uint8Array([1, 2, 3]));
+		expect(text.headers.get("content-type")).toEqual("text/plain; charset=utf-8");
+		expect(textBody).toEqual("hello");
+		expect(head.status).toEqual(HttpStatusCode.ok);
+		expect(headBody).toEqual("");
+	});
+
+	test("Can keep serving when an additional localhost address is already in use", async () => {
+		const addresses = await lookup("localhost", { all: true });
+		const blockers: ReturnType<typeof createNetServer>[] = [];
+		// The first address is the primary binding, block the others so they fail to bind
+		for (const address of addresses.slice(1)) {
+			const blocker = createNetServer();
+			await new Promise<void>(resolve => blocker.listen(port, address.address, resolve));
+			blockers.push(blocker);
+		}
+
+		const server = new FastifyWebServer();
+		await server.build(
+			[createHandlerProcessor()],
+			[createRoute("/info", async () => ({ body: { ok: true } }))],
+			undefined,
+			undefined,
+			{ port }
+		);
+		await server.start();
+
+		const primary = addresses[0];
+		const host = primary.family === 6 ? `[${primary.address}]` : primary.address;
+		const response = await fetch(`http://${host}:${port}/info`);
+		const json = await response.json();
+		const health = await server.health();
+
+		await server.stop();
+		for (const blocker of blockers) {
+			await new Promise(resolve => blocker.close(resolve));
+		}
+
+		expect(json).toEqual({ ok: true });
+		expect(health).toEqual([expect.objectContaining({ status: HealthStatus.Ok })]);
 	});
 });

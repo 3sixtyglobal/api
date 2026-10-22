@@ -40,6 +40,14 @@ This package provides Fastify web server integration for exposing API routes wit
 - [Examples](../packages/api-server-fastify/docs/examples.md)
 - [Changelog](../packages/api-server-fastify/docs/changelog.md)
 
+## api-server-hono
+
+This package provides Hono web server integration for exposing API routes with consistent runtime behaviour. It builds on the [Hono](https://hono.dev/) framework, served through the Node.js adapter, with Socket.IO attached to the same HTTP server for socket routes.
+
+- [README](../packages/api-server-hono/README.md)
+- [Examples](../packages/api-server-hono/docs/examples.md)
+- [Changelog](../packages/api-server-hono/docs/changelog.md)
+
 ## api-service
 
 This package provides information and hosting service implementations with generated REST route handlers.

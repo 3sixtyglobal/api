@@ -41,6 +41,10 @@
 		"packages/api-server-fastify": {
 			"package-name": "api-server-fastify",
 			"changelog-path": "docs/changelog.md"
+		},
+		"packages/api-server-hono": {
+			"package-name": "api-server-hono",
+			"changelog-path": "docs/changelog.md"
 		}
 	},
 	"plugins": [
@@ -56,7 +60,8 @@
 				"api-tenant-processor",
 				"api-rest-client",
 				"api-core-server",
-				"api-server-fastify"
+				"api-server-fastify",
+				"api-server-hono"
 			]
 		}
 	]
