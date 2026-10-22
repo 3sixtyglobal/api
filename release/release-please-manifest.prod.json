@@ -1,6 +1,7 @@
 {
 	"packages/api-models": "0.11.0",
 	"packages/api-core": "0.11.0",
+	"packages/api-core-server": "0.11.0",
 	"packages/api-processors": "0.11.0",
 	"packages/api-server-fastify": "0.11.0",
 	"packages/api-service": "0.11.0",

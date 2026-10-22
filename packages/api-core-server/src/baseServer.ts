@@ -1,4 +1,5 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	type HealthApplicationCallback,
@@ -35,10 +36,10 @@ import {
 	type IHttpHeaders,
 	MimeTypes
 } from "@3sixty/web";
-import type { IBaseServerConstructorOptions } from "../models/IBaseServerConstructorOptions.js";
-import type { IRestProcessorChains } from "../models/IRestProcessorChains.js";
-import type { IServerCorsOptions } from "../models/IServerCorsOptions.js";
-import type { ISocketProcessorChains } from "../models/ISocketProcessorChains.js";
+import type { IBaseServerConstructorOptions } from "./models/IBaseServerConstructorOptions.js";
+import type { IRestProcessorChains } from "./models/IRestProcessorChains.js";
+import type { IServerCorsOptions } from "./models/IServerCorsOptions.js";
+import type { ISocketProcessorChains } from "./models/ISocketProcessorChains.js";
 
 /**
  * Base class for web servers, containing the transport agnostic route processing.

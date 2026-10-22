@@ -8,6 +8,7 @@ Alongside the core API building blocks, the repository also includes entity stor
 
 - [api-models](packages/api-models/README.md) - Shared API contracts, route types, and response models used across services and clients.
 - [api-core](packages/api-core/README.md) - Base client classes and common helpers for building HTTP and socket integrations.
+- [api-core-server](packages/api-core-server/README.md) - Base server class with transport agnostic route processing for building web servers.
 - [api-processors](packages/api-processors/README.md) - Reusable request and route processors for logging, context handling, and content negotiation.
 - [api-server-fastify](packages/api-server-fastify/README.md) - Fastify web server integration for exposing API routes with consistent runtime behaviour.
 - [api-service](packages/api-service/README.md) - Information and hosting service implementations with generated REST route handlers.

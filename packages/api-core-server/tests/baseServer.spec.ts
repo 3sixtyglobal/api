@@ -1,4 +1,5 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HealthCategory,
@@ -21,9 +22,9 @@ import type { IContextIds } from "@3sixty/context";
 import { ComponentFactory, NotImplementedError, UnauthorizedError } from "@3sixty/core";
 import type { ILogEntry, ILoggingComponent } from "@3sixty/logging-models";
 import { HeaderTypes, HttpMethod, HttpStatusCode, type IHttpHeaders, MimeTypes } from "@3sixty/web";
+import { BaseServer } from "../src/baseServer.js";
 import type { IBaseServerConstructorOptions } from "../src/models/IBaseServerConstructorOptions.js";
 import type { IServerCorsOptions } from "../src/models/IServerCorsOptions.js";
-import { BaseServer } from "../src/servers/baseServer.js";
 
 class TestServer extends BaseServer<string> {
 	public static readonly CLASS_NAME: string = "TestServer";

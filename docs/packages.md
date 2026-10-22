@@ -16,6 +16,14 @@ This package provides base client classes and common helpers for building HTTP a
 - [Examples](../packages/api-core/docs/examples.md)
 - [Changelog](../packages/api-core/docs/changelog.md)
 
+## api-core-server
+
+This package provides a base server class with transport agnostic route processing for building web servers.
+
+- [README](../packages/api-core-server/README.md)
+- [Examples](../packages/api-core-server/docs/examples.md)
+- [Changelog](../packages/api-core-server/docs/changelog.md)
+
 ## api-processors
 
 This package provides reusable request and route processors for logging, context handling, and content negotiation.

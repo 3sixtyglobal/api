@@ -1,4 +1,5 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HttpContextIdKeys,
@@ -227,7 +228,8 @@ export class PlatformService implements IPlatformComponent {
 	public async fireTenantEvent(tenantId: string, eventType: TenantEventType): Promise<void> {
 		for (const callback of this._tenantEventCallbacks.values()) {
 			try {
-				await callback(tenantId, eventType);
+				// Run with an empty context so callbacks do not inherit the caller's tenant
+				await ContextIdStore.run({}, async () => callback(tenantId, eventType));
 			} catch (error) {
 				const logging = ComponentFactory.getIfExists<ILoggingComponent>(this._loggingComponentType);
 				await logging?.log({

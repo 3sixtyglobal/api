@@ -1,4 +1,5 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import { HttpContextIdKeys, type ITenant, TenantEventType } from "@3sixty/api-models";
 import { ContextIdKeys, ContextIdStore } from "@3sixty/context";
@@ -303,6 +304,21 @@ describe("PlatformService", () => {
 
 			expect(logCalls).toEqual([{ level: "error", message: "tenantEventCallbackFailed" }]);
 			expect(order).toEqual(["cb-ok"]);
+		});
+
+		it("invokes callbacks with an empty context", async () => {
+			const service = new PlatformService();
+			let callbackContextIds: unknown;
+			service.registerTenantEventCallback("cb-1", async () => {
+				callbackContextIds = await ContextIdStore.getContextIds();
+			});
+
+			await ContextIdStore.run({ [ContextIdKeys.Tenant]: TENANT_A.id }, async () => {
+				await service.fireTenantEvent("tenant-1", TenantEventType.Created);
+				expect((await ContextIdStore.getContextIds())?.[ContextIdKeys.Tenant]).toBe(TENANT_A.id);
+			});
+
+			expect(callbackContextIds).toEqual({});
 		});
 
 		it("passes each event type correctly to the callback", async () => {

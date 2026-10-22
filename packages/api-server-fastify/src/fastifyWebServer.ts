@@ -1,6 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
-import { BaseServer } from "@3sixty/api-core";
+import { BaseServer } from "@3sixty/api-core-server";
 import {
 	HttpBodyLimit,
 	HttpErrorHelper,

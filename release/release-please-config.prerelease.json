@@ -24,20 +24,24 @@
 			"package-name": "api-processors",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-server-fastify": {
-			"package-name": "api-server-fastify",
-			"changelog-path": "docs/changelog.md"
-		},
 		"packages/api-service": {
 			"package-name": "api-service",
+			"changelog-path": "docs/changelog.md"
+		},
+		"packages/api-tenant-processor": {
+			"package-name": "api-tenant-processor",
 			"changelog-path": "docs/changelog.md"
 		},
 		"packages/api-rest-client": {
 			"package-name": "api-rest-client",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-tenant-processor": {
-			"package-name": "api-tenant-processor",
+		"packages/api-core-server": {
+			"package-name": "api-core-server",
+			"changelog-path": "docs/changelog.md"
+		},
+		"packages/api-server-fastify": {
+			"package-name": "api-server-fastify",
 			"changelog-path": "docs/changelog.md"
 		}
 	},
@@ -50,10 +54,11 @@
 				"api-models",
 				"api-core",
 				"api-processors",
-				"api-server-fastify",
 				"api-service",
+				"api-tenant-processor",
 				"api-rest-client",
-				"api-tenant-processor"
+				"api-core-server",
+				"api-server-fastify"
 			]
 		}
 	]
