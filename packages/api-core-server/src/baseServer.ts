@@ -548,10 +548,10 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 			HttpMethod.DELETE,
 			HttpMethod.OPTIONS
 		];
-		const allowedHeaders = [
-			"Access-Control-Allow-Origin",
-			"Content-Encoding",
-			"Accept-Encoding",
+		const allowedHeaders: string[] = [
+			HeaderTypes.AccessControlAllowOrigin,
+			HeaderTypes.ContentEncoding,
+			HeaderTypes.AcceptEncoding,
 			HeaderTypes.ContentType,
 			HeaderTypes.Authorization,
 			HeaderTypes.Accept
