@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0.
 import { lookup } from "node:dns/promises";
 import { once } from "node:events";
+import { createSecureServer as createSecureHttp2Server } from "node:http2";
+import { createServer as createHttpsServer } from "node:https";
 import { createServer as createNetServer, type Server as NetServer } from "node:net";
 import type { Server as TlsServer } from "node:tls";
 import { BaseServer } from "@3sixty/api-core-server";
@@ -20,7 +22,7 @@ import {
 	type IWebServerOptions
 } from "@3sixty/api-models";
 import type { IContextIds } from "@3sixty/context";
-import { BaseError, GeneralError, type IError, Is, StringHelper } from "@3sixty/core";
+import { BaseError, Converter, GeneralError, type IError, Is, StringHelper } from "@3sixty/core";
 import { nameof } from "@3sixty/nameof";
 import { HeaderTypes, HttpMethod, HttpStatusCode, type IHttpHeaders, MimeTypes } from "@3sixty/web";
 import { createAdaptorServer, type HttpBindings, type ServerType } from "@hono/node-server";
@@ -41,16 +43,10 @@ export class HonoWebServer extends BaseServer<Hono> {
 	public static readonly CLASS_NAME: string = nameof<HonoWebServer>();
 
 	/**
-	 * Matches the JSON keys which can be used for prototype poisoning.
+	 * The maximum length of a path param, matching the Fastify server.
 	 * @internal
 	 */
-	private static readonly _POISON_KEYS: RegExp = /"(?:__proto__|constructor)"\s*:/;
-
-	/**
-	 * Shared encoder for text response bodies.
-	 * @internal
-	 */
-	private static readonly _TEXT_ENCODER: TextEncoder = new TextEncoder();
+	private static readonly _MAX_PARAM_LENGTH: number = 2000;
 
 	/**
 	 * The Hono application.
@@ -113,6 +109,27 @@ export class HonoWebServer extends BaseServer<Hono> {
 		};
 		this._mimeTypeProcessorMap = {};
 		this._additionalServers = [];
+	}
+
+	/**
+	 * Compare two route paths, ordering a static segment before a param in the same position.
+	 * @param a The first route path.
+	 * @param b The second route path.
+	 * @returns Negative if a should be registered first, positive if b should, otherwise zero.
+	 * @internal
+	 */
+	private static compareRouteSpecificity(a: string, b: string): number {
+		const aSegments = StringHelper.trimLeadingSlashes(a).split("/");
+		const bSegments = StringHelper.trimLeadingSlashes(b).split("/");
+		const length = Math.min(aSegments.length, bSegments.length);
+		for (let i = 0; i < length; i++) {
+			const aIsParam = aSegments[i].startsWith(":");
+			const bIsParam = bSegments[i].startsWith(":");
+			if (aIsParam !== bIsParam) {
+				return aIsParam ? 1 : -1;
+			}
+		}
+		return 0;
 	}
 
 	/**
@@ -302,7 +319,12 @@ export class HonoWebServer extends BaseServer<Hono> {
 	 * @returns True if the transport is secure.
 	 */
 	protected serverIsSecure(): boolean {
-		return Is.function((this._server as Partial<TlsServer> | undefined)?.setSecureContext);
+		if (!Is.empty(this._server)) {
+			return Is.function((this._server as Partial<TlsServer>).setSecureContext);
+		}
+		// Before listening the server factory determines whether it will be secure
+		const createServer: unknown = this._webConfig?.createServer;
+		return createServer === createHttpsServer || createServer === createSecureHttp2Server;
 	}
 
 	/**
@@ -334,7 +356,12 @@ export class HonoWebServer extends BaseServer<Hono> {
 		restRoutes?: IRestRoute[]
 	): Promise<void> {
 		if (Is.arrayValue(restRouteProcessors) && Is.arrayValue(restRoutes)) {
-			for (const restRoute of restRoutes) {
+			// Hono matches overlapping routes in registration order, so register the routes with a
+			// static segment before those with a param in the same position, as find-my-way does
+			const sortedRoutes = [...restRoutes].sort((a, b) =>
+				HonoWebServer.compareRouteSpecificity(a.path, b.path)
+			);
+			for (const restRoute of sortedRoutes) {
 				let path = StringHelper.trimTrailingSlashes(restRoute.path);
 				if (!path.startsWith("/")) {
 					path = `/${path}`;
@@ -358,7 +385,9 @@ export class HonoWebServer extends BaseServer<Hono> {
 					});
 				}
 
-				this._app.on(restRoute.method, path, async c =>
+				// Like find-my-way, a param can match an empty segment
+				const honoPath = path.replace(/:(\w+)/g, ":$1{[^/]*}");
+				this._app.on(restRoute.method, honoPath, async c =>
 					this.handleRequestRest(c, bodyLimit, restRoute)
 				);
 			}
@@ -485,12 +514,39 @@ export class HonoWebServer extends BaseServer<Hono> {
 		const requestOrigin = pathStart === -1 ? url : url.slice(0, pathStart);
 		const headers = this.getRequestHeaders(c);
 
+		// Like Fastify, a path which is not valid percent encoding is rejected, the raw path is
+		// checked as Hono may already have partially decoded its own copy
+		const queryStart = url.indexOf("?", pathStart);
+		const path =
+			pathStart === -1 ? "/" : url.slice(pathStart, queryStart === -1 ? undefined : queryStart);
+		if (path.includes("%")) {
+			try {
+				decodeURIComponent(path);
+			} catch (err) {
+				throw new HTTPException(HttpStatusCode.badRequest, {
+					cause: new GeneralError(HonoWebServer.CLASS_NAME, "invalidUrl", { path }, err)
+				});
+			}
+		}
+
+		const pathParams = c.req.param();
+		for (const param of Object.keys(pathParams)) {
+			if (pathParams[param].length > HonoWebServer._MAX_PARAM_LENGTH) {
+				throw new HTTPException(HttpStatusCode.uriTooLong, {
+					cause: new GeneralError(HonoWebServer.CLASS_NAME, "paramTooLong", {
+						param,
+						maxParamLength: HonoWebServer._MAX_PARAM_LENGTH
+					})
+				});
+			}
+		}
+
 		const httpServerRequest = this.buildServerRequest(
 			c.req.method.toUpperCase() as HttpMethod,
 			url,
 			await this.parseBody(c, headers, bodyLimit),
-			c.req.query(),
-			c.req.param(),
+			this.getRequestQuery(c),
+			pathParams,
 			headers
 		);
 
@@ -506,6 +562,7 @@ export class HonoWebServer extends BaseServer<Hono> {
 			processorState
 		);
 
+		this.validateResponse(httpResponse);
 		return this.buildResponse(httpResponse);
 	}
 
@@ -555,6 +612,22 @@ export class HonoWebServer extends BaseServer<Hono> {
 	}
 
 	/**
+	 * Get the request query, like Fastify a repeated key gives an array of its values.
+	 * @param c The Hono context for the request.
+	 * @returns The request query.
+	 * @internal
+	 */
+	private getRequestQuery(c: Context): IHttpRequestQuery {
+		const query: { [key: string]: string | string[] } = {};
+		const queries = c.req.queries();
+		for (const key of Object.keys(queries)) {
+			const values = queries[key];
+			query[key] = values.length === 1 ? values[0] : values;
+		}
+		return query as IHttpRequestQuery;
+	}
+
+	/**
 	 * Get the request headers, using the headers already parsed by Node when available,
 	 * as building them from the fetch request is comparatively expensive.
 	 * @param c The Hono context for the request.
@@ -581,16 +654,22 @@ export class HonoWebServer extends BaseServer<Hono> {
 			return undefined;
 		}
 
-		const raw = await this.readBody(c, headers, bodyLimit);
-		if (Is.empty(raw)) {
-			return undefined;
-		}
-
 		const contentType = headers[HeaderTypes.ContentType];
 		const mediaType = (Is.string(contentType) ? contentType : "")
 			.split(";")[0]
 			.trim()
 			.toLowerCase();
+
+		const raw = await this.readBody(c, headers, bodyLimit);
+		if (Is.empty(raw)) {
+			// Like Fastify, declaring a JSON body without sending one is an error
+			if (mediaType === MimeTypes.Json) {
+				throw new HTTPException(HttpStatusCode.badRequest, {
+					cause: new GeneralError(HonoWebServer.CLASS_NAME, "emptyJsonBody")
+				});
+			}
+			return undefined;
+		}
 
 		const mimeTypeProcessor = this._mimeTypeProcessorMap[mediaType];
 		if (!Is.empty(mimeTypeProcessor)) {
@@ -598,13 +677,9 @@ export class HonoWebServer extends BaseServer<Hono> {
 		}
 
 		if (mediaType === MimeTypes.Json) {
-			const text = new TextDecoder().decode(raw);
+			const text = Converter.bytesToUtf8(raw);
 			try {
-				const parsed: unknown = JSON.parse(text);
-				if (HonoWebServer._POISON_KEYS.test(text)) {
-					this.assertNotPoisoned(parsed);
-				}
-				return parsed;
+				return JSON.parse(text);
 			} catch (err) {
 				throw new HTTPException(HttpStatusCode.badRequest, {
 					cause: new GeneralError(HonoWebServer.CLASS_NAME, "invalidJsonBody", undefined, err)
@@ -613,7 +688,7 @@ export class HonoWebServer extends BaseServer<Hono> {
 		}
 
 		if (mediaType === MimeTypes.PlainText) {
-			return new TextDecoder().decode(raw);
+			return Converter.bytesToUtf8(raw);
 		}
 
 		throw new HTTPException(HttpStatusCode.unsupportedMediaType, {
@@ -675,30 +750,6 @@ export class HonoWebServer extends BaseServer<Hono> {
 	}
 
 	/**
-	 * Reject parsed JSON containing keys which could be used for prototype poisoning.
-	 * @param value The parsed value to check.
-	 * @throws GeneralError If a poisoning key is found.
-	 * @internal
-	 */
-	private assertNotPoisoned(value: unknown): void {
-		const pending: unknown[] = [value];
-		while (pending.length > 0) {
-			const current = pending.pop();
-			if (Is.object<{ [key: string]: unknown }>(current) || Is.array(current)) {
-				if (
-					Object.hasOwn(current, "__proto__") ||
-					(Object.hasOwn(current, "constructor") &&
-						Is.object((current as { constructor: unknown }).constructor) &&
-						Object.hasOwn((current as { constructor: object }).constructor, "prototype"))
-				) {
-					throw new GeneralError(HonoWebServer.CLASS_NAME, "prototypePoisoning");
-				}
-				pending.push(...Object.values(current));
-			}
-		}
-	}
-
-	/**
 	 * Build the transport response from the processed response.
 	 * @param httpResponse The processed response.
 	 * @returns The response.
@@ -750,10 +801,10 @@ export class HonoWebServer extends BaseServer<Hono> {
 			body = payload;
 			headers[HeaderTypes.ContentType] ??= MimeTypes.OctetStream;
 		} else if (Is.string(payload)) {
-			body = HonoWebServer._TEXT_ENCODER.encode(payload);
+			body = Converter.utf8ToBytes(payload);
 			headers[HeaderTypes.ContentType] ??= `${MimeTypes.PlainText}; charset=utf-8`;
 		} else {
-			body = HonoWebServer._TEXT_ENCODER.encode(JSON.stringify(payload));
+			body = Converter.utf8ToBytes(JSON.stringify(payload));
 			headers[HeaderTypes.ContentType] ??= `${MimeTypes.Json}; charset=utf-8`;
 		}
 

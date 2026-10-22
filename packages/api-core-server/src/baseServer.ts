@@ -2,6 +2,13 @@
 // Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
+	type IncomingMessage,
+	request as httpRequest,
+	validateHeaderName,
+	validateHeaderValue
+} from "node:http";
+import { request as httpsRequest } from "node:https";
+import {
 	type HealthApplicationCallback,
 	HealthCategory,
 	HealthStatus,
@@ -312,10 +319,9 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 		}
 
 		try {
-			const response = await fetch(`${this._localOrigin}/`);
-			const body = await response.text();
+			const response = await this.requestLocalRoot(`${this._localOrigin}/`);
 
-			if (response.ok && Is.stringValue(body)) {
+			if (response.ok && Is.stringValue(response.body)) {
 				return [
 					{
 						source: BaseServer.CLASS_NAME,
@@ -347,6 +353,37 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 				}
 			];
 		}
+	}
+
+	/**
+	 * Request the root endpoint of this server over the loopback address.
+	 * @param url The url of the root endpoint.
+	 * @returns Whether the response was successful and its body.
+	 */
+	protected async requestLocalRoot(url: string): Promise<{ ok: boolean; body: string }> {
+		const isSecure = url.startsWith("https:");
+		return new Promise((resolve, reject) => {
+			const callback = (response: IncomingMessage): void => {
+				const chunks: Buffer[] = [];
+				response.on("data", (chunk: Buffer) => chunks.push(chunk));
+				response.on("error", reject);
+				response.on("end", () => {
+					const statusCode = response.statusCode ?? 0;
+					resolve({
+						ok: statusCode >= HttpStatusCode.ok && statusCode < HttpStatusCode.multipleChoices,
+						body: Buffer.concat(chunks).toString("utf8")
+					});
+				});
+			};
+			// The certificate is issued for the public host name rather than the loopback
+			// address, and this only checks the server can reach its own listener, so it
+			// is not verified
+			const request = isSecure
+				? httpsRequest(url, { rejectUnauthorized: false }, callback)
+				: httpRequest(url, callback);
+			request.on("error", reject);
+			request.end();
+		});
 	}
 
 	/**
@@ -384,7 +421,7 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 			localHost = "127.0.0.1";
 		}
 
-		this._localOrigin = `http://${localHost}:${options?.port ?? 3000}`;
+		this._localOrigin = `${this.serverIsSecure() ? "https" : "http"}://${localHost}:${options?.port ?? 3000}`;
 
 		if (Is.stringValue(options?.publicOrigin)) {
 			const publicUrl = Url.tryParseExact(options.publicOrigin);
@@ -532,7 +569,8 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 	}
 
 	/**
-	 * Build the server request from the transport values, decoding the path params and query.
+	 * Build the server request from the transport values, the path params and query must already
+	 * have been decoded by the transport, as decoding them again corrupts values containing %.
 	 * @param method The request method.
 	 * @param url The full request url, including the origin.
 	 * @param body The request body.
@@ -549,7 +587,7 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 		pathParams?: IHttpRequestPathParams,
 		headers?: IHttpHeaders
 	): IHttpServerRequest {
-		const httpServerRequest: IHttpServerRequest = {
+		return {
 			method,
 			url,
 			body,
@@ -557,19 +595,37 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 			pathParams,
 			headers
 		};
+	}
 
-		if (Is.object(httpServerRequest.pathParams)) {
-			for (const key of Object.keys(httpServerRequest.pathParams)) {
-				httpServerRequest.pathParams[key] = decodeURIComponent(httpServerRequest.pathParams[key]);
+	/**
+	 * Validate the processed response before it is sent, so that every transport fails an invalid
+	 * response in the same way rather than with its own transport specific error.
+	 * @param httpResponse The processed response.
+	 * @throws GeneralError If the status code or a header is invalid.
+	 */
+	protected validateResponse(httpResponse: IHttpResponse): void {
+		const statusCode = httpResponse.statusCode;
+		if (
+			!Is.empty(statusCode) &&
+			(!Is.integer(statusCode) || statusCode < 100 || statusCode > 599)
+		) {
+			throw new GeneralError(BaseServer.CLASS_NAME, "invalidStatusCode", { statusCode });
+		}
+		if (!Is.empty(httpResponse.headers)) {
+			for (const header of Object.keys(httpResponse.headers)) {
+				const value = httpResponse.headers[header];
+				try {
+					validateHeaderName(header);
+					for (const item of Is.array(value) ? value : [value]) {
+						if (!Is.empty(item)) {
+							validateHeaderValue(header, item);
+						}
+					}
+				} catch (err) {
+					throw new GeneralError(BaseServer.CLASS_NAME, "invalidHeader", { header }, err);
+				}
 			}
 		}
-		if (Is.object(httpServerRequest.query)) {
-			for (const key of Object.keys(httpServerRequest.query)) {
-				httpServerRequest.query[key] = decodeURIComponent(httpServerRequest.query[key]);
-			}
-		}
-
-		return httpServerRequest;
 	}
 
 	/**

@@ -224,7 +224,9 @@ export class FastifyWebServer extends BaseServer<FastifyInstance> {
 	 * @returns True if the transport is secure.
 	 */
 	protected serverIsSecure(): boolean {
-		return Is.object(this._fastify.initialConfig.https);
+		// Fastify reports the https option as true rather than the options object
+		const https: unknown = this._fastify.initialConfig.https;
+		return https === true || Is.object(https);
 	}
 
 	/**
@@ -419,7 +421,8 @@ export class FastifyWebServer extends BaseServer<FastifyInstance> {
 			`${requestOrigin}${request.url}`,
 			request.body,
 			request.query as IHttpRequestQuery,
-			request.params as IHttpRequestPathParams,
+			// The not found handler matches a wildcard, which is not a param of any route
+			Is.empty(restRoute) ? {} : (request.params as IHttpRequestPathParams),
 			request.headers as IHttpHeaders
 		);
 
@@ -434,6 +437,8 @@ export class FastifyWebServer extends BaseServer<FastifyInstance> {
 			contextIds,
 			processorState
 		);
+
+		this.validateResponse(httpResponse);
 
 		if (!Is.empty(httpResponse.headers)) {
 			for (const header of Object.keys(httpResponse.headers)) {

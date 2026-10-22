@@ -48,6 +48,14 @@ This package provides Hono web server integration for exposing API routes with c
 - [Examples](../packages/api-server-hono/docs/examples.md)
 - [Changelog](../packages/api-server-hono/docs/changelog.md)
 
+## api-server-native
+
+This package provides a native Node.js web server integration for exposing API routes with consistent runtime behaviour. It uses the built-in Node.js HTTP and HTTPS servers with the [find-my-way](https://github.com/delvedor/find-my-way) router, with Socket.IO attached to the same server for socket routes.
+
+- [README](../packages/api-server-native/README.md)
+- [Examples](../packages/api-server-native/docs/examples.md)
+- [Changelog](../packages/api-server-native/docs/changelog.md)
+
 ## api-service
 
 This package provides information and hosting service implementations with generated REST route handlers.

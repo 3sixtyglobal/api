@@ -1,0 +1,25 @@
+{
+	"error": {
+		"nativeWebServer": {
+			"badRequest": "The web server could not handle the request",
+			"unknownBodyLimit": "The route \"{route}\" uses the body limit named \"{bodyLimit}\", which is not configured",
+			"bodyTooLarge": "The request body is larger than the limit of {bodyLimit} bytes",
+			"invalidJsonBody": "The request body is not valid JSON",
+			"unsupportedMediaType": "The content type \"{contentType}\" is not supported",
+			"emptyJsonBody": "The request declares a JSON body but the body is empty",
+			"invalidUrl": "The request path \"{path}\" is not a valid URL",
+			"paramTooLong": "The path param \"{param}\" is longer than the maximum of {maxParamLength} characters"
+		}
+	},
+	"warn": {
+		"nativeWebServer": {
+			"additionalBindingFailed": "The Web Server could not bind to the additional address \"{host}\" on port \"{port}\""
+		}
+	},
+	"info": {
+		"nativeWebServer": {
+			"restRouteAdded": "Added REST route \"{route}\" \"{method}\"",
+			"socketRouteAdded": "Added socket route: handshake path \"{handshakePath}\", namespace \"{namespace}\", event name \"{eventName}\""
+		}
+	}
+}

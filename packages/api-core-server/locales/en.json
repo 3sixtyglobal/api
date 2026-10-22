@@ -6,7 +6,9 @@
 			"noSocketProcessors": "You must configure at least one socket processor",
 			"postProcessorError": "There was a failure in a post processor for route \"{route}\"",
 			"invalidPublicOrigin": "The public origin \"{publicOrigin}\" is not a valid origin URL, it should be in the format \"protocol://host[:port]\".",
-			"invalidBodyLimit": "The body limit named \"{bodyLimit}\" must be an integer greater than zero, but it is \"{value}\""
+			"invalidBodyLimit": "The body limit named \"{bodyLimit}\" must be an integer greater than zero, but it is \"{value}\"",
+			"invalidStatusCode": "The response status code \"{statusCode}\" is not valid",
+			"invalidHeader": "The response header \"{header}\" has an invalid name or value"
 		}
 	},
 	"info": {

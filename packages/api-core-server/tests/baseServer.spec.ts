@@ -128,6 +128,10 @@ class TestServer extends BaseServer<string> {
 		return this.buildServerRequest(method, url, body, query, pathParams, headers);
 	}
 
+	public checkResponse(httpResponse: IHttpResponse): void {
+		this.validateResponse(httpResponse);
+	}
+
 	public contextIds(requestOrigin: string, headers?: IHttpHeaders): IContextIds {
 		return this.buildContextIds(requestOrigin, headers);
 	}
@@ -274,6 +278,15 @@ describe("BaseServer", () => {
 			});
 
 			expect(server.localOrigin()).toEqual("http://127.0.0.1:4000");
+		});
+
+		test("uses https for the local origin when the server is secure", async () => {
+			const server = new TestServer();
+			server.secure = true;
+
+			await server.build(undefined, undefined, undefined, undefined, { port: 4000 });
+
+			expect(server.localOrigin()).toEqual("https://127.0.0.1:4000");
 		});
 
 		test("reduces the public origin to its schema, host and port", async () => {
@@ -778,20 +791,68 @@ describe("BaseServer", () => {
 		});
 	});
 
+	describe("validateResponse", () => {
+		test("accepts a valid response", () => {
+			const server = new TestServer();
+
+			expect(() =>
+				server.checkResponse({
+					statusCode: HttpStatusCode.created,
+					headers: { [HeaderTypes.ContentType]: "application/json", "set-cookie": ["a=1", "b=2"] }
+				})
+			).not.toThrow();
+			expect(() => server.checkResponse({})).not.toThrow();
+		});
+
+		test("rejects a status code outside the valid range", () => {
+			const server = new TestServer();
+
+			// Processors can set any number, so the invalid values are cast to the status code type
+			for (const statusCode of [99, 600, 200.5]) {
+				expect(() => server.checkResponse({ statusCode: statusCode as HttpStatusCode })).toThrow(
+					expect.objectContaining({
+						message: "baseServer.invalidStatusCode",
+						properties: { statusCode }
+					})
+				);
+			}
+		});
+
+		test("rejects an invalid header name or value", () => {
+			const server = new TestServer();
+
+			expect(() => server.checkResponse({ headers: { "x-test": "a\nb" } })).toThrow(
+				expect.objectContaining({
+					message: "baseServer.invalidHeader",
+					properties: { header: "x-test" }
+				})
+			);
+			expect(() => server.checkResponse({ headers: { "x-test": ["ok", "a\rb"] } })).toThrow(
+				expect.objectContaining({ message: "baseServer.invalidHeader" })
+			);
+			expect(() => server.checkResponse({ headers: { "bad header": "ok" } })).toThrow(
+				expect.objectContaining({
+					message: "baseServer.invalidHeader",
+					properties: { header: "bad header" }
+				})
+			);
+		});
+	});
+
 	describe("buildServerRequest", () => {
-		test("decodes the path params and the query values", () => {
+		test("keeps the path params and query values the transport has already decoded", () => {
 			const server = new TestServer();
 
 			const request = server.serverRequest(
 				HttpMethod.GET,
 				"http://localhost:3000/test",
 				undefined,
-				{ filter: "a%20b" },
-				{ id: "urn%3Atest%3A1" }
+				{ filter: "100%", encoded: "a%20b" },
+				{ id: "urn:test:1", percent: "50%" }
 			);
 
-			expect(request.pathParams?.id).toEqual("urn:test:1");
-			expect(request.query?.filter).toEqual("a b");
+			expect(request.pathParams).toEqual({ id: "urn:test:1", percent: "50%" });
+			expect(request.query).toEqual({ filter: "100%", encoded: "a%20b" });
 		});
 
 		test("keeps the method, url and body as supplied", () => {

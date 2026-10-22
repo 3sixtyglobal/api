@@ -5,8 +5,10 @@
 			"unknownBodyLimit": "The route \"{route}\" uses the body limit named \"{bodyLimit}\", which is not configured",
 			"bodyTooLarge": "The request body is larger than the limit of {bodyLimit} bytes",
 			"invalidJsonBody": "The request body is not valid JSON",
-			"prototypePoisoning": "The request body contains a key which is not allowed",
-			"unsupportedMediaType": "The content type \"{contentType}\" is not supported"
+			"unsupportedMediaType": "The content type \"{contentType}\" is not supported",
+			"emptyJsonBody": "The request declares a JSON body but the body is empty",
+			"invalidUrl": "The request path \"{path}\" is not a valid URL",
+			"paramTooLong": "The path param \"{param}\" is longer than the maximum of {maxParamLength} characters"
 		}
 	},
 	"warn": {

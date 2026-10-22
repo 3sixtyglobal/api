@@ -47,6 +47,10 @@
 		"packages/api-server-hono": {
 			"package-name": "api-server-hono",
 			"changelog-path": "docs/changelog.md"
+		},
+		"packages/api-server-native": {
+			"package-name": "api-server-native",
+			"changelog-path": "docs/changelog.md"
 		}
 	},
 	"plugins": [
@@ -63,7 +67,8 @@
 				"api-rest-client",
 				"api-core-server",
 				"api-server-fastify",
-				"api-server-hono"
+				"api-server-hono",
+				"api-server-native"
 			]
 		}
 	]

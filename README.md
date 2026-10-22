@@ -12,6 +12,7 @@ Alongside the core API building blocks, the repository also includes entity stor
 - [api-processors](packages/api-processors/README.md) - Reusable request and route processors for logging, context handling, and content negotiation.
 - [api-server-fastify](packages/api-server-fastify/README.md) - Fastify web server integration for exposing API routes with consistent runtime behaviour.
 - [api-server-hono](packages/api-server-hono/README.md) - Hono web server integration for exposing API routes with consistent runtime behaviour.
+- [api-server-native](packages/api-server-native/README.md) - Native Node.js web server integration for exposing API routes with consistent runtime behaviour.
 - [api-service](packages/api-service/README.md) - Information and hosting service implementations with generated REST route handlers.
 - [api-rest-client](packages/api-rest-client/README.md) - REST client implementation for consuming information and hosting endpoints.
 - [api-tenant-processor](packages/api-tenant-processor/README.md) - Tenant resolution services and route handlers that derive tenant context from API keys.
