@@ -22,7 +22,7 @@ Convert list query to array.
 
 #### Type Parameters
 
-##### T
+##### T {#t}
 
 `T` = `string`
 
@@ -50,7 +50,7 @@ Convert array of values to query string.
 
 #### Type Parameters
 
-##### T
+##### T {#t-1}
 
 `T` = `string`
 
@@ -78,7 +78,7 @@ Convert object string to object.
 
 #### Type Parameters
 
-##### T
+##### T {#t-2}
 
 `T` = `unknown`
 
@@ -106,7 +106,7 @@ Convert object to query string.
 
 #### Type Parameters
 
-##### T
+##### T {#t-3}
 
 `T` = `unknown`
 

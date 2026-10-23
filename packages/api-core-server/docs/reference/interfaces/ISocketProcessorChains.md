@@ -6,7 +6,7 @@ The socket processor phase chains, bound to their processors when the server is 
 
 ### connected {#connected}
 
-> **connected**: (`request`, `route`, `loggingComponentType?`) => `Promise`\<`void`\>[]
+> **connected**: ((`request`, `route`, `loggingComponentType?`) => `Promise`\<`void`\>)[]
 
 The socket connected phase.
 
@@ -42,7 +42,7 @@ Promise that resolves when the request is processed.
 
 ### disconnected {#disconnected}
 
-> **disconnected**: (`request`, `route`, `loggingComponentType?`) => `Promise`\<`void`\>[]
+> **disconnected**: ((`request`, `route`, `loggingComponentType?`) => `Promise`\<`void`\>)[]
 
 The socket disconnected phase.
 
@@ -78,7 +78,7 @@ Promise that resolves when the request is processed.
 
 ### pre {#pre}
 
-> **pre**: (`request`, `response`, `route`, `contextIds`, `processorState`, `componentTypes?`) => `Promise`\<`void`\>[]
+> **pre**: ((`request`, `response`, `route`, `contextIds`, `processorState`, `componentTypes?`) => `Promise`\<`void`\>)[]
 
 The pre processing phase.
 
@@ -112,6 +112,8 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 ##### componentTypes?
@@ -134,7 +136,7 @@ Promise that resolves when the request is processed.
 
 ### process {#process}
 
-> **process**: (`request`, `response`, `route`, `processorState`, `responseEmitter`, `loggingComponentType?`) => `Promise`\<`void`\>[]
+> **process**: ((`request`, `response`, `route`, `processorState`, `responseEmitter`, `loggingComponentType?`) => `Promise`\<`void`\>)[]
 
 The main processing phase.
 
@@ -162,6 +164,8 @@ The route being requested, if a matching one was found.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 ##### responseEmitter
@@ -186,7 +190,7 @@ Promise that resolves when the request is processed.
 
 ### post {#post}
 
-> **post**: (`request`, `response`, `route`, `contextIds`, `processorState`, `componentTypes?`) => `Promise`\<`void`\>[]
+> **post**: ((`request`, `response`, `route`, `contextIds`, `processorState`, `componentTypes?`) => `Promise`\<`void`\>)[]
 
 The post processing phase.
 
@@ -219,6 +223,8 @@ The route being requested, if a matching one was found.
 The context IDs of the request.
 
 ##### processorState
+
+\{\[`id`: `string`\]: `unknown`; \}
 
 The state handed through the processors.
 

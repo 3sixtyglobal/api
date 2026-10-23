@@ -293,7 +293,7 @@ The conditions to filter the tenants.
 
 ##### properties?
 
-keyof `ITenant`[]
+(keyof `ITenant`)[]
 
 The properties to include in the returned tenants.
 

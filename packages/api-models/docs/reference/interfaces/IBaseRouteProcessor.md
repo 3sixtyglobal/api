@@ -13,11 +13,11 @@ The definition for a base processor for handling REST routes.
 
 ## Type Parameters
 
-### T
+### T {#t}
 
 `T` = [`IBaseRoute`](IBaseRoute.md)
 
-### R
+### R {#r}
 
 `R` = [`IHttpServerRequest`](IHttpServerRequest.md)
 
@@ -56,6 +56,8 @@ The route being requested, if a matching one was found.
 The context IDs of the request.
 
 ##### processorState
+
+\{\[`id`: `string`\]: `unknown`; \}
 
 The state handed through the processors.
 
@@ -110,6 +112,8 @@ The route being requested, if a matching one was found.
 The context IDs of the request.
 
 ##### processorState
+
+\{\[`id`: `string`\]: `unknown`; \}
 
 The state handed through the processors.
 

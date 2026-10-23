@@ -82,6 +82,8 @@ The route to process.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 ##### componentTypes?

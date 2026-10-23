@@ -42,6 +42,8 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 ##### componentTypes?
@@ -100,6 +102,8 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 ##### componentTypes?
@@ -151,6 +155,8 @@ The response data to send if any.
 The route being requested, if a matching one was found.
 
 ##### processorState
+
+\{\[`id`: `string`\]: `unknown`; \}
 
 The state handed through the processors.
 

@@ -6,9 +6,15 @@ The configuration for the Fastify web server.
 
 ### web? {#web}
 
-> `optional` **web?**: `Partial`\<`FastifyServerOptions`\>
+> `optional` **web?**: `Partial`\<`FastifyServerOptions`\> & `object`
 
-The web server options.
+The web server options, providing the https options serves over HTTPS.
+
+#### Type Declaration
+
+##### https?
+
+> `optional` **https?**: `ServerOptions`\<*typeof* `IncomingMessage`, *typeof* `ServerResponse`\>
 
 ***
 

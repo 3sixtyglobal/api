@@ -30,6 +30,8 @@ The message as a code.
 
 ##### properties?
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 Any additional information for the error.
 
 ##### cause?

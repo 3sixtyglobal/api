@@ -1,54 +1,46 @@
-# Abstract Class: BaseServer\<T\>
+# Class: NativeWebServer
 
-Base class for web servers, containing the transport agnostic route processing.
-Derived classes supply the transport specific behaviour through the abstract server methods.
+Implementation of the web server using the Node.js HTTP server and the find-my-way router.
 
-## Type Parameters
+## Extends
 
-### T
-
-`T`
-
-## Implements
-
-- `IWebServer`\<`T`\>
-- `IHealthProviderComponent`
+- `BaseServer`\<`Router.Instance`\<`Router.HTTPVersion.V1`\>\>
 
 ## Constructors
 
 ### Constructor
 
-> **new BaseServer**\<`T`\>(`options?`): `BaseServer`\<`T`\>
+> **new NativeWebServer**(`options?`): `NativeWebServer`
 
-Create a new instance of BaseServer.
+Create a new instance of NativeWebServer.
 
 #### Parameters
 
 ##### options?
 
-[`IBaseServerConstructorOptions`](../interfaces/IBaseServerConstructorOptions.md)
+[`INativeWebServerConstructorOptions`](../interfaces/INativeWebServerConstructorOptions.md)
 
 The options for the server.
 
 #### Returns
 
-`BaseServer`\<`T`\>
+`NativeWebServer`
+
+#### Overrides
+
+`BaseServer<Router.Instance<Router.HTTPVersion.V1>>.constructor`
 
 ## Properties
-
-### CLASS\_NAME {#class_name}
-
-> `readonly` `static` **CLASS\_NAME**: `string`
-
-Runtime name for the class.
-
-***
 
 ### \_loggingComponentType? {#_loggingcomponenttype}
 
 > `protected` `readonly` `optional` **\_loggingComponentType?**: `string`
 
 The logging component type.
+
+#### Inherited from
+
+`BaseServer._loggingComponentType`
 
 ***
 
@@ -58,6 +50,10 @@ The logging component type.
 
 The logging component.
 
+#### Inherited from
+
+`BaseServer._logging`
+
 ***
 
 ### \_options? {#_options}
@@ -65,6 +61,10 @@ The logging component.
 > `protected` `optional` **\_options?**: `IWebServerOptions`
 
 The options for the server.
+
+#### Inherited from
+
+`BaseServer._options`
 
 ***
 
@@ -74,6 +74,10 @@ The options for the server.
 
 Whether the server has been started.
 
+#### Inherited from
+
+`BaseServer._started`
+
 ***
 
 ### \_mimeTypeProcessors {#_mimetypeprocessors}
@@ -81,6 +85,10 @@ Whether the server has been started.
 > `protected` `readonly` **\_mimeTypeProcessors**: `IMimeTypeProcessor`[]
 
 The mime type processors.
+
+#### Inherited from
+
+`BaseServer._mimeTypeProcessors`
 
 ***
 
@@ -90,6 +98,10 @@ The mime type processors.
 
 Include the stack with errors.
 
+#### Inherited from
+
+`BaseServer._includeErrorStack`
+
 ***
 
 ### \_publicOrigin? {#_publicorigin}
@@ -97,6 +109,10 @@ Include the stack with errors.
 > `protected` `optional` **\_publicOrigin?**: `string`
 
 The public origin of the server, used for constructing the request URL and for CORS.
+
+#### Inherited from
+
+`BaseServer._publicOrigin`
 
 ***
 
@@ -106,21 +122,45 @@ The public origin of the server, used for constructing the request URL and for C
 
 The local origin of the server, used for constructing the request URL and for CORS.
 
+#### Inherited from
+
+`BaseServer._localOrigin`
+
 ***
 
 ### \_restChains {#_restchains}
 
-> `protected` **\_restChains**: [`IRestProcessorChains`](../interfaces/IRestProcessorChains.md)
+> `protected` **\_restChains**: `IRestProcessorChains`
 
 The REST processor chains resolved when the server is built.
+
+#### Inherited from
+
+`BaseServer._restChains`
 
 ***
 
 ### \_socketChains {#_socketchains}
 
-> `protected` **\_socketChains**: [`ISocketProcessorChains`](../interfaces/ISocketProcessorChains.md)
+> `protected` **\_socketChains**: `ISocketProcessorChains`
 
 The socket processor chains resolved when the server is built.
+
+#### Inherited from
+
+`BaseServer._socketChains`
+
+***
+
+### CLASS\_NAME {#class_name}
+
+> `readonly` `static` **CLASS\_NAME**: `string`
+
+Runtime name for the class.
+
+#### Overrides
+
+`BaseServer.CLASS_NAME`
 
 ## Methods
 
@@ -136,9 +176,9 @@ Start the server.
 
 A promise that resolves when the server is listening for connections.
 
-#### Implementation of
+#### Inherited from
 
-`IWebServer.start`
+`BaseServer.start`
 
 ***
 
@@ -154,9 +194,9 @@ Stop the server.
 
 A promise that resolves when the server has shut down all connections.
 
-#### Implementation of
+#### Inherited from
 
-`IWebServer.stop`
+`BaseServer.stop`
 
 ***
 
@@ -172,9 +212,9 @@ Returns the health status of the component.
 
 The health status of the component, can return multiple entries for elements within the component.
 
-#### Implementation of
+#### Inherited from
 
-`IHealthProviderComponent.health`
+`BaseServer.health`
 
 ***
 
@@ -199,9 +239,35 @@ The callback to invoke when a deferred health result is ready.
 
 The application health status of the component.
 
-#### Implementation of
+#### Inherited from
 
-`IHealthProviderComponent.healthApplication`
+`BaseServer.healthApplication`
+
+***
+
+### requestLocalRoot() {#requestlocalroot}
+
+> `protected` **requestLocalRoot**(`url`): `Promise`\<\{ `ok`: `boolean`; `body`: `string`; \}\>
+
+Request the root endpoint of this server over the loopback address.
+
+#### Parameters
+
+##### url
+
+`string`
+
+The url of the root endpoint.
+
+#### Returns
+
+`Promise`\<\{ `ok`: `boolean`; `body`: `string`; \}\>
+
+Whether the response was successful and its body.
+
+#### Inherited from
+
+`BaseServer.requestLocalRoot`
 
 ***
 
@@ -250,6 +316,10 @@ Options for building the server.
 
 A promise that resolves when the shared build steps are complete.
 
+#### Inherited from
+
+`BaseServer.prepareBuild`
+
 ***
 
 ### buildProcessorChains() {#buildprocessorchains}
@@ -277,6 +347,10 @@ The processors for the incoming socket requests.
 
 `void`
 
+#### Inherited from
+
+`BaseServer.buildProcessorChains`
+
 ***
 
 ### resolveBodyLimits() {#resolvebodylimits}
@@ -295,11 +369,15 @@ The named body limits in bytes.
 
 GeneralError If a limit is not a positive integer.
 
+#### Inherited from
+
+`BaseServer.resolveBodyLimits`
+
 ***
 
 ### resolveCorsOptions() {#resolvecorsoptions}
 
-> `protected` **resolveCorsOptions**(`options?`): [`IServerCorsOptions`](../interfaces/IServerCorsOptions.md)
+> `protected` **resolveCorsOptions**(`options?`): `IServerCorsOptions`
 
 Resolve the CORS options from the web server options, merging in the defaults.
 
@@ -313,9 +391,13 @@ The web server options.
 
 #### Returns
 
-[`IServerCorsOptions`](../interfaces/IServerCorsOptions.md)
+`IServerCorsOptions`
 
 The resolved CORS options.
+
+#### Inherited from
+
+`BaseServer.resolveCorsOptions`
 
 ***
 
@@ -323,7 +405,8 @@ The resolved CORS options.
 
 > `protected` **buildServerRequest**(`method`, `url`, `body`, `query?`, `pathParams?`, `headers?`): `IHttpServerRequest`
 
-Build the server request from the transport values, decoding the path params and query.
+Build the server request from the transport values, the path params and query must already
+have been decoded by the transport, as decoding them again corrupts values containing %.
 
 #### Parameters
 
@@ -369,6 +452,39 @@ The request headers.
 
 The server request.
 
+#### Inherited from
+
+`BaseServer.buildServerRequest`
+
+***
+
+### validateResponse() {#validateresponse}
+
+> `protected` **validateResponse**(`httpResponse`): `void`
+
+Validate the processed response before it is sent, so that every transport fails an invalid
+response in the same way rather than with its own transport specific error.
+
+#### Parameters
+
+##### httpResponse
+
+`IHttpResponse`
+
+The processed response.
+
+#### Returns
+
+`void`
+
+#### Throws
+
+GeneralError If the status code or a header is invalid.
+
+#### Inherited from
+
+`BaseServer.validateResponse`
+
 ***
 
 ### buildContextIds() {#buildcontextids}
@@ -396,6 +512,10 @@ The request headers.
 `IContextIds`
 
 The context ids.
+
+#### Inherited from
+
+`BaseServer.buildContextIds`
 
 ***
 
@@ -433,11 +553,17 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 #### Returns
 
 `Promise`\<`void`\>
+
+#### Inherited from
+
+`BaseServer.runProcessorsRest`
 
 ***
 
@@ -475,6 +601,8 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 ##### requestTopic
@@ -493,11 +621,15 @@ The emitter to send the response on.
 
 `Promise`\<`void`\>
 
+#### Inherited from
+
+`BaseServer.runProcessorsSocket`
+
 ***
 
 ### className() {#classname}
 
-> `abstract` **className**(): `string`
+> **className**(): `string`
 
 Returns the class name of the component.
 
@@ -507,33 +639,33 @@ Returns the class name of the component.
 
 The class name of the component.
 
-#### Implementation of
+#### Overrides
 
-`IWebServer.className`
+`BaseServer.className`
 
 ***
 
 ### getInstance() {#getinstance}
 
-> `abstract` **getInstance**(): `T`
+> **getInstance**(): `Instance`\<`V1`\>
 
 Get the web server instance.
 
 #### Returns
 
-`T`
+`Instance`\<`V1`\>
 
 The web server instance.
 
-#### Implementation of
+#### Overrides
 
-`IWebServer.getInstance`
+`BaseServer.getInstance`
 
 ***
 
 ### build() {#build}
 
-> `abstract` **build**(`restRouteProcessors?`, `restRoutes?`, `socketRouteProcessors?`, `socketRoutes?`, `options?`): `Promise`\<`void`\>
+> **build**(`restRouteProcessors?`, `restRoutes?`, `socketRouteProcessors?`, `socketRoutes?`, `options?`): `Promise`\<`void`\>
 
 Build the server.
 
@@ -575,15 +707,15 @@ Options for building the server.
 
 A promise that resolves when the server is fully built and ready to start.
 
-#### Implementation of
+#### Overrides
 
-`IWebServer.build`
+`BaseServer.build`
 
 ***
 
 ### serverListen() {#serverlisten}
 
-> `abstract` `protected` **serverListen**(`host`, `port`): `Promise`\<`void`\>
+> `protected` **serverListen**(`host`, `port`): `Promise`\<`void`\>
 
 Start listening for connections on the transport.
 
@@ -607,11 +739,15 @@ The port to bind to.
 
 A promise that resolves when the transport is listening.
 
+#### Overrides
+
+`BaseServer.serverListen`
+
 ***
 
 ### serverClose() {#serverclose}
 
-> `abstract` `protected` **serverClose**(): `Promise`\<`void`\>
+> `protected` **serverClose**(): `Promise`\<`void`\>
 
 Close the transport and all of its connections.
 
@@ -621,11 +757,15 @@ Close the transport and all of its connections.
 
 A promise that resolves when the transport has closed.
 
+#### Overrides
+
+`BaseServer.serverClose`
+
 ***
 
 ### serverAddresses() {#serveraddresses}
 
-> `abstract` `protected` **serverAddresses**(): `object`[]
+> `protected` **serverAddresses**(): `object`[]
 
 Get the addresses the transport is bound to.
 
@@ -635,11 +775,15 @@ Get the addresses the transport is bound to.
 
 The bound addresses.
 
+#### Overrides
+
+`BaseServer.serverAddresses`
+
 ***
 
 ### serverIsSecure() {#serverissecure}
 
-> `abstract` `protected` **serverIsSecure**(): `boolean`
+> `protected` **serverIsSecure**(): `boolean`
 
 Whether the transport is serving over TLS.
 
@@ -649,11 +793,15 @@ Whether the transport is serving over TLS.
 
 True if the transport is secure.
 
+#### Overrides
+
+`BaseServer.serverIsSecure`
+
 ***
 
 ### serverIsListening() {#serverislistening}
 
-> `abstract` `protected` **serverIsListening**(): `boolean`
+> `protected` **serverIsListening**(): `boolean`
 
 Whether the transport is currently listening for connections.
 
@@ -663,11 +811,15 @@ Whether the transport is currently listening for connections.
 
 True if the transport is listening.
 
+#### Overrides
+
+`BaseServer.serverIsListening`
+
 ***
 
 ### serverHasRootRoute() {#serverhasrootroute}
 
-> `abstract` `protected` **serverHasRootRoute**(): `boolean`
+> `protected` **serverHasRootRoute**(): `boolean`
 
 Whether a GET route is registered for the root path.
 
@@ -676,3 +828,7 @@ Whether a GET route is registered for the root path.
 `boolean`
 
 True if the root route is registered.
+
+#### Overrides
+
+`BaseServer.serverHasRootRoute`

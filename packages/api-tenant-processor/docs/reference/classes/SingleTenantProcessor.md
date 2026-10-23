@@ -115,6 +115,8 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 #### Returns

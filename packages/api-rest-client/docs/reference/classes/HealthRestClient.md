@@ -88,11 +88,11 @@ Perform a request in json format.
 
 #### Type Parameters
 
-##### T
+##### T {#t}
 
 `T` *extends* `IHttpRequest`\<`any`\>
 
-##### U
+##### U {#u}
 
 `U` *extends* `IHttpResponse`\<`any`\>
 

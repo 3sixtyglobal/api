@@ -4,7 +4,7 @@ Route entry points are used for exposing the routes from a package.
 
 ## Type Parameters
 
-### T
+### T {#t}
 
 `T`
 

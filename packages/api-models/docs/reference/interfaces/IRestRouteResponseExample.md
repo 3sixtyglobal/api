@@ -8,7 +8,7 @@ Interface which defines a REST route response example.
 
 ## Type Parameters
 
-### T
+### T {#t}
 
 `T`
 

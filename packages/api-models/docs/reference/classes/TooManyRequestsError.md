@@ -42,6 +42,8 @@ The time when the next request can be made, as date ISO string.
 
 ##### properties?
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 Any additional information for the error.
 
 ##### cause?

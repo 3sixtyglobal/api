@@ -8,11 +8,11 @@ Interface which defines a REST route.
 
 ## Type Parameters
 
-### T
+### T {#t}
 
 `T` *extends* [`IHttpRequest`](IHttpRequest.md) = `any`
 
-### U
+### U {#u}
 
 `U` *extends* [`IHttpResponse`](IHttpResponse.md) & [`IRestRouteResponseOptions`](IRestRouteResponseOptions.md) = `any`
 
