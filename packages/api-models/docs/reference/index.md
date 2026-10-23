@@ -8,7 +8,6 @@
 - [HttpHeaderHelper](classes/HttpHeaderHelper.md)
 - [HttpParameterHelper](classes/HttpParameterHelper.md)
 - [HttpUrlHelper](classes/HttpUrlHelper.md)
-- [ScopeHelper](classes/ScopeHelper.md)
 
 ## Interfaces
 
@@ -54,6 +53,7 @@
 - [IRestRouteResponseAttachmentOptions](interfaces/IRestRouteResponseAttachmentOptions.md)
 - [IRestRouteResponseExample](interfaces/IRestRouteResponseExample.md)
 - [IRestRouteResponseOptions](interfaces/IRestRouteResponseOptions.md)
+- [IRouteAuthorization](interfaces/IRouteAuthorization.md)
 - [ISocketRoute](interfaces/ISocketRoute.md)
 - [ITag](interfaces/ITag.md)
 - [IBaseRouteProcessor](interfaces/IBaseRouteProcessor.md)
@@ -79,6 +79,8 @@
 - [ISocketRouteEntryPoint](type-aliases/ISocketRouteEntryPoint.md)
 - [HttpBodyLimit](type-aliases/HttpBodyLimit.md)
 - [HealthApplicationCallback](type-aliases/HealthApplicationCallback.md)
+- [TenantEventCallback](type-aliases/TenantEventCallback.md)
+- [TenantEventType](type-aliases/TenantEventType.md)
 
 ## Variables
 
@@ -90,3 +92,4 @@
 - [HealthStatus](variables/HealthStatus.md)
 - [HttpContextIdKeys](variables/HttpContextIdKeys.md)
 - [HttpBodyLimit](variables/HttpBodyLimit.md)
+- [TenantEventType](variables/TenantEventType.md)

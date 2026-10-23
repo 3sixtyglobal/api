@@ -1,50 +1,25 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
+import { BaseServer } from "@3sixty/api-core-server";
 import {
-	type HealthApplicationCallback,
-	HealthStatus,
 	HttpBodyLimit,
-	HttpContextIdKeys,
 	HttpErrorHelper,
-	type IHealthProviderComponent,
-	type IHealth,
 	type IHttpRequest,
 	type IHttpRequestPathParams,
 	type IHttpRequestQuery,
 	type IHttpResponse,
-	type IHttpServerRequest,
-	type IMimeTypeProcessor,
 	type IRestRoute,
 	type IRestRouteProcessor,
 	type ISocketRoute,
 	type ISocketRouteProcessor,
 	type ISocketServerRequest,
-	type IWebServer,
-	type IWebServerOptions,
-	HealthCategory
+	type IWebServerOptions
 } from "@3sixty/api-models";
-import { JsonLdMimeTypeProcessor } from "@3sixty/api-processors";
-import { ContextIdStore, type IContextIds } from "@3sixty/context";
-import {
-	BaseError,
-	ComponentFactory,
-	GeneralError,
-	type IError,
-	Is,
-	RandomHelper,
-	StringHelper,
-	Url
-} from "@3sixty/core";
-import type { ILoggingComponent } from "@3sixty/logging-models";
+import type { IContextIds } from "@3sixty/context";
+import { BaseError, GeneralError, type IError, Is, StringHelper } from "@3sixty/core";
 import { nameof } from "@3sixty/nameof";
-import {
-	HeaderTypes,
-	HttpMethod,
-	HttpStatusCode,
-	type IHttpHeaders,
-	HeaderHelper,
-	MimeTypes
-} from "@3sixty/web";
+import { HttpMethod, HttpStatusCode, type IHttpHeaders } from "@3sixty/web";
 import FastifyCompress from "@fastify/compress";
 import FastifyCors from "@fastify/cors";
 import Fastify, {
@@ -56,56 +31,15 @@ import Fastify, {
 import type { Server, ServerOptions, Socket } from "socket.io";
 import FastifySocketIO from "./fastifySocketIo.js";
 import type { IFastifyWebServerConstructorOptions } from "./models/IFastifyWebServerConstructorOptions.js";
-import type { IRestProcessorChains } from "./models/IRestProcessorChains.js";
-import type { ISocketProcessorChains } from "./models/ISocketProcessorChains.js";
 
 /**
  * Implementation of the web server using Fastify.
  */
-export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthProviderComponent {
+export class FastifyWebServer extends BaseServer<FastifyInstance> {
 	/**
 	 * Runtime name for the class.
 	 */
 	public static readonly CLASS_NAME: string = nameof<FastifyWebServer>();
-
-	/**
-	 * Default port for running the server.
-	 * @internal
-	 */
-	private static readonly _DEFAULT_PORT: number = 3000;
-
-	/**
-	 * Default host for running the server.
-	 * @internal
-	 */
-	private static readonly _DEFAULT_HOST: string = "localhost";
-
-	/**
-	 * Default named body size limits for routes.
-	 * @internal
-	 */
-	private static readonly _DEFAULT_BODY_LIMITS: { [name: string]: number } = {
-		[HttpBodyLimit.Default]: 1048576,
-		[HttpBodyLimit.Large]: 26214400
-	};
-
-	/**
-	 * The logging component type.
-	 * @internal
-	 */
-	private readonly _loggingComponentType?: string;
-
-	/**
-	 * The logging component.
-	 * @internal
-	 */
-	private readonly _logging?: ILoggingComponent;
-
-	/**
-	 * The options for the server.
-	 * @internal
-	 */
-	private _options?: IWebServerOptions;
 
 	/**
 	 * The Fastify instance.
@@ -120,54 +54,16 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 	private readonly _socketConfig: Partial<ServerOptions>;
 
 	/**
-	 * Whether the server has been started.
-	 * @internal
-	 */
-	private _started: boolean;
-
-	/**
-	 * The mime type processors.
-	 * @internal
-	 */
-	private readonly _mimeTypeProcessors: IMimeTypeProcessor[];
-
-	/**
-	 * Include the stack with errors.
-	 * @internal
-	 */
-	private readonly _includeErrorStack: boolean;
-
-	/**
-	 * The public origin of the server, used for constructing the request URL and for CORS.
-	 * @internal
-	 */
-	private _publicOrigin?: string;
-
-	/**
-	 * The local origin of the server, used for constructing the request URL and for CORS.
-	 * @internal
-	 */
-	private _localOrigin?: string;
-
-	/**
-	 * The REST processor chains resolved when the server is built.
-	 * @internal
-	 */
-	private _restChains: IRestProcessorChains;
-
-	/**
-	 * The socket processor chains resolved when the server is built.
-	 * @internal
-	 */
-	private _socketChains: ISocketProcessorChains;
-
-	/**
 	 * Create a new instance of FastifyWebServer.
 	 * @param options The options for the server.
 	 */
 	constructor(options?: IFastifyWebServerConstructorOptions) {
-		this._loggingComponentType = options?.loggingComponentType;
-		this._logging = ComponentFactory.getIfExists(options?.loggingComponentType);
+		super({
+			loggingComponentType: options?.loggingComponentType,
+			mimeTypeProcessors: options?.mimeTypeProcessors,
+			includeErrorStack: options?.config?.includeErrorStack
+		});
+
 		this._fastify = Fastify({
 			routerOptions: {
 				maxParamLength: 2000
@@ -180,20 +76,6 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 			path: "/socket",
 			...options?.config?.socket
 		};
-		this._started = false;
-		this._restChains = { pre: [], process: [], post: [] };
-		this._socketChains = { connected: [], disconnected: [], pre: [], process: [], post: [] };
-
-		this._mimeTypeProcessors = options?.mimeTypeProcessors ?? [];
-
-		const hasJsonLd = this._mimeTypeProcessors.some(processor =>
-			processor.getTypes().includes(MimeTypes.JsonLd)
-		);
-		if (!hasJsonLd) {
-			this._mimeTypeProcessors.push(new JsonLdMimeTypeProcessor());
-		}
-
-		this._includeErrorStack = options?.config?.includeErrorStack ?? false;
 	}
 
 	/**
@@ -228,39 +110,13 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 		socketRoutes?: ISocketRoute[],
 		options?: IWebServerOptions
 	): Promise<void> {
-		if (Is.arrayValue(restRoutes) && !Is.arrayValue(restRouteProcessors)) {
-			throw new GeneralError(FastifyWebServer.CLASS_NAME, "noRestProcessors");
-		}
-		if (Is.arrayValue(socketRoutes) && !Is.arrayValue(socketRouteProcessors)) {
-			throw new GeneralError(FastifyWebServer.CLASS_NAME, "noSocketProcessors");
-		}
-		await this._logging?.log({
-			level: "info",
-			ts: Date.now(),
-			source: FastifyWebServer.CLASS_NAME,
-			message: "building"
-		});
-
-		let localHost = options?.host ?? "127.0.0.1";
-		if (localHost === "0.0.0.0") {
-			localHost = "127.0.0.1";
-		}
-
-		this._localOrigin = `http://${localHost}:${options?.port ?? 3000}`;
-
-		if (Is.stringValue(options?.publicOrigin)) {
-			const publicUrl = Url.tryParseExact(options.publicOrigin);
-			if (!Is.empty(publicUrl)) {
-				const urlParts = publicUrl.parts();
-				this._publicOrigin = `${urlParts.schema}://${urlParts.host}${Is.integer(urlParts.port) ? `:${urlParts.port}` : ""}`;
-			} else {
-				throw new GeneralError(FastifyWebServer.CLASS_NAME, "invalidPublicOrigin", {
-					publicOrigin: options.publicOrigin
-				});
-			}
-		}
-
-		this._options = options;
+		await this.prepareBuild(
+			restRouteProcessors,
+			restRoutes,
+			socketRouteProcessors,
+			socketRoutes,
+			options
+		);
 
 		await this._fastify.register(FastifyCompress);
 
@@ -290,7 +146,7 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 		await this.initCors(options);
 
 		this._fastify.setNotFoundHandler({}, async (request, reply) =>
-			this.handleRequestRest(restRouteProcessors ?? [], request, reply)
+			this.handleRequestRest(request, reply)
 		);
 
 		this._fastify.setErrorHandler(
@@ -335,214 +191,58 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 
 		await this.addRoutesRest(restRouteProcessors, restRoutes);
 		await this.addRoutesSocket(socketRouteProcessors, socketRoutes);
-
-		this.buildProcessorChains(restRouteProcessors, socketRouteProcessors);
 	}
 
 	/**
-	 * Start the server.
-	 * @returns A promise that resolves when the server is listening for connections.
+	 * Start listening for connections on the transport.
+	 * @param host The host to bind to.
+	 * @param port The port to bind to.
+	 * @returns A promise that resolves when the transport is listening.
 	 */
-	public async start(): Promise<void> {
-		const host = this._options?.host ?? FastifyWebServer._DEFAULT_HOST;
-		const port = this._options?.port ?? FastifyWebServer._DEFAULT_PORT;
-
-		await this._logging?.log({
-			level: "info",
-			ts: Date.now(),
-			source: FastifyWebServer.CLASS_NAME,
-			message: "starting",
-			data: {
-				host,
-				port
-			}
-		});
-
-		if (!this._started) {
-			try {
-				await this._fastify.listen({ port, host });
-				const addresses = this._fastify.addresses();
-
-				const protocol = Is.object(this._fastify.initialConfig.https) ? "https://" : "http://";
-				const normalizeAnyHost = (address: string): string => {
-					if (address === "0.0.0.0") {
-						return "127.0.0.1";
-					}
-					if (address === "::") {
-						return "::1";
-					}
-
-					return address;
-				};
-
-				const formatAddress = (
-					address: string,
-					family?: string,
-					forceProtocol?: string
-				): string => {
-					const displayAddress = normalizeAnyHost(address);
-					const isIPv6 =
-						family === "IPv6" || (Is.stringValue(displayAddress) && displayAddress.includes(":"));
-
-					return `${forceProtocol ?? protocol}${isIPv6 ? "[" : ""}${displayAddress}${isIPv6 ? "]" : ""}`;
-				};
-
-				const startupAddresses = addresses.map(a => {
-					const formatted = formatAddress(a.address, a.family, protocol);
-
-					return `${formatted}:${a.port}`;
-				});
-
-				for (const origin of [this._localOrigin, this._publicOrigin]) {
-					if (Is.stringValue(origin)) {
-						const originUrl = Url.tryParseExact(origin);
-						if (!Is.empty(originUrl)) {
-							const originParts = originUrl.parts();
-							const formatted = formatAddress(
-								originParts.host,
-								undefined,
-								`${originParts.schema}://`
-							);
-							startupAddresses.push(
-								`${formatted}${Is.integer(originParts.port) ? `:${originParts.port}` : ""}`
-							);
-						} else {
-							startupAddresses.push(origin);
-						}
-					}
-				}
-
-				const distinctStartupAddresses = [...new Set(startupAddresses)];
-
-				await this._logging?.log({
-					level: "info",
-					ts: Date.now(),
-					source: FastifyWebServer.CLASS_NAME,
-					message: "started",
-					data: {
-						addresses: distinctStartupAddresses.join(", ")
-					}
-				});
-				this._started = true;
-			} catch (err) {
-				await this._logging?.log({
-					level: "error",
-					ts: Date.now(),
-					source: FastifyWebServer.CLASS_NAME,
-					message: "startFailed",
-					error: BaseError.fromError(err)
-				});
-			}
-		}
+	protected async serverListen(host: string, port: number): Promise<void> {
+		await this._fastify.listen({ port, host });
 	}
 
 	/**
-	 * Stop the server.
-	 * @returns A promise that resolves when the server has shut down all connections.
+	 * Close the transport and all of its connections.
+	 * @returns A promise that resolves when the transport has closed.
 	 */
-	public async stop(): Promise<void> {
-		if (this._started) {
-			this._started = false;
-
-			await this._fastify.close();
-
-			await this._logging?.log({
-				level: "info",
-				ts: Date.now(),
-				source: FastifyWebServer.CLASS_NAME,
-				message: "stopped"
-			});
-		}
+	protected async serverClose(): Promise<void> {
+		await this._fastify.close();
 	}
 
 	/**
-	 * Returns the health status of the component.
-	 * @returns The health status of the component, can return multiple entries for elements within the component.
+	 * Get the addresses the transport is bound to.
+	 * @returns The bound addresses.
 	 */
-	public async health(): Promise<IHealth[]> {
-		let healthCheck: IHealth | undefined;
-		if (this._fastify?.server?.listening) {
-			healthCheck = {
-				source: FastifyWebServer.CLASS_NAME,
-				status: HealthStatus.Ok,
-				category: HealthCategory.Connectivity,
-				description: "healthConnectivityDescription",
-				message: "reachable"
-			};
-		} else {
-			healthCheck = {
-				source: FastifyWebServer.CLASS_NAME,
-				status: HealthStatus.Error,
-				category: HealthCategory.Connectivity,
-				description: "healthConnectivityDescription",
-				message: "unreachable"
-			};
-		}
-
-		return [healthCheck];
+	protected serverAddresses(): { address: string; family?: string; port: number }[] {
+		return this._fastify.addresses();
 	}
 
 	/**
-	 * Verify the root endpoint is reachable and returns a body by making a real HTTP request.
-	 * Skipped when GET / is not registered on this server instance.
-	 * @param callback The callback to invoke when a deferred health result is ready.
-	 * @returns The application health status of the component.
+	 * Whether the transport is serving over TLS.
+	 * @returns True if the transport is secure.
 	 */
-	public async healthApplication(
-		callback: HealthApplicationCallback
-	): Promise<IHealth[] | undefined> {
-		if (!this._fastify.hasRoute({ method: "GET", url: "/" })) {
-			return [];
-		}
+	protected serverIsSecure(): boolean {
+		// Fastify reports the https option as true rather than the options object
+		const https: unknown = this._fastify.initialConfig.https;
+		return https === true || Is.object(https);
+	}
 
-		if (!Is.stringValue(this._localOrigin)) {
-			return [
-				{
-					source: FastifyWebServer.CLASS_NAME,
-					status: HealthStatus.Error,
-					category: HealthCategory.Application,
-					description: "healthApplicationDescription",
-					message: "serverNotBuilt"
-				}
-			];
-		}
+	/**
+	 * Whether the transport is currently listening for connections.
+	 * @returns True if the transport is listening.
+	 */
+	protected serverIsListening(): boolean {
+		return this._fastify?.server?.listening ?? false;
+	}
 
-		try {
-			const response = await fetch(`${this._localOrigin}/`);
-			const body = await response.text();
-
-			if (response.ok && Is.stringValue(body)) {
-				return [
-					{
-						source: FastifyWebServer.CLASS_NAME,
-						status: HealthStatus.Ok,
-						category: HealthCategory.Application,
-						description: "healthApplicationDescription",
-						message: "rootEndpointReachable"
-					}
-				];
-			}
-
-			return [
-				{
-					source: FastifyWebServer.CLASS_NAME,
-					status: HealthStatus.Error,
-					category: HealthCategory.Application,
-					description: "healthApplicationDescription",
-					message: "rootEndpointError"
-				}
-			];
-		} catch (error) {
-			return [
-				{
-					source: FastifyWebServer.CLASS_NAME,
-					status: HealthStatus.Error,
-					category: HealthCategory.Application,
-					description: "healthApplicationDescription",
-					error: BaseError.fromError(error)
-				}
-			];
-		}
+	/**
+	 * Whether a GET route is registered for the root path.
+	 * @returns True if the root route is registered.
+	 */
+	protected serverHasRootRoute(): boolean {
+		return this._fastify.hasRoute({ method: "GET", url: "/" });
 	}
 
 	/**
@@ -584,33 +284,10 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 				}
 
 				this._fastify[method](path, { bodyLimit }, async (request, reply) =>
-					this.handleRequestRest(restRouteProcessors, request, reply, restRoute)
+					this.handleRequestRest(request, reply, restRoute)
 				);
 			}
 		}
-	}
-
-	/**
-	 * Merge the configured body limits over the built-in ones and validate them.
-	 * @returns The named body limits in bytes.
-	 * @throws GeneralError If a limit is not a positive integer.
-	 * @internal
-	 */
-	private resolveBodyLimits(): { [name: string]: number } {
-		const bodyLimits = {
-			...FastifyWebServer._DEFAULT_BODY_LIMITS,
-			...this._options?.bodyLimits
-		};
-		for (const name of Object.keys(bodyLimits)) {
-			const bodyLimit = bodyLimits[name];
-			if (!Is.integer(bodyLimit) || bodyLimit <= 0) {
-				throw new GeneralError(FastifyWebServer.CLASS_NAME, "invalidBodyLimit", {
-					bodyLimit: name,
-					value: bodyLimit
-				});
-			}
-		}
-		return bodyLimits;
 	}
 
 	/**
@@ -661,14 +338,8 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 
 					// Pass the connected information on to any processors
 					try {
-						for (const socketRouteProcessor of socketRouteProcessors) {
-							if (socketRouteProcessor.connected) {
-								await socketRouteProcessor.connected(
-									socketServerRequest,
-									socketRoute,
-									this._loggingComponentType
-								);
-							}
+						for (const connected of this._socketChains.connected) {
+							await connected(socketServerRequest, socketRoute, this._loggingComponentType);
 						}
 					} catch (err) {
 						const { error, httpStatusCode } = HttpErrorHelper.processError(
@@ -683,14 +354,8 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 					socket.on("disconnect", async () => {
 						try {
 							// The socket disconnected so notify any processors
-							for (const socketRouteProcessor of socketRouteProcessors) {
-								if (socketRouteProcessor.disconnected) {
-									await socketRouteProcessor.disconnected(
-										socketServerRequest,
-										socketRoute,
-										this._loggingComponentType
-									);
-								}
+							for (const disconnected of this._socketChains.disconnected) {
+								await disconnected(socketServerRequest, socketRoute, this._loggingComponentType);
 							}
 						} catch {
 							// If something fails on a disconnect there is not much we can do with it
@@ -703,7 +368,6 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 						// rejection and terminate the process, emit it on the topic instead
 						try {
 							await this.handleRequestSocket(
-								socketRouteProcessors,
 								socketRoute,
 								socket,
 								`/${pathParts.join("/")}`,
@@ -732,7 +396,6 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 
 	/**
 	 * Handle the incoming REST request.
-	 * @param restRouteProcessors The hooks to process the incoming requests.
 	 * @param request The incoming request.
 	 * @param reply The outgoing response.
 	 * @param restRoute The REST route to handle.
@@ -740,7 +403,6 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 	 * @internal
 	 */
 	private async handleRequestRest(
-		restRouteProcessors: IRestRouteProcessor[],
 		request: FastifyRequest,
 		reply: FastifyReply,
 		restRoute?: IRestRoute
@@ -754,50 +416,29 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 
 		const requestOrigin = `${request.protocol}://${request.hostname}${port}`;
 
-		const httpServerRequest: IHttpServerRequest = {
-			method: request.method.toUpperCase() as HttpMethod,
-			url: `${requestOrigin}${request.url}`,
-			body: request.body,
-			query: request.query as IHttpRequestQuery,
-			pathParams: request.params as IHttpRequestPathParams,
-			headers: request.headers as IHttpHeaders
-		};
+		const httpServerRequest = this.buildServerRequest(
+			request.method.toUpperCase() as HttpMethod,
+			`${requestOrigin}${request.url}`,
+			request.body,
+			request.query as IHttpRequestQuery,
+			// The not found handler matches a wildcard, which is not a param of any route
+			Is.empty(restRoute) ? {} : (request.params as IHttpRequestPathParams),
+			request.headers as IHttpHeaders
+		);
 
 		const httpResponse: IHttpResponse = {};
-		const contextIds: IContextIds = {
-			[HttpContextIdKeys.IpAddress]: HeaderHelper.extractClientIps(httpServerRequest.headers).join(
-				"|"
-			),
-			[HttpContextIdKeys.UserAgent]: HeaderHelper.extractUserAgent(httpServerRequest.headers),
-			[HttpContextIdKeys.CorrelationId]: HeaderHelper.extractCorrelationId(
-				httpServerRequest.headers
-			),
-			[HttpContextIdKeys.RemoteRequest]: RandomHelper.generateUuidV7("compact"),
-			[HttpContextIdKeys.LocalOrigin]: this._localOrigin,
-			// This can be overridden by a processor if needed, for example a tenant processor
-			[HttpContextIdKeys.PublicOrigin]: this._publicOrigin ?? requestOrigin ?? this._localOrigin
-		};
+		const contextIds = this.buildContextIds(requestOrigin, httpServerRequest.headers);
 		const processorState = {};
 
-		if (Is.object(httpServerRequest.pathParams)) {
-			for (const key of Object.keys(httpServerRequest.pathParams)) {
-				httpServerRequest.pathParams[key] = decodeURIComponent(httpServerRequest.pathParams[key]);
-			}
-		}
-		if (Is.object(httpServerRequest.query)) {
-			for (const key of Object.keys(httpServerRequest.query)) {
-				httpServerRequest.query[key] = decodeURIComponent(httpServerRequest.query[key]);
-			}
-		}
-
 		await this.runProcessorsRest(
-			restRouteProcessors,
 			restRoute,
 			httpServerRequest,
 			httpResponse,
 			contextIds,
 			processorState
 		);
+
+		this.validateResponse(httpResponse);
 
 		if (!Is.empty(httpResponse.headers)) {
 			for (const header of Object.keys(httpResponse.headers)) {
@@ -808,100 +449,7 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 	}
 
 	/**
-	 * Run the REST processors for the route.
-	 * @param restRouteProcessors The processors to run.
-	 * @param restRoute The route to process.
-	 * @param httpServerRequest The incoming request.
-	 * @param httpResponse The outgoing response.
-	 * @param contextIds The context IDs of the request.
-	 * @internal
-	 */
-	private async runProcessorsRest(
-		restRouteProcessors: IRestRouteProcessor[],
-		restRoute: IRestRoute | undefined,
-		httpServerRequest: IHttpServerRequest,
-		httpResponse: IHttpResponse,
-		contextIds: IContextIds,
-		processorState: {
-			[id: string]: unknown;
-		}
-	): Promise<void> {
-		let hasPreError = false;
-
-		try {
-			// Run inside ContextIdStore.run so pre-processors can do tenant-scoped storage lookups.
-			await ContextIdStore.run(contextIds, async () => {
-				for (const pre of this._restChains.pre) {
-					await pre(httpServerRequest, httpResponse, restRoute, contextIds, processorState, {
-						loggingComponentType: this._loggingComponentType
-					});
-				}
-			});
-		} catch (err) {
-			const { error, httpStatusCode } = HttpErrorHelper.processError(err, this._includeErrorStack);
-			HttpErrorHelper.buildResponse(httpResponse, error, httpStatusCode, this._includeErrorStack);
-			hasPreError = true;
-		}
-
-		// A pre-processor may set an error response without throwing; treat that as halt.
-		if (
-			!hasPreError &&
-			Is.integer(httpResponse.statusCode) &&
-			httpResponse.statusCode >= HttpStatusCode.badRequest
-		) {
-			hasPreError = true;
-		}
-
-		// Don't run the main processing if there was an error in the pre processing
-		// As this is likely to perform tasks such as authentication which may have failed
-		if (!hasPreError) {
-			try {
-				// Run the processors within an async context
-				// so that any services can access the context ids
-				await ContextIdStore.run(contextIds, async () => {
-					for (const process of this._restChains.process) {
-						await process(httpServerRequest, httpResponse, restRoute, processorState, {
-							loggingComponentType: this._loggingComponentType
-						});
-					}
-				});
-			} catch (err) {
-				const { error, httpStatusCode } = HttpErrorHelper.processError(
-					err,
-					this._includeErrorStack
-				);
-				HttpErrorHelper.buildResponse(httpResponse, error, httpStatusCode, this._includeErrorStack);
-			}
-		}
-
-		try {
-			// Always run the post processors, even if there was an error earlier
-			// as they may perform cleanup tasks, or logging etc
-			await ContextIdStore.run(contextIds, async () => {
-				for (const post of this._restChains.post) {
-					await post(httpServerRequest, httpResponse, restRoute, contextIds, processorState, {
-						loggingComponentType: this._loggingComponentType
-					});
-				}
-			});
-		} catch (err) {
-			// Just log post processor errors
-			await this._logging?.log({
-				level: "error",
-				ts: Date.now(),
-				source: FastifyWebServer.CLASS_NAME,
-				message: "postProcessorError",
-				error: BaseError.fromError(err),
-				data: {
-					route: restRoute?.path ?? ""
-				}
-			});
-		}
-	}
-
-	/**
 	 * Handle the incoming socket request.
-	 * @param socketRouteProcessors The hooks to process the incoming requests.
 	 * @param socketRoute The socket route to handle.
 	 * @param socket The socket to handle.
 	 * @param fullPath The full path of the socket route.
@@ -910,7 +458,6 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 	 * @internal
 	 */
 	private async handleRequestSocket(
-		socketRouteProcessors: ISocketRouteProcessor[],
 		socketRoute: ISocketRoute,
 		socket: Socket,
 		fullPath: string,
@@ -934,7 +481,6 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 		delete socketServerRequest.query?.transport;
 
 		await this.runProcessorsSocket(
-			socketRouteProcessors,
 			socketRoute,
 			socketServerRequest,
 			httpResponse,
@@ -948,223 +494,24 @@ export class FastifyWebServer implements IWebServer<FastifyInstance>, IHealthPro
 	}
 
 	/**
-	 * Run the socket processors for the route.
-	 * @param socketRouteProcessors The processors to run.
-	 * @param socketRoute The route to process.
-	 * @param socketServerRequest The incoming request.
-	 * @param httpResponse The outgoing response.
-	 * @param contextIds The context IDs of the request.
-	 * @param processorState The state handed through the processors.
-	 * @param requestTopic The topic of the request.
-	 * @param responseEmitter The emitter to send the response on.
-	 * @internal
-	 */
-	private async runProcessorsSocket(
-		socketRouteProcessors: ISocketRouteProcessor[],
-		socketRoute: ISocketRoute,
-		socketServerRequest: ISocketServerRequest,
-		httpResponse: IHttpResponse,
-		contextIds: IContextIds,
-		processorState: {
-			[id: string]: unknown;
-		},
-		requestTopic: string,
-		responseEmitter: (topic: string, response: IHttpResponse) => Promise<void>
-	): Promise<void> {
-		// Custom emit method which will also call the post processors
-		const postProcessEmit = async (
-			topic: string,
-			response: IHttpResponse,
-			responseProcessorState: {
-				[id: string]: unknown;
-			}
-		): Promise<void> => {
-			await responseEmitter(topic, response);
-
-			try {
-				// The post processors are called after the response has been emitted
-				for (const post of this._socketChains.post) {
-					await post(
-						socketServerRequest,
-						response,
-						socketRoute,
-						contextIds,
-						responseProcessorState,
-						{
-							loggingComponentType: this._loggingComponentType
-						}
-					);
-				}
-			} catch (err) {
-				await this._logging?.log({
-					level: "error",
-					ts: Date.now(),
-					source: FastifyWebServer.CLASS_NAME,
-					message: "postProcessorError",
-					error: BaseError.fromError(err),
-					data: {
-						route: socketRoute.path
-					}
-				});
-			}
-		};
-
-		try {
-			for (const pre of this._socketChains.pre) {
-				await pre(socketServerRequest, httpResponse, socketRoute, contextIds, processorState, {
-					loggingComponentType: this._loggingComponentType
-				});
-			}
-
-			// We always call all the processors regardless of any response set by a previous processor.
-			// But if a pre processor sets a status code, we will emit the response manually, as the pre
-			// and post processors do not receive the emit method, they just populate the response object.
-			if (!Is.empty(httpResponse.statusCode)) {
-				await postProcessEmit(requestTopic, httpResponse, processorState);
-			}
-
-			await ContextIdStore.run(contextIds, async () => {
-				for (const process of this._socketChains.process) {
-					await process(
-						socketServerRequest,
-						httpResponse,
-						socketRoute,
-						processorState,
-						async (topic: string, processResponse: IHttpResponse) => {
-							await postProcessEmit(topic, processResponse, processorState);
-						},
-						this._loggingComponentType
-					);
-				}
-			});
-
-			// If the processors set the status to any kind of error then we should emit this manually
-			if (
-				Is.integer(httpResponse.statusCode) &&
-				httpResponse.statusCode >= HttpStatusCode.badRequest
-			) {
-				await postProcessEmit(requestTopic, httpResponse, processorState);
-			}
-		} catch (err) {
-			// Emit any unhandled errors manually
-			const { error, httpStatusCode } = HttpErrorHelper.processError(err, this._includeErrorStack);
-			HttpErrorHelper.buildResponse(httpResponse, error, httpStatusCode, this._includeErrorStack);
-			await postProcessEmit(requestTopic, httpResponse, processorState);
-		}
-	}
-
-	/**
 	 * Initialize the cors options.
 	 * @param options The web server options.
 	 * @internal
 	 */
 	private async initCors(options?: IWebServerOptions): Promise<void> {
-		let origins: string[] = ["*"];
-
-		if (Is.arrayValue(options?.corsOrigins)) {
-			origins = options?.corsOrigins;
-		} else if (Is.stringValue(options?.corsOrigins)) {
-			origins = [options?.corsOrigins];
-		}
-
-		const hasWildcardOrigin = origins.includes("*");
-
-		const methods = options?.methods ?? [
-			HttpMethod.GET,
-			HttpMethod.PUT,
-			HttpMethod.POST,
-			HttpMethod.PATCH,
-			HttpMethod.DELETE,
-			HttpMethod.OPTIONS
-		];
-		const allowedHeaders = [
-			"Access-Control-Allow-Origin",
-			"Content-Encoding",
-			"Accept-Encoding",
-			HeaderTypes.ContentType,
-			HeaderTypes.Authorization,
-			HeaderTypes.Accept
-		];
-		const exposedHeaders: string[] = [HeaderTypes.ContentDisposition, HeaderTypes.Location];
-
-		if (Is.arrayValue(options?.allowedHeaders)) {
-			allowedHeaders.push(...options.allowedHeaders);
-		}
-		if (Is.arrayValue(options?.exposedHeaders)) {
-			exposedHeaders.push(...options.exposedHeaders);
-		}
+		const corsOptions = this.resolveCorsOptions(options);
 
 		await this._fastify.register(FastifyCors, {
 			origin: (origin, callback) => {
-				callback(null, hasWildcardOrigin ? true : origins.includes(origin as string));
+				callback(
+					null,
+					corsOptions.hasWildcardOrigin ? true : corsOptions.origins.includes(origin as string)
+				);
 			},
-			methods,
-			allowedHeaders,
-			exposedHeaders,
+			methods: corsOptions.methods,
+			allowedHeaders: corsOptions.allowedHeaders,
+			exposedHeaders: corsOptions.exposedHeaders,
 			credentials: true
 		});
-	}
-
-	/**
-	 * Resolve the route processors in to per phase chains, so that the lookups and bindings
-	 * are performed once when the server is built instead of on every request.
-	 * @param restRouteProcessors The processors for the incoming REST requests.
-	 * @param socketRouteProcessors The processors for the incoming socket requests.
-	 * @internal
-	 */
-	private buildProcessorChains(
-		restRouteProcessors?: IRestRouteProcessor[],
-		socketRouteProcessors?: ISocketRouteProcessor[]
-	): void {
-		const restChains: IRestProcessorChains = { pre: [], process: [], post: [] };
-
-		for (const routeProcessor of restRouteProcessors ?? []) {
-			const pre = routeProcessor.pre?.bind(routeProcessor);
-			if (Is.function(pre)) {
-				restChains.pre.push(pre);
-			}
-			const process = routeProcessor.process?.bind(routeProcessor);
-			if (Is.function(process)) {
-				restChains.process.push(process);
-			}
-			const post = routeProcessor.post?.bind(routeProcessor);
-			if (Is.function(post)) {
-				restChains.post.push(post);
-			}
-		}
-
-		const socketChains: ISocketProcessorChains = {
-			connected: [],
-			disconnected: [],
-			pre: [],
-			process: [],
-			post: []
-		};
-
-		for (const routeProcessor of socketRouteProcessors ?? []) {
-			const connected = routeProcessor.connected?.bind(routeProcessor);
-			if (Is.function(connected)) {
-				socketChains.connected.push(connected);
-			}
-			const disconnected = routeProcessor.disconnected?.bind(routeProcessor);
-			if (Is.function(disconnected)) {
-				socketChains.disconnected.push(disconnected);
-			}
-			const pre = routeProcessor.pre?.bind(routeProcessor);
-			if (Is.function(pre)) {
-				socketChains.pre.push(pre);
-			}
-			const process = routeProcessor.process?.bind(routeProcessor);
-			if (Is.function(process)) {
-				socketChains.process.push(process);
-			}
-			const post = routeProcessor.post?.bind(routeProcessor);
-			if (Is.function(post)) {
-				socketChains.post.push(post);
-			}
-		}
-
-		this._restChains = restChains;
-		this._socketChains = socketChains;
 	}
 }

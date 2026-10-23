@@ -1,5 +1,6 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
+import type { ServerOptions as HttpsServerOptions } from "node:https";
 import type { FastifyServerOptions } from "fastify";
 import type { ServerOptions } from "socket.io";
 
@@ -8,9 +9,9 @@ import type { ServerOptions } from "socket.io";
  */
 export interface IFastifyWebServerConfig {
 	/**
-	 * The web server options.
+	 * The web server options, providing the https options serves over HTTPS.
 	 */
-	web?: Partial<FastifyServerOptions>;
+	web?: Partial<FastifyServerOptions> & { https?: HttpsServerOptions };
 
 	/**
 	 * The socket server options.

@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	type HealthApplicationCallback,
@@ -6,13 +7,16 @@ import {
 	HealthStatus,
 	type IHealth,
 	type IHealthProviderComponent,
+	type IPlatformComponent,
 	type ITenant,
-	type ITenantAdminComponent
+	type ITenantAdminComponent,
+	TenantEventType
 } from "@3sixty/api-models";
 import { ContextIdKeys, ContextIdStore, type IContextIds } from "@3sixty/context";
 import {
 	AlreadyExistsError,
 	BaseError,
+	ComponentFactory,
 	Converter,
 	GeneralError,
 	Guards,
@@ -79,6 +83,12 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 	private readonly _entityStorageConnector: IEntityStorageConnector<Tenant>;
 
 	/**
+	 * Platform component used to fire tenant events.
+	 * @internal
+	 */
+	private readonly _platformComponent: IPlatformComponent;
+
+	/**
 	 * The cache of tenant lookups, undefined when caching is disabled.
 	 * @internal
 	 */
@@ -97,6 +107,9 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 	constructor(options?: ITenantAdminServiceConstructorOptions) {
 		this._entityStorageConnector = EntityStorageConnectorFactory.get(
 			options?.tenantEntityStorageType ?? "tenant"
+		);
+		this._platformComponent = ComponentFactory.get<IPlatformComponent>(
+			options?.platformComponentType ?? "platform"
 		);
 
 		this._tenantCacheTtlMs =
@@ -325,6 +338,8 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 		// tenant even though the new tenant now owns it outright.
 		this.invalidateTenant(tenantEntity);
 
+		await this._platformComponent.fireTenantEvent(tenantEntity.id, TenantEventType.Created);
+
 		return tenantEntity.id;
 	}
 
@@ -434,6 +449,8 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 		// cached under the previous values have to go as well as the new ones.
 		this.invalidateTenant(currentTenantEntity);
 		this.invalidateTenant(tenantEntity);
+
+		await this._platformComponent.fireTenantEvent(tenantEntity.id, TenantEventType.Updated);
 	}
 
 	/**
@@ -459,6 +476,8 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 			// under the id before it went missing still has to go.
 			this._tenantCache?.delete(`${TenantAdminService._CACHE_PREFIX_ID}${tenantId}`);
 		}
+
+		await this._platformComponent.fireTenantEvent(tenantId, TenantEventType.Deleted);
 	}
 
 	/**

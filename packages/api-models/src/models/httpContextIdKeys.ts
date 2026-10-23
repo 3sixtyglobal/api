@@ -1,4 +1,5 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 
 /**
@@ -35,11 +36,6 @@ export const HttpContextIdKeys = {
 	 * Local Origin of the request.
 	 */
 	LocalOrigin: "localOrigin",
-
-	/**
-	 * The comma-separated scope claim from the verified JWT for the current request.
-	 */
-	Scope: "scope",
 
 	/**
 	 * The caller's original tenant ID before an escalated privilege tenant override was applied.

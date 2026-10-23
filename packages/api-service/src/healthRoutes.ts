@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HealthCategory,
@@ -8,7 +9,8 @@ import {
 	type INoContentRequest,
 	type IRestRoute,
 	type IServerHealthResponse,
-	type ITag
+	type ITag,
+	type IRouteAuthorization
 } from "@3sixty/api-models";
 import { ComponentFactory } from "@3sixty/core";
 import { nameof } from "@3sixty/nameof";
@@ -22,6 +24,14 @@ export const tagsHealth: ITag[] = [
 		description: "Health endpoints for the REST server."
 	}
 ];
+
+/**
+ * The default authorization for the routes, used to seed authorization rules.
+ */
+const DEFAULT_AUTHORIZATION_READER: IRouteAuthorization = {
+	permission: "health:read",
+	role: "devops"
+};
 
 /**
  * The REST routes for server health.
@@ -93,16 +103,16 @@ export function generateRestRoutesHealth(
 						description: "The response for the health request with errors.",
 						response: {
 							body: {
-								status: "error",
+								status: HealthStatus.Error,
 								components: [
 									{
 										source: "Database",
-										status: "ok",
+										status: HealthStatus.Ok,
 										category: HealthCategory.Connectivity
 									},
 									{
 										source: "Storage",
-										status: "error",
+										status: HealthStatus.Error,
 										description: "storageFull",
 										category: HealthCategory.Connectivity
 									}
@@ -112,7 +122,8 @@ export function generateRestRoutesHealth(
 					}
 				]
 			}
-		]
+		],
+		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
 	};
 
 	return [healthRoute];

@@ -1,4 +1,5 @@
 // Copyright 2025 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type { ITenantAdminServiceConfig } from "./ITenantAdminServiceConfig.js";
 
@@ -11,6 +12,12 @@ export interface ITenantAdminServiceConstructorOptions {
 	 * @default tenant
 	 */
 	tenantEntityStorageType?: string;
+
+	/**
+	 * The component type to use for firing tenant events.
+	 * @default platform
+	 */
+	platformComponentType?: string;
 
 	/**
 	 * Configuration for the service.

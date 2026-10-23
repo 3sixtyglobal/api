@@ -1,12 +1,12 @@
 {
 	"packages/api-models": "0.11.0",
 	"packages/api-core": "0.11.0",
+	"packages/api-core-server": "0.11.0",
 	"packages/api-processors": "0.11.0",
 	"packages/api-server-fastify": "0.11.0",
+	"packages/api-server-hono": "0.11.0",
+	"packages/api-server-native": "0.11.0",
 	"packages/api-service": "0.11.0",
 	"packages/api-rest-client": "0.11.0",
-	"packages/api-auth-entity-storage-models": "0.11.0",
-	"packages/api-auth-entity-storage-service": "0.11.0",
-	"packages/api-auth-entity-storage-rest-client": "0.11.0",
 	"packages/api-tenant-processor": "0.11.0"
 }

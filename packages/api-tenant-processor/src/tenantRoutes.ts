@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HttpContextIdKeys,
@@ -10,7 +11,8 @@ import {
 	type INoContentResponse,
 	type IRestRoute,
 	type ITag,
-	type ITenantAdminComponent
+	type ITenantAdminComponent,
+	type IRouteAuthorization
 } from "@3sixty/api-models";
 import { ContextIdStore } from "@3sixty/context";
 import { Coerce, ComponentFactory, Guards, Is } from "@3sixty/core";
@@ -30,6 +32,19 @@ import type { ITenantUpdateRequest } from "./models/api/ITenantUpdateRequest.js"
  * The source used when communicating about these routes.
  */
 const ROUTES_SOURCE = "tenantRoutes";
+
+/**
+ * The default authorization for the routes, used to seed authorization rules.
+ */
+const DEFAULT_AUTHORIZATION_READER: IRouteAuthorization = {
+	permission: "tenant:read",
+	role: "tenant-admin"
+};
+const DEFAULT_AUTHORIZATION_WRITER: IRouteAuthorization = {
+	permission: "tenant:write",
+	role: "tenant-admin",
+	inherits: [DEFAULT_AUTHORIZATION_READER.permission]
+};
 
 /**
  * The tag to associate with the routes.
@@ -86,7 +101,7 @@ export function generateRestRoutesTenants(
 				]
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
 	};
 
 	const tenantGetByIdRoute: IRestRoute<ITenantGetByIdRequest, ITenantGetResponse> = {
@@ -132,7 +147,7 @@ export function generateRestRoutesTenants(
 				]
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
 	};
 
 	const tenantGetByApiKeyRoute: IRestRoute<ITenantGetByApiKeyRequest, ITenantGetResponse> = {
@@ -165,7 +180,7 @@ export function generateRestRoutesTenants(
 				]
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
 	};
 
 	const tenantGetByPublicOriginRoute: IRestRoute = {
@@ -196,7 +211,7 @@ export function generateRestRoutesTenants(
 				]
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
 	};
 
 	const tenantRemoveRoute: IRestRoute<ITenantRemoveRequest, INoContentResponse> = {
@@ -226,7 +241,7 @@ export function generateRestRoutesTenants(
 				type: nameof<INoContentResponse>()
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_WRITER
 	};
 
 	const tenantCreateRoute: IRestRoute<ITenantCreateRequest, ICreatedResponse> = {
@@ -259,7 +274,7 @@ export function generateRestRoutesTenants(
 				type: nameof<ICreatedResponse>()
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_WRITER
 	};
 
 	const tenantUpdateRoute: IRestRoute<ITenantUpdateRequest, INoContentResponse> = {
@@ -295,7 +310,7 @@ export function generateRestRoutesTenants(
 				type: nameof<INoContentResponse>()
 			}
 		],
-		requiredScope: ["tenant-admin"]
+		defaultAuthorization: DEFAULT_AUTHORIZATION_WRITER
 	};
 
 	return [

@@ -16,6 +16,14 @@ This package provides base client classes and common helpers for building HTTP a
 - [Examples](../packages/api-core/docs/examples.md)
 - [Changelog](../packages/api-core/docs/changelog.md)
 
+## api-core-server
+
+This package provides a base server class with transport agnostic route processing for building web servers.
+
+- [README](../packages/api-core-server/README.md)
+- [Examples](../packages/api-core-server/docs/examples.md)
+- [Changelog](../packages/api-core-server/docs/changelog.md)
+
 ## api-processors
 
 This package provides reusable request and route processors for logging, context handling, and content negotiation.
@@ -32,6 +40,22 @@ This package provides Fastify web server integration for exposing API routes wit
 - [Examples](../packages/api-server-fastify/docs/examples.md)
 - [Changelog](../packages/api-server-fastify/docs/changelog.md)
 
+## api-server-hono
+
+This package provides Hono web server integration for exposing API routes with consistent runtime behaviour. It builds on the [Hono](https://hono.dev/) framework, served through the Node.js adapter, with Socket.IO attached to the same HTTP server for socket routes.
+
+- [README](../packages/api-server-hono/README.md)
+- [Examples](../packages/api-server-hono/docs/examples.md)
+- [Changelog](../packages/api-server-hono/docs/changelog.md)
+
+## api-server-native
+
+This package provides a native Node.js web server integration for exposing API routes with consistent runtime behaviour. It uses the built-in Node.js HTTP and HTTPS servers with the [find-my-way](https://github.com/delvedor/find-my-way) router, with Socket.IO attached to the same server for socket routes.
+
+- [README](../packages/api-server-native/README.md)
+- [Examples](../packages/api-server-native/docs/examples.md)
+- [Changelog](../packages/api-server-native/docs/changelog.md)
+
 ## api-service
 
 This package provides information and hosting service implementations with generated REST route handlers.
@@ -47,30 +71,6 @@ This package provides a REST client implementation for consuming information and
 - [README](../packages/api-rest-client/README.md)
 - [Examples](../packages/api-rest-client/docs/examples.md)
 - [Changelog](../packages/api-rest-client/docs/changelog.md)
-
-## api-auth-entity-storage-models
-
-This package provides contracts for authentication flows and admin user management with entity storage.
-
-- [README](../packages/api-auth-entity-storage-models/README.md)
-- [Examples](../packages/api-auth-entity-storage-models/docs/examples.md)
-- [Changelog](../packages/api-auth-entity-storage-models/docs/changelog.md)
-
-## api-auth-entity-storage-service
-
-This package provides an authentication service implementation and REST routes backed by entity storage.
-
-- [README](../packages/api-auth-entity-storage-service/README.md)
-- [Examples](../packages/api-auth-entity-storage-service/docs/examples.md)
-- [Changelog](../packages/api-auth-entity-storage-service/docs/changelog.md)
-
-## api-auth-entity-storage-rest-client
-
-This package provides REST clients for authentication and admin operations against entity storage endpoints.
-
-- [README](../packages/api-auth-entity-storage-rest-client/README.md)
-- [Examples](../packages/api-auth-entity-storage-rest-client/docs/examples.md)
-- [Changelog](../packages/api-auth-entity-storage-rest-client/docs/changelog.md)
 
 ## api-tenant-processor
 

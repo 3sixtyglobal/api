@@ -6,10 +6,6 @@
 			"apiKeyNotFound": "No tenant found for API key \"{key}\".",
 			"organizationIdNotFound": "No tenant found for organization ID \"{organizationId}\"."
 		},
-		"tenantOverrideProcessor": {
-			"insufficientScopeForTenantOverride": "Caller does not hold the required scope for tenant override.",
-			"tenantNotFound": "Tenant \"{notFoundId}\" not found."
-		},
 		"singleTenantProcessor": {
 			"invalidOrganizationId": "Organization ID query parameter \"{paramName}\" value \"{value}\" is not valid for this node"
 		},

@@ -1,8 +1,20 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
-import { HealthCategory, HealthStatus, type ITenant } from "@3sixty/api-models";
+import {
+	HealthCategory,
+	HealthStatus,
+	type IPlatformComponent,
+	type ITenant
+} from "@3sixty/api-models";
 import { ContextIdKeys, ContextIdStore, type IContextIds } from "@3sixty/context";
-import { AlreadyExistsError, Converter, LfuCache, NotFoundError } from "@3sixty/core";
+import {
+	AlreadyExistsError,
+	ComponentFactory,
+	Converter,
+	LfuCache,
+	NotFoundError
+} from "@3sixty/core";
 import { Blake2b } from "@3sixty/crypto";
 import { ComparisonOperator } from "@3sixty/entity";
 import {
@@ -34,6 +46,7 @@ const EXISTING_TENANT: Tenant = {
 
 describe("TenantAdminService", () => {
 	let mockStorage: IEntityStorageConnector<Tenant>;
+	let mockPlatformComponent: IPlatformComponent;
 
 	beforeEach(() => {
 		vi.restoreAllMocks();
@@ -46,7 +59,18 @@ describe("TenantAdminService", () => {
 			query: vi.fn().mockResolvedValue({ entities: [] })
 		} as unknown as IEntityStorageConnector<Tenant>;
 
+		mockPlatformComponent = {
+			className: vi.fn().mockReturnValue("PlatformService"),
+			isMultiTenant: vi.fn().mockReturnValue(false),
+			execute: vi.fn().mockResolvedValue(undefined),
+			getLocalOriginContext: vi.fn().mockResolvedValue(undefined),
+			registerTenantEventCallback: vi.fn(),
+			unregisterTenantEventCallback: vi.fn(),
+			fireTenantEvent: vi.fn().mockResolvedValue(undefined)
+		};
+
 		vi.spyOn(EntityStorageConnectorFactory, "get").mockReturnValue(mockStorage);
+		vi.spyOn(ComponentFactory, "get").mockReturnValue(mockPlatformComponent);
 	});
 
 	describe("create", () => {
@@ -138,6 +162,40 @@ describe("TenantAdminService", () => {
 			});
 
 			expect(result).toBe(TENANT_ID);
+		});
+
+		it("should fire a created event with the new tenant id after storing", async () => {
+			vi.mocked(mockStorage.get).mockResolvedValue(undefined);
+
+			const service = new TenantAdminService();
+			const result = await service.create({
+				id: TENANT_ID,
+				apiKey: API_KEY,
+				label: "Named Tenant",
+				organizationId: ORG_ID
+			});
+
+			expect(mockPlatformComponent.fireTenantEvent).toHaveBeenCalledOnce();
+			expect(mockPlatformComponent.fireTenantEvent).toHaveBeenCalledWith(result, "created");
+		});
+
+		it("should not fire a created event when the operation fails", async () => {
+			vi.mocked(mockStorage.get).mockImplementation(
+				async (id: string, index?: string): Promise<Tenant | undefined> => {
+					if (index === "organizationId" && id === ORG_ID) {
+						return EXISTING_TENANT;
+					}
+					return undefined;
+				}
+			);
+
+			const service = new TenantAdminService();
+
+			await expect(
+				service.create({ apiKey: API_KEY, label: "Duplicate", organizationId: ORG_ID })
+			).rejects.toThrow(AlreadyExistsError);
+
+			expect(mockPlatformComponent.fireTenantEvent).not.toHaveBeenCalled();
 		});
 	});
 
@@ -290,6 +348,45 @@ describe("TenantAdminService", () => {
 					organizationIdLegacy: [ORG_ID]
 				})
 			);
+		});
+
+		it("should fire an updated event with the tenant id after storing", async () => {
+			vi.mocked(mockStorage.get).mockImplementation(
+				async (id: string, index?: string): Promise<Tenant | undefined> => {
+					if (!index && id === TENANT_ID) {
+						return EXISTING_TENANT;
+					}
+					return undefined;
+				}
+			);
+
+			const service = new TenantAdminService();
+			await service.update({ id: TENANT_ID, organizationId: ORG_ID, label: "Updated" });
+
+			expect(mockPlatformComponent.fireTenantEvent).toHaveBeenCalledOnce();
+			expect(mockPlatformComponent.fireTenantEvent).toHaveBeenCalledWith(TENANT_ID, "updated");
+		});
+
+		it("should not fire an updated event when the operation fails", async () => {
+			vi.mocked(mockStorage.get).mockResolvedValue(undefined);
+
+			const service = new TenantAdminService();
+
+			await expect(service.update({ id: TENANT_ID, organizationId: ORG_ID })).rejects.toThrow(
+				NotFoundError
+			);
+
+			expect(mockPlatformComponent.fireTenantEvent).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("remove", () => {
+		it("should fire a deleted event with the tenant id after removing", async () => {
+			const service = new TenantAdminService();
+			await service.remove(TENANT_ID);
+
+			expect(mockPlatformComponent.fireTenantEvent).toHaveBeenCalledOnce();
+			expect(mockPlatformComponent.fireTenantEvent).toHaveBeenCalledWith(TENANT_ID, "deleted");
 		});
 	});
 

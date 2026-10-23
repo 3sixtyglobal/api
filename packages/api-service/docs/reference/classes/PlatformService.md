@@ -121,3 +121,89 @@ A promise that resolves to the context IDs if the URL is a local origin, undefin
 #### Implementation of
 
 `IPlatformComponent.getLocalOriginContext`
+
+***
+
+### registerTenantEventCallback() {#registertenanteventcallback}
+
+> **registerTenantEventCallback**(`callbackId`, `callback`): `void`
+
+Registers a callback to be invoked when a tenant event occurs.
+
+#### Parameters
+
+##### callbackId
+
+`string`
+
+A unique identifier for the callback.
+
+##### callback
+
+`TenantEventCallback`
+
+The callback to invoke when a tenant event occurs.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+`IPlatformComponent.registerTenantEventCallback`
+
+***
+
+### unregisterTenantEventCallback() {#unregistertenanteventcallback}
+
+> **unregisterTenantEventCallback**(`callbackId`): `void`
+
+Unregisters a previously registered tenant event callback.
+
+#### Parameters
+
+##### callbackId
+
+`string`
+
+The identifier of the callback to unregister.
+
+#### Returns
+
+`void`
+
+#### Implementation of
+
+`IPlatformComponent.unregisterTenantEventCallback`
+
+***
+
+### fireTenantEvent() {#firetenantevent}
+
+> **fireTenantEvent**(`tenantId`, `eventType`): `Promise`\<`void`\>
+
+Fires all registered tenant event callbacks.
+
+#### Parameters
+
+##### tenantId
+
+`string`
+
+The ID of the tenant for which the event occurred.
+
+##### eventType
+
+`TenantEventType`
+
+The type of event that occurred.
+
+#### Returns
+
+`Promise`\<`void`\>
+
+A promise that resolves when all callbacks have been invoked.
+
+#### Implementation of
+
+`IPlatformComponent.fireTenantEvent`

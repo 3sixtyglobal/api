@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 export * from "./errors/forbiddenError.js";
 export * from "./errors/tooManyRequestsError.js";
@@ -10,7 +11,6 @@ export * from "./helpers/httpErrorHelper.js";
 export * from "./helpers/httpHeaderHelper.js";
 export * from "./helpers/httpParameterHelper.js";
 export * from "./helpers/httpUrlHelper.js";
-export * from "./helpers/scopeHelper.js";
 export * from "./models/api/IServerFavIconResponse.js";
 export * from "./models/api/IServerHealthResponse.js";
 export * from "./models/api/IServerInfoResponse.js";
@@ -58,6 +58,7 @@ export * from "./models/routes/IRestRouteRequestExample.js";
 export * from "./models/routes/IRestRouteResponseAttachmentOptions.js";
 export * from "./models/routes/IRestRouteResponseExample.js";
 export * from "./models/routes/IRestRouteResponseOptions.js";
+export * from "./models/routes/IRouteAuthorization.js";
 export * from "./models/routes/ISocketRoute.js";
 export * from "./models/routes/ISocketRouteEntryPoint.js";
 export * from "./models/routes/ITag.js";
@@ -75,3 +76,5 @@ export * from "./models/services/IPlatformComponent.js";
 export * from "./models/services/IServerInfo.js";
 export * from "./models/services/ITenant.js";
 export * from "./models/services/ITenantAdminComponent.js";
+export * from "./models/services/tenantEventCallback.js";
+export * from "./models/services/tenantEventType.js";

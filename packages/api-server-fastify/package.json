@@ -28,12 +28,11 @@
 		"dist:no-test": "pnpm run clean && concurrently -g -n build,locales,types \"pnpm run build\" \"pnpm run validate-locales\" \"pnpm run test:build\""
 	},
 	"dependencies": {
+		"@3sixty/api-core-server": "0.20.0-next.0",
 		"@3sixty/api-core": "0.20.0-next.0",
 		"@3sixty/api-models": "0.20.0-next.0",
-		"@3sixty/api-processors": "0.20.0-next.0",
 		"@3sixty/context": "next",
 		"@3sixty/core": "next",
-		"@3sixty/logging-models": "next",
 		"@3sixty/nameof": "next",
 		"@3sixty/web": "next",
 		"@fastify/compress": "9.2.2",
@@ -43,6 +42,8 @@
 		"socket.io": "4.8.4"
 	},
 	"devDependencies": {
+		"@3sixty/api-processors": "0.20.0-next.0",
+		"@3sixty/logging-models": "next",
 		"@3sixty/nameof-transformer": "next",
 		"@3sixty/nameof-vitest-plugin": "next",
 		"@3sixty/validate-locales": "next",

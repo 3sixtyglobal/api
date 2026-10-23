@@ -22,32 +22,32 @@
 			"package-name": "api-processors",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-server-fastify": {
-			"package-name": "api-server-fastify",
-			"changelog-path": "docs/changelog.md"
-		},
 		"packages/api-service": {
 			"package-name": "api-service",
+			"changelog-path": "docs/changelog.md"
+		},
+		"packages/api-tenant-processor": {
+			"package-name": "api-tenant-processor",
 			"changelog-path": "docs/changelog.md"
 		},
 		"packages/api-rest-client": {
 			"package-name": "api-rest-client",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-auth-entity-storage-models": {
-			"package-name": "api-auth-entity-storage-models",
+		"packages/api-core-server": {
+			"package-name": "api-core-server",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-auth-entity-storage-service": {
-			"package-name": "api-auth-entity-storage-service",
+		"packages/api-server-fastify": {
+			"package-name": "api-server-fastify",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-auth-entity-storage-rest-client": {
-			"package-name": "api-auth-entity-storage-rest-client",
+		"packages/api-server-hono": {
+			"package-name": "api-server-hono",
 			"changelog-path": "docs/changelog.md"
 		},
-		"packages/api-tenant-processor": {
-			"package-name": "api-tenant-processor",
+		"packages/api-server-native": {
+			"package-name": "api-server-native",
 			"changelog-path": "docs/changelog.md"
 		}
 	},
@@ -60,13 +60,13 @@
 				"api-models",
 				"api-core",
 				"api-processors",
-				"api-server-fastify",
 				"api-service",
+				"api-tenant-processor",
 				"api-rest-client",
-				"api-auth-entity-storage-models",
-				"api-auth-entity-storage-service",
-				"api-auth-entity-storage-rest-client",
-				"api-tenant-processor"
+				"api-core-server",
+				"api-server-fastify",
+				"api-server-hono",
+				"api-server-native"
 			]
 		}
 	]

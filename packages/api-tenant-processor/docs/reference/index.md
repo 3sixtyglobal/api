@@ -3,10 +3,11 @@
 ## Classes
 
 - [Tenant](classes/Tenant.md)
+- [TenantV0](classes/TenantV0.md)
+- [TenantV1](classes/TenantV1.md)
 - [SingleTenantProcessor](classes/SingleTenantProcessor.md)
 - [TenantAdminService](classes/TenantAdminService.md)
 - [TenantIdContextIdHandler](classes/TenantIdContextIdHandler.md)
-- [TenantOverrideProcessor](classes/TenantOverrideProcessor.md)
 - [TenantProcessor](classes/TenantProcessor.md)
 - [TenantIdHelper](classes/TenantIdHelper.md)
 
@@ -16,8 +17,6 @@
 - [ISingleTenantProcessorConstructorOptions](interfaces/ISingleTenantProcessorConstructorOptions.md)
 - [ITenantAdminServiceConfig](interfaces/ITenantAdminServiceConfig.md)
 - [ITenantAdminServiceConstructorOptions](interfaces/ITenantAdminServiceConstructorOptions.md)
-- [ITenantOverrideProcessorConfig](interfaces/ITenantOverrideProcessorConfig.md)
-- [ITenantOverrideProcessorConstructorOptions](interfaces/ITenantOverrideProcessorConstructorOptions.md)
 - [ITenantProcessorConfig](interfaces/ITenantProcessorConfig.md)
 - [ITenantProcessorConstructorOptions](interfaces/ITenantProcessorConstructorOptions.md)
 - [ITenantCreateRequest](interfaces/ITenantCreateRequest.md)
@@ -32,6 +31,7 @@
 
 ## Variables
 
+- [restEntryPoints](variables/restEntryPoints.md)
 - [tagsTenants](variables/tagsTenants.md)
 
 ## Functions

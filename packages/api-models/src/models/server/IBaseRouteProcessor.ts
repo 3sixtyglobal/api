@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IContextIds } from "@3sixty/context";
 import type { IComponent } from "@3sixty/core";
@@ -10,14 +11,6 @@ import type { IBaseRoute } from "../routes/IBaseRoute.js";
  * The definition for a base processor for handling REST routes.
  */
 export interface IBaseRouteProcessor<T = IBaseRoute, R = IHttpServerRequest> extends IComponent {
-	/**
-	 * Features supported by this processor.
-	 * If a route has any of these features listed, this processor will be run for that route.
-	 * If this is not implemented, the processor will run for all routes.
-	 * @returns The features supported by this processor.
-	 */
-	features?(): string[];
-
 	/**
 	 * Pre process the REST request for the specified route.
 	 * @param request The request to handle.

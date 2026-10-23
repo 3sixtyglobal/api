@@ -18,6 +18,14 @@ tenant
 
 ***
 
+### loggingComponentType? {#loggingcomponenttype}
+
+> `optional` **loggingComponentType?**: `string`
+
+The logging component type to use for error logging.
+
+***
+
 ### config? {#config}
 
 > `optional` **config?**: [`IPlatformServiceConfig`](IPlatformServiceConfig.md)

@@ -31,6 +31,12 @@ The path to use for routing.
 
 Skips the authentication requirement for this route.
 
+#### Default
+
+```ts
+false
+```
+
 ***
 
 ### skipTenant? {#skiptenant}
@@ -39,13 +45,33 @@ Skips the authentication requirement for this route.
 
 Skips the tenant requirement for this route.
 
+#### Default
+
+```ts
+false
+```
+
 ***
 
-### requiredScope? {#requiredscope}
+### requiresAuthorization? {#requiresauthorization}
 
-> `optional` **requiredScope?**: `string`[]
+> `optional` **requiresAuthorization?**: `boolean`
 
-The user must have one of the specified scopes to access the route.
+Requires authorization for this route.
+
+#### Default
+
+```ts
+true
+```
+
+***
+
+### defaultAuthorization? {#defaultauthorization}
+
+> `optional` **defaultAuthorization?**: [`IRouteAuthorization`](IRouteAuthorization.md)
+
+The default authorization which can access this route, used to seed the RBAC rules.
 
 ***
 
@@ -54,4 +80,10 @@ The user must have one of the specified scopes to access the route.
 > `optional` **disableTenantOverride?**: `boolean`
 
 Set to true to prevent callers from using the overrideTenant query parameter on this route.
-Tenant override is allowed by default, but you must hold the escalated privilege scope to use it.
+Tenant override is allowed by default, but you must hold the escalated privilege role to use it.
+
+#### Default
+
+```ts
+false
+```

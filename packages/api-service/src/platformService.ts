@@ -1,17 +1,21 @@
 // Copyright 2026 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import {
 	HttpContextIdKeys,
 	HttpUrlHelper,
 	type IPlatformComponent,
-	type ITenant
+	type ITenant,
+	type TenantEventCallback,
+	type TenantEventType
 } from "@3sixty/api-models";
 import { ContextIdKeys, ContextIdStore, type IContextIds } from "@3sixty/context";
-import { Guards, Is } from "@3sixty/core";
+import { BaseError, ComponentFactory, Guards, Is } from "@3sixty/core";
 import {
 	EntityStorageConnectorFactory,
 	type IEntityStorageConnector
 } from "@3sixty/entity-storage-models";
+import type { ILoggingComponent } from "@3sixty/logging-models";
 import { nameof } from "@3sixty/nameof";
 import type { IPlatformServiceConstructorOptions } from "./models/IPlatformServiceConstructorOptions.js";
 
@@ -43,12 +47,26 @@ export class PlatformService implements IPlatformComponent {
 	private readonly _isMultiTenant: boolean;
 
 	/**
+	 * The logging component type for error logging.
+	 * @internal
+	 */
+	private readonly _loggingComponentType?: string;
+
+	/**
+	 * Registered tenant event callbacks.
+	 * @internal
+	 */
+	private readonly _tenantEventCallbacks: Map<string, TenantEventCallback>;
+
+	/**
 	 * Create a new instance of PlatformService.
 	 * @param options The options for the connector.
 	 */
 	constructor(options?: IPlatformServiceConstructorOptions) {
 		this._tenantEntityStorageConnectorType = options?.tenantEntityStorageType ?? "tenant";
 		this._isMultiTenant = options?.config?.isMultiTenant ?? false;
+		this._loggingComponentType = options?.loggingComponentType;
+		this._tenantEventCallbacks = new Map();
 	}
 
 	/**
@@ -129,7 +147,7 @@ export class PlatformService implements IPlatformComponent {
 		if (this._isMultiTenant) {
 			const tenantEntityStorageConnector = this.ensureEntityStorageConnector();
 			if (!Is.empty(tenantEntityStorageConnector)) {
-				// Post-#203 organization routing: when the URL carries an ?organization=<org-did>
+				// When the URL carries an ?organization=<org-did>
 				// query param, that param - not the origin - identifies the target tenant. A single
 				// node hosts many tenants behind one shared origin, so an origin match alone cannot
 				// distinguish them and would incorrectly return the caller's own context. Resolve the
@@ -180,6 +198,47 @@ export class PlatformService implements IPlatformComponent {
 			const localOrigin = contextIds?.[HttpContextIdKeys.LocalOrigin];
 			if (localOrigin === origin) {
 				return contextIds;
+			}
+		}
+	}
+
+	/**
+	 * Registers a callback to be invoked when a tenant event occurs.
+	 * @param callbackId A unique identifier for the callback.
+	 * @param callback The callback to invoke when a tenant event occurs.
+	 */
+	public registerTenantEventCallback(callbackId: string, callback: TenantEventCallback): void {
+		this._tenantEventCallbacks.set(callbackId, callback);
+	}
+
+	/**
+	 * Unregisters a previously registered tenant event callback.
+	 * @param callbackId The identifier of the callback to unregister.
+	 */
+	public unregisterTenantEventCallback(callbackId: string): void {
+		this._tenantEventCallbacks.delete(callbackId);
+	}
+
+	/**
+	 * Fires all registered tenant event callbacks.
+	 * @param tenantId The ID of the tenant for which the event occurred.
+	 * @param eventType The type of event that occurred.
+	 * @returns A promise that resolves when all callbacks have been invoked.
+	 */
+	public async fireTenantEvent(tenantId: string, eventType: TenantEventType): Promise<void> {
+		for (const callback of this._tenantEventCallbacks.values()) {
+			try {
+				// Run with an empty context so callbacks do not inherit the caller's tenant
+				await ContextIdStore.run({}, async () => callback(tenantId, eventType));
+			} catch (error) {
+				const logging = ComponentFactory.getIfExists<ILoggingComponent>(this._loggingComponentType);
+				await logging?.log({
+					level: "error",
+					source: PlatformService.CLASS_NAME,
+					message: "tenantEventCallbackFailed",
+					data: { tenantId, eventType },
+					error: BaseError.fromError(error)
+				});
 			}
 		}
 	}

@@ -42,12 +42,6 @@ Public Origin of the request.
 
 Local Origin of the request.
 
-### Scope {#scope}
-
-> `readonly` **Scope**: `"scope"` = `"scope"`
-
-The comma-separated scope claim from the verified JWT for the current request.
-
 ### OriginalTenant {#originaltenant}
 
 > `readonly` **OriginalTenant**: `"originalTenant"` = `"originalTenant"`

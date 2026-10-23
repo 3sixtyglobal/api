@@ -1,0 +1,33 @@
+{
+	"error": {
+		"baseServer": {
+			"startFailed": "The Web Server failed to start",
+			"noRestProcessors": "You must configure at least one REST processor",
+			"noSocketProcessors": "You must configure at least one socket processor",
+			"postProcessorError": "There was a failure in a post processor for route \"{route}\"",
+			"invalidPublicOrigin": "The public origin \"{publicOrigin}\" is not a valid origin URL, it should be in the format \"protocol://host[:port]\".",
+			"invalidBodyLimit": "The body limit named \"{bodyLimit}\" must be an integer greater than zero, but it is \"{value}\"",
+			"invalidStatusCode": "The response status code \"{statusCode}\" is not valid",
+			"invalidHeader": "The response header \"{header}\" has an invalid name or value"
+		}
+	},
+	"info": {
+		"baseServer": {
+			"building": "Building Web Server",
+			"starting": "Starting Web Server with binding \"{host}\" on port \"{port}\"",
+			"started": "The Web Server started on {addresses}",
+			"stopped": "The Web Server was stopped"
+		}
+	},
+	"health": {
+		"baseServer": {
+			"healthConnectivityDescription": "Checks if the Web Server is reachable",
+			"reachable": "The Web Server is reachable",
+			"unreachable": "The Web Server is unreachable",
+			"healthApplicationDescription": "Checks if the root endpoint is reachable",
+			"rootEndpointReachable": "The root endpoint is reachable",
+			"rootEndpointError": "The root endpoint returned an unexpected response",
+			"serverNotBuilt": "The server has not been built"
+		}
+	}
+}

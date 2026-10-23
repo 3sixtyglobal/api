@@ -1,35 +1,14 @@
 {
 	"error": {
 		"fastifyWebServer": {
-			"startFailed": "The Web Server failed to start",
 			"badRequest": "The web server could not handle the request",
-			"noRestProcessors": "You must configure at least one REST processor",
-			"noSocketProcessors": "You must configure at least one socket processor",
-			"postProcessorError": "There was a failure after in a post processor for route \"{route}\"",
-			"invalidPublicOrigin": "The public origin \"{publicOrigin}\" is not a valid origin URL, it should be in the format \"protocol://host[:port]\".",
-			"unknownBodyLimit": "The route \"{route}\" uses the body limit named \"{bodyLimit}\", which is not configured",
-			"invalidBodyLimit": "The body limit named \"{bodyLimit}\" must be an integer greater than zero, but it is \"{value}\""
+			"unknownBodyLimit": "The route \"{route}\" uses the body limit named \"{bodyLimit}\", which is not configured"
 		}
 	},
 	"info": {
 		"fastifyWebServer": {
-			"building": "Building Web Server",
-			"starting": "Starting Web Server with binding \"{host}\" on port \"{port}\"",
-			"started": "The Web Server started on {addresses}",
-			"stopped": "The Web Server was stopped",
 			"restRouteAdded": "Added REST route \"{route}\" \"{method}\"",
 			"socketRouteAdded": "Added socket route: handshake path \"{handshakePath}\", namespace \"{namespace}\", event name \"{eventName}\""
-		}
-	},
-	"health": {
-		"fastifyWebServer": {
-			"healthConnectivityDescription": "Checks if the Web Server is reachable",
-			"reachable": "The Web Server is reachable",
-			"unreachable": "The Web Server is unreachable",
-			"healthApplicationDescription": "Checks if the root endpoint is reachable",
-			"rootEndpointReachable": "The root endpoint is reachable",
-			"rootEndpointError": "The root endpoint returned an unexpected response",
-			"serverNotBuilt": "The server has not been built"
 		}
 	}
 }

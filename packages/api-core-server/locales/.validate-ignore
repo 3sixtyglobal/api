@@ -1,0 +1,3 @@
+# Host literals used when normalising the bind address in baseServer.ts, not locale keys
+127.0.0.1
+0.0.0.0
