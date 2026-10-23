@@ -1,6 +1,6 @@
 {
 	"name": "@3sixty/api-server-native",
-	"version": "0.20.0-next.0",
+	"version": "0.20.0-next.1",
 	"description": "Native Node.js web server integration for exposing API routes with consistent runtime behaviour.",
 	"repository": {
 		"type": "git",
@@ -28,8 +28,8 @@
 		"dist:no-test": "pnpm run clean && concurrently -g -n build,locales,types \"pnpm run build\" \"pnpm run validate-locales\" \"pnpm run test:build\""
 	},
 	"dependencies": {
-		"@3sixty/api-core-server": "0.20.0-next.0",
-		"@3sixty/api-models": "0.20.0-next.0",
+		"@3sixty/api-core-server": "0.20.0-next.1",
+		"@3sixty/api-models": "0.20.0-next.1",
 		"@3sixty/context": "next",
 		"@3sixty/core": "next",
 		"@3sixty/nameof": "next",
@@ -38,7 +38,7 @@
 		"socket.io": "4.8.3"
 	},
 	"devDependencies": {
-		"@3sixty/api-processors": "0.20.0-next.0",
+		"@3sixty/api-processors": "0.20.0-next.1",
 		"@3sixty/logging-models": "next",
 		"@3sixty/nameof-transformer": "next",
 		"@3sixty/nameof-vitest-plugin": "next",
