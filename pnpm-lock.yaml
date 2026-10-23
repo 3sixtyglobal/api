@@ -242,7 +242,7 @@ importers:
   packages/api-core:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/core':
         specifier: next
@@ -300,10 +300,10 @@ importers:
   packages/api-core-server:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-processors
       '@3sixty/context':
         specifier: next
@@ -422,7 +422,7 @@ importers:
   packages/api-processors:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -483,10 +483,10 @@ importers:
   packages/api-rest-client:
     dependencies:
       '@3sixty/api-core':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-core
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/core':
         specifier: next
@@ -541,13 +541,13 @@ importers:
   packages/api-server-fastify:
     dependencies:
       '@3sixty/api-core':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-core
       '@3sixty/api-core-server':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-core-server
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -578,7 +578,7 @@ importers:
         version: 4.8.4(supports-color@10.2.2)
     devDependencies:
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-processors
       '@3sixty/logging-models':
         specifier: next
@@ -629,10 +629,10 @@ importers:
   packages/api-server-hono:
     dependencies:
       '@3sixty/api-core-server':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-core-server
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -657,7 +657,7 @@ importers:
         version: 4.8.3(supports-color@10.2.2)
     devDependencies:
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-processors
       '@3sixty/logging-models':
         specifier: next
@@ -708,10 +708,10 @@ importers:
   packages/api-server-native:
     dependencies:
       '@3sixty/api-core-server':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-core-server
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -733,7 +733,7 @@ importers:
         version: 4.8.3(supports-color@10.2.2)
     devDependencies:
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-processors
       '@3sixty/logging-models':
         specifier: next
@@ -784,7 +784,7 @@ importers:
   packages/api-service:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/background-task-models':
         specifier: next
@@ -860,7 +860,7 @@ importers:
   packages/api-tenant-processor:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.0
+        specifier: 0.20.0-next.1
         version: link:../api-models
       '@3sixty/context':
         specifier: next
