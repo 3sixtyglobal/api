@@ -245,6 +245,32 @@ The application health status of the component.
 
 ***
 
+### requestLocalRoot() {#requestlocalroot}
+
+> `protected` **requestLocalRoot**(`url`): `Promise`\<\{ `ok`: `boolean`; `body`: `string`; \}\>
+
+Request the root endpoint of this server over the loopback address.
+
+#### Parameters
+
+##### url
+
+`string`
+
+The url of the root endpoint.
+
+#### Returns
+
+`Promise`\<\{ `ok`: `boolean`; `body`: `string`; \}\>
+
+Whether the response was successful and its body.
+
+#### Inherited from
+
+`BaseServer.requestLocalRoot`
+
+***
+
 ### prepareBuild() {#preparebuild}
 
 > `protected` **prepareBuild**(`restRouteProcessors?`, `restRoutes?`, `socketRouteProcessors?`, `socketRoutes?`, `options?`): `Promise`\<`void`\>
@@ -379,7 +405,8 @@ The resolved CORS options.
 
 > `protected` **buildServerRequest**(`method`, `url`, `body`, `query?`, `pathParams?`, `headers?`): `IHttpServerRequest`
 
-Build the server request from the transport values, decoding the path params and query.
+Build the server request from the transport values, the path params and query must already
+have been decoded by the transport, as decoding them again corrupts values containing %.
 
 #### Parameters
 
@@ -428,6 +455,35 @@ The server request.
 #### Inherited from
 
 `BaseServer.buildServerRequest`
+
+***
+
+### validateResponse() {#validateresponse}
+
+> `protected` **validateResponse**(`httpResponse`): `void`
+
+Validate the processed response before it is sent, so that every transport fails an invalid
+response in the same way rather than with its own transport specific error.
+
+#### Parameters
+
+##### httpResponse
+
+`IHttpResponse`
+
+The processed response.
+
+#### Returns
+
+`void`
+
+#### Throws
+
+GeneralError If the status code or a header is invalid.
+
+#### Inherited from
+
+`BaseServer.validateResponse`
 
 ***
 
@@ -497,6 +553,8 @@ The context IDs of the request.
 
 ##### processorState
 
+\{\[`id`: `string`\]: `unknown`; \}
+
 The state handed through the processors.
 
 #### Returns
@@ -542,6 +600,8 @@ The outgoing response.
 The context IDs of the request.
 
 ##### processorState
+
+\{\[`id`: `string`\]: `unknown`; \}
 
 The state handed through the processors.
 

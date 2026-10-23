@@ -1,6 +1,6 @@
 # Interface: IRouteAuthorization
 
-Type which defines the default authorization permission for a route used to seed the RBAC rules.
+Interface which defines the default authorization permission for a route used to seed the RBAC rules.
 
 ## Properties
 

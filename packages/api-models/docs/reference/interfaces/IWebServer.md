@@ -8,7 +8,7 @@ Interface describing a web server.
 
 ## Type Parameters
 
-### T
+### T {#t}
 
 `T`
 

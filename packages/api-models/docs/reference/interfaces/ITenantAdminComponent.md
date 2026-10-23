@@ -204,7 +204,7 @@ The conditions to filter the tenants.
 
 ##### properties?
 
-keyof [`ITenant`](ITenant.md)[]
+(keyof [`ITenant`](ITenant.md))[]
 
 The properties to include in the returned tenants.
 
