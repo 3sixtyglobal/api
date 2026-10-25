@@ -4,7 +4,12 @@ import { lookup } from "node:dns/promises";
 import { once } from "node:events";
 import { createSecureServer as createSecureHttp2Server } from "node:http2";
 import { createServer as createHttpsServer } from "node:https";
-import { createServer as createNetServer, type Server as NetServer } from "node:net";
+import {
+	createConnection,
+	createServer as createNetServer,
+	type Server as NetServer,
+	type Socket as NetSocket
+} from "node:net";
 import type { Server as TlsServer } from "node:tls";
 import { BaseServer } from "@3sixty/api-core-server";
 import {
@@ -257,8 +262,17 @@ export class HonoWebServer extends BaseServer<Hono> {
 		await this.listenOn(server, hosts[0], port);
 		this._server = server;
 
+		// Bun does not apply TLS to connections emitted on a secure server, so secure
+		// connections are proxied to the primary address instead
+		const isSecure = this.serverIsSecure();
 		for (const additionalHost of hosts.slice(1)) {
-			const additionalServer = createNetServer(socket => server.emit("connection", socket));
+			const additionalServer = createNetServer(socket => {
+				if (isSecure) {
+					this.proxyConnection(socket, hosts[0], port);
+				} else {
+					server.emit("connection", socket);
+				}
+			});
 			try {
 				await this.listenOn(additionalServer, additionalHost, port);
 				this._additionalServers.push(additionalServer);
@@ -319,12 +333,12 @@ export class HonoWebServer extends BaseServer<Hono> {
 	 * @returns True if the transport is secure.
 	 */
 	protected serverIsSecure(): boolean {
-		if (!Is.empty(this._server)) {
-			return Is.function((this._server as Partial<TlsServer>).setSecureContext);
-		}
-		// Before listening the server factory determines whether it will be secure
+		// Bun's https server is not a TLS server, so the server factory is always checked
 		const createServer: unknown = this._webConfig?.createServer;
-		return createServer === createHttpsServer || createServer === createSecureHttp2Server;
+		if (createServer === createHttpsServer || createServer === createSecureHttp2Server) {
+			return true;
+		}
+		return Is.function((this._server as Partial<TlsServer> | undefined)?.setSecureContext);
 	}
 
 	/**
@@ -893,6 +907,25 @@ export class HonoWebServer extends BaseServer<Hono> {
 				responseHeaders.set("access-control-expose-headers", exposeHeaders);
 			}
 		});
+	}
+
+	/**
+	 * Proxy a connection to the server listening on the host and port.
+	 * @param socket The incoming connection.
+	 * @param host The host to connect to.
+	 * @param port The port to connect to.
+	 * @internal
+	 */
+	private proxyConnection(socket: NetSocket, host: string, port: number): void {
+		const upstream = createConnection({ host, port });
+		for (const [from, to] of [
+			[socket, upstream],
+			[upstream, socket]
+		]) {
+			from.pipe(to);
+			from.on("error", () => to.destroy());
+			from.on("close", () => to.destroy());
+		}
 	}
 
 	/**

@@ -10,7 +10,12 @@ import {
 	type ServerResponse
 } from "node:http";
 import { createServer as createHttpsServer, type Server as HttpsServer } from "node:https";
-import { createServer as createNetServer, type Server as NetServer } from "node:net";
+import {
+	createConnection,
+	createServer as createNetServer,
+	type Server as NetServer,
+	type Socket as NetSocket
+} from "node:net";
 import { parse as parseQuery } from "node:querystring";
 import { Readable, type Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -297,8 +302,17 @@ export class NativeWebServer extends BaseServer<Router.Instance<Router.HTTPVersi
 		await this.listenOn(server, hosts[0], port);
 		this._server = server;
 
+		// Bun does not apply TLS to connections emitted on a secure server, so secure
+		// connections are proxied to the primary address instead
+		const isSecure = this.serverIsSecure();
 		for (const additionalHost of hosts.slice(1)) {
-			const additionalServer = createNetServer(socket => server.emit("connection", socket));
+			const additionalServer = createNetServer(socket => {
+				if (isSecure) {
+					this.proxyConnection(socket, hosts[0], port);
+				} else {
+					server.emit("connection", socket);
+				}
+			});
 			try {
 				await this.listenOn(additionalServer, additionalHost, port);
 				this._additionalServers.push(additionalServer);
@@ -1061,6 +1075,25 @@ export class NativeWebServer extends BaseServer<Router.Instance<Router.HTTPVersi
 		}
 		res.writeHead(httpStatusCode, headers);
 		res.end(body);
+	}
+
+	/**
+	 * Proxy a connection to the server listening on the host and port.
+	 * @param socket The incoming connection.
+	 * @param host The host to connect to.
+	 * @param port The port to connect to.
+	 * @internal
+	 */
+	private proxyConnection(socket: NetSocket, host: string, port: number): void {
+		const upstream = createConnection({ host, port });
+		for (const [from, to] of [
+			[socket, upstream],
+			[upstream, socket]
+		]) {
+			from.pipe(to);
+			from.on("error", () => to.destroy());
+			from.on("close", () => to.destroy());
+		}
 	}
 
 	/**
