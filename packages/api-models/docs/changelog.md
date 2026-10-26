@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0-next.2](https://github.com/3sixtyglobal/api/compare/api-models-v0.20.0-next.1...api-models-v0.20.0-next.2) (2026-10-26)
+
+
+### Features
+
+* release to next [skip ci] ([#54](https://github.com/3sixtyglobal/api/issues/54)) ([800b37b](https://github.com/3sixtyglobal/api/commit/800b37bbd673bbaedbdbc8dcfdf29f39a292e2c0))
+
 ## [0.20.0-next.1](https://github.com/3sixtyglobal/api/compare/api-models-v0.20.0-next.0...api-models-v0.20.0-next.1) (2026-10-23)
 
 
