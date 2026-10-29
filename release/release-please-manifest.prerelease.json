@@ -1,12 +1,12 @@
 {
-	"packages/api-models": "0.20.0-next.2",
-	"packages/api-core": "0.20.0-next.2",
-	"packages/api-core-server": "0.20.0-next.2",
-	"packages/api-processors": "0.20.0-next.2",
-	"packages/api-server-fastify": "0.20.0-next.2",
-	"packages/api-server-hono": "0.20.0-next.2",
-	"packages/api-server-native": "0.20.0-next.2",
-	"packages/api-service": "0.20.0-next.2",
-	"packages/api-rest-client": "0.20.0-next.2",
-	"packages/api-tenant-processor": "0.20.0-next.2"
+	"packages/api-models": "0.20.0-next.3",
+	"packages/api-core": "0.20.0-next.3",
+	"packages/api-core-server": "0.20.0-next.3",
+	"packages/api-processors": "0.20.0-next.3",
+	"packages/api-server-fastify": "0.20.0-next.3",
+	"packages/api-server-hono": "0.20.0-next.3",
+	"packages/api-server-native": "0.20.0-next.3",
+	"packages/api-service": "0.20.0-next.3",
+	"packages/api-rest-client": "0.20.0-next.3",
+	"packages/api-tenant-processor": "0.20.0-next.3"
 }
