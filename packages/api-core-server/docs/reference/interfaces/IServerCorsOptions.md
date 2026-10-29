@@ -20,6 +20,14 @@ Whether the allowed origins include the wildcard, in which case any origin is al
 
 ***
 
+### wildcardCredentials? {#wildcardcredentials}
+
+> `optional` **wildcardCredentials?**: `boolean`
+
+Whether a wildcard origin reflects the request origin with credentials.
+
+***
+
 ### methods {#methods}
 
 > **methods**: `HttpMethod`[]

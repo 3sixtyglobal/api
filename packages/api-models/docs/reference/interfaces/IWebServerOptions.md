@@ -76,6 +76,32 @@ The allowed CORS domains.
 
 ***
 
+### corsWildcardCredentials? {#corswildcardcredentials}
+
+> `optional` **corsWildcardCredentials?**: `boolean`
+
+Reflect any origin with credentials when the CORS origins include the wildcard. Set false to
+answer a wildcard origin with "*" and no credentials, so credentials are only allowed for
+explicitly configured origins.
+
+#### Default
+
+```ts
+true
+```
+
+***
+
+### trustedProxies? {#trustedproxies}
+
+> `optional` **trustedProxies?**: `string` \| `string`[]
+
+The proxies trusted to set the X-Forwarded-For and X-Real-IP headers, as IP addresses or CIDR
+ranges, a string can be comma separated. Use "*" to trust any proxy. When the immediate peer is
+not trusted, or no proxies are configured, the client IP is the socket address.
+
+***
+
 ### publicOrigin? {#publicorigin}
 
 > `optional` **publicOrigin?**: `string`
