@@ -9,6 +9,10 @@
 		"jsonLdMimeTypeProcessor": {
 			"invalidJsonLd": "The JSON-LD content is invalid or missing '@context'."
 		},
+		"originCheckProcessor": {
+			"originNotAllowed": "The request origin \"{origin}\" is not allowed to make cookie authenticated requests",
+			"crossSiteRequest": "Cross site cookie authenticated requests are not allowed, Sec-Fetch-Site was \"{fetchSite}\""
+		},
 		"loggingProcessor": {
 			"responseMessage": "<=== {statusCode} {method} {requestUrl} duration: {elapsedMicroSeconds}µs"
 		}

@@ -8,7 +8,8 @@
 			"invalidPublicOrigin": "The public origin \"{publicOrigin}\" is not a valid origin URL, it should be in the format \"protocol://host[:port]\".",
 			"invalidBodyLimit": "The body limit named \"{bodyLimit}\" must be an integer greater than zero, but it is \"{value}\"",
 			"invalidStatusCode": "The response status code \"{statusCode}\" is not valid",
-			"invalidHeader": "The response header \"{header}\" has an invalid name or value"
+			"invalidHeader": "The response header \"{header}\" has an invalid name or value",
+			"invalidTrustedProxy": "The trusted proxy \"{trustedProxy}\" is not a valid IP address or CIDR range"
 		}
 	},
 	"info": {

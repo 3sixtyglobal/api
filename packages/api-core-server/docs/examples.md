@@ -76,3 +76,17 @@ const server = new MyWebServer();
 await server.build(restProcessors, restRoutes, undefined, undefined, { port: 3000 });
 await server.start();
 ```
+
+## CORS and Client IP Options
+
+When `corsOrigins` includes `*`, any origin is reflected with credentials. Set `corsWildcardCredentials` to false to answer any origin with `Access-Control-Allow-Origin: *` and no credentials, so credentials are only allowed for origins listed explicitly.
+
+The client IP in the `ipAddress` context id is the socket address of the immediate peer. Forwarding headers are only honoured when that peer is listed in `trustedProxies`, as addresses or CIDR ranges, in which case the right-most untrusted `X-Forwarded-For` hop, or `X-Real-IP`, is used. Use `*` to trust any proxy.
+
+```typescript
+await server.build(restProcessors, restRoutes, undefined, undefined, {
+  port: 3000,
+  corsOrigins: ['https://app.example.com'],
+  trustedProxies: ['10.0.0.0/8', '127.0.0.1']
+});
+```

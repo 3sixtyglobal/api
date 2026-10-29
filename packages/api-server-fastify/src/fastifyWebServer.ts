@@ -427,7 +427,11 @@ export class FastifyWebServer extends BaseServer<FastifyInstance> {
 		);
 
 		const httpResponse: IHttpResponse = {};
-		const contextIds = this.buildContextIds(requestOrigin, httpServerRequest.headers);
+		const contextIds = this.buildContextIds(
+			requestOrigin,
+			httpServerRequest.headers,
+			request.socket.remoteAddress
+		);
 		const processorState = {};
 
 		await this.runProcessorsRest(
@@ -502,16 +506,21 @@ export class FastifyWebServer extends BaseServer<FastifyInstance> {
 		const corsOptions = this.resolveCorsOptions(options);
 
 		await this._fastify.register(FastifyCors, {
-			origin: (origin, callback) => {
-				callback(
-					null,
-					corsOptions.hasWildcardOrigin ? true : corsOptions.origins.includes(origin as string)
+			delegator: (request, callback) => {
+				const origin = request.headers.origin;
+				const corsResponse = this.resolveCorsResponse(
+					corsOptions,
+					Is.string(origin) ? origin : undefined
 				);
-			},
-			methods: corsOptions.methods,
-			allowedHeaders: corsOptions.allowedHeaders,
-			exposedHeaders: corsOptions.exposedHeaders,
-			credentials: true
+				callback(null, {
+					// False disables CORS for the request, true reflects the request origin
+					origin: Is.empty(corsResponse) ? false : (corsResponse.allowOrigin ?? true),
+					credentials: corsResponse?.credentials ?? false,
+					methods: corsOptions.methods,
+					allowedHeaders: corsOptions.allowedHeaders,
+					exposedHeaders: corsOptions.exposedHeaders
+				});
+			}
 		});
 	}
 }

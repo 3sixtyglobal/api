@@ -187,3 +187,49 @@ await staticContext.pre(
 );
 console.log(contextIds.environment); // test
 ```
+
+## OriginCheckProcessor
+
+Rejects cookie authenticated `POST`, `PUT`, `PATCH` and `DELETE` requests whose `Origin` is not the request, public or local origin, or one of the allowed origins. Without an `Origin` header a `Sec-Fetch-Site` other than `same-origin` or `none` is rejected. Requests with an `Authorization` header, without cookies, or with neither header are not rejected.
+
+```typescript
+import { OriginCheckProcessor } from '@3sixty/api-processors';
+
+const originCheck = new OriginCheckProcessor({
+  config: {
+    allowedOrigins: ['https://app.example.com']
+  }
+});
+
+await originCheck.pre(
+  {
+    method: 'POST',
+    url: 'https://api.example.com/items',
+    headers: { cookie: 'session=1', origin: 'https://evil.example.com' }
+  },
+  {},
+  undefined,
+  {},
+  {}
+);
+// Throws a ForbiddenError, which the server returns as a 403
+```
+
+It can also be registered as a socket route processor. Socket connections and messages are checked with the same rules whatever the method, using the handshake headers, with the handshake `Host` also counting as the request's own origin. A rejected connection emits a `403` error and skips the following `connected` processors, and a rejected message is not handled.
+
+```typescript
+await originCheck.connected(
+  {
+    method: 'GET',
+    url: '/socket/updates',
+    socketId: 'abc123',
+    headers: {
+      host: 'api.example.com',
+      cookie: 'session=1',
+      origin: 'https://evil.example.com'
+    }
+  },
+  undefined
+);
+// Throws a ForbiddenError
+```

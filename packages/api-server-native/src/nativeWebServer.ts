@@ -23,7 +23,7 @@ import type { ReadableStream as NodeReadableStream } from "node:stream/web";
 import type { TLSSocket } from "node:tls";
 import { promisify } from "node:util";
 import zlib from "node:zlib";
-import { BaseServer } from "@3sixty/api-core-server";
+import { BaseServer, type IServerCorsOptions } from "@3sixty/api-core-server";
 import {
 	HttpBodyLimit,
 	HttpErrorHelper,
@@ -158,8 +158,7 @@ export class NativeWebServer extends BaseServer<Router.Instance<Router.HTTPVersi
 	 * @internal
 	 */
 	private _cors?: {
-		hasWildcardOrigin: boolean;
-		origins: string[];
+		options: IServerCorsOptions;
 		allowMethods: string;
 		allowHeaders: string;
 		exposeHeaders: string;
@@ -261,8 +260,7 @@ export class NativeWebServer extends BaseServer<Router.Instance<Router.HTTPVersi
 
 		const corsOptions = this.resolveCorsOptions(options);
 		this._cors = {
-			hasWildcardOrigin: corsOptions.hasWildcardOrigin,
-			origins: corsOptions.origins,
+			options: corsOptions,
 			allowMethods: corsOptions.methods.join(", "),
 			allowHeaders: corsOptions.allowedHeaders.join(", "),
 			exposeHeaders: corsOptions.exposedHeaders.join(", ")
@@ -640,7 +638,11 @@ export class NativeWebServer extends BaseServer<Router.Instance<Router.HTTPVersi
 		);
 
 		const httpResponse: IHttpResponse = {};
-		const contextIds = this.buildContextIds(requestOrigin, httpServerRequest.headers);
+		const contextIds = this.buildContextIds(
+			requestOrigin,
+			httpServerRequest.headers,
+			req.socket.remoteAddress
+		);
 		const processorState = {};
 
 		await this.runProcessorsRest(
@@ -715,16 +717,17 @@ export class NativeWebServer extends BaseServer<Router.Instance<Router.HTTPVersi
 		res.setHeader("vary", "Origin");
 
 		const origin = req.headers.origin;
-		const allowed =
-			cors.hasWildcardOrigin || (Is.stringValue(origin) && cors.origins.includes(origin));
-		if (!allowed) {
+		const corsResponse = this.resolveCorsResponse(cors.options, origin);
+		if (Is.empty(corsResponse)) {
 			return false;
 		}
 
-		if (Is.stringValue(origin)) {
-			res.setHeader("access-control-allow-origin", origin);
+		if (Is.stringValue(corsResponse.allowOrigin)) {
+			res.setHeader("access-control-allow-origin", corsResponse.allowOrigin);
 		}
-		res.setHeader("access-control-allow-credentials", "true");
+		if (corsResponse.credentials) {
+			res.setHeader("access-control-allow-credentials", "true");
+		}
 		res.setHeader("access-control-expose-headers", cors.exposeHeaders);
 
 		if (req.method === HttpMethod.OPTIONS) {

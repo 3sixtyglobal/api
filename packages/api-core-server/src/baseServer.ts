@@ -8,7 +8,9 @@ import {
 	validateHeaderValue
 } from "node:http";
 import { request as httpsRequest } from "node:https";
+import { BlockList, isIP } from "node:net";
 import {
+	HeaderTypesExtended,
 	type HealthApplicationCallback,
 	HealthCategory,
 	HealthStatus,
@@ -46,6 +48,7 @@ import {
 import type { IBaseServerConstructorOptions } from "./models/IBaseServerConstructorOptions.js";
 import type { IRestProcessorChains } from "./models/IRestProcessorChains.js";
 import type { IServerCorsOptions } from "./models/IServerCorsOptions.js";
+import type { IServerCorsResponse } from "./models/IServerCorsResponse.js";
 import type { ISocketProcessorChains } from "./models/ISocketProcessorChains.js";
 
 /**
@@ -130,6 +133,16 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 	protected _socketChains: ISocketProcessorChains;
 
 	/**
+	 * The proxies trusted to set the forwarding headers.
+	 */
+	protected _trustedProxies?: BlockList;
+
+	/**
+	 * Whether any proxy is trusted to set the forwarding headers.
+	 */
+	protected _trustAllProxies: boolean;
+
+	/**
 	 * Create a new instance of BaseServer.
 	 * @param options The options for the server.
 	 */
@@ -141,6 +154,7 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 		this._socketChains = { connected: [], disconnected: [], pre: [], process: [], post: [] };
 		this._mimeTypeProcessors = options?.mimeTypeProcessors ?? [];
 		this._includeErrorStack = options?.includeErrorStack ?? false;
+		this._trustAllProxies = false;
 
 		const hasJsonLd = this._mimeTypeProcessors.some(processor =>
 			processor.getTypes().includes(MimeTypes.JsonLd)
@@ -437,6 +451,8 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 
 		this._options = options;
 
+		this.resolveTrustedProxies(options?.trustedProxies);
+
 		this.buildProcessorChains(restRouteProcessors, socketRouteProcessors);
 	}
 
@@ -565,7 +581,97 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 			exposedHeaders.push(...options.exposedHeaders);
 		}
 
-		return { origins, hasWildcardOrigin, methods, allowedHeaders, exposedHeaders };
+		return {
+			origins,
+			hasWildcardOrigin,
+			wildcardCredentials: options?.corsWildcardCredentials ?? true,
+			methods,
+			allowedHeaders,
+			exposedHeaders
+		};
+	}
+
+	/**
+	 * Resolve the CORS response for a request origin, a wildcard is only combined with credentials
+	 * while wildcard credentials are enabled.
+	 * @param corsOptions The resolved CORS options.
+	 * @param origin The request origin.
+	 * @returns The CORS response, or undefined if the origin is not allowed.
+	 */
+	protected resolveCorsResponse(
+		corsOptions: IServerCorsOptions,
+		origin?: string
+	): IServerCorsResponse | undefined {
+		if (Is.stringValue(origin) && origin !== "*" && corsOptions.origins.includes(origin)) {
+			return { allowOrigin: origin, credentials: true };
+		}
+		if (corsOptions.hasWildcardOrigin) {
+			if (corsOptions.wildcardCredentials ?? true) {
+				return { allowOrigin: Is.stringValue(origin) ? origin : undefined, credentials: true };
+			}
+			return { allowOrigin: "*", credentials: false };
+		}
+	}
+
+	/**
+	 * Resolve the trusted proxies from the configuration.
+	 * @param trustedProxies The trusted proxy addresses or CIDR ranges.
+	 * @throws GeneralError If an entry is not a valid address or range.
+	 */
+	protected resolveTrustedProxies(trustedProxies?: string | string[]): void {
+		const entries = (Is.string(trustedProxies) ? trustedProxies.split(",") : (trustedProxies ?? []))
+			.map(entry => entry.trim())
+			.filter(entry => entry.length > 0);
+
+		this._trustAllProxies = false;
+		this._trustedProxies = undefined;
+
+		for (const entry of entries) {
+			if (entry === "*") {
+				this._trustAllProxies = true;
+			} else {
+				this.addTrustedProxy(entry);
+			}
+		}
+	}
+
+	/**
+	 * Resolve the client IP address, the socket address is used unless it is a trusted proxy, in
+	 * which case the right-most untrusted X-Forwarded-For hop, or X-Real-IP, is used.
+	 * @param remoteAddress The address of the immediate peer.
+	 * @param headers The request headers.
+	 * @returns The client IP address.
+	 */
+	protected resolveClientIp(remoteAddress?: string, headers?: IHttpHeaders): string | undefined {
+		let clientIp = this.normaliseIp(remoteAddress);
+		if (!Is.stringValue(clientIp) || !this.isTrustedProxy(clientIp)) {
+			return clientIp;
+		}
+
+		const hops: string[] = [];
+		for (const value of this.getHeaderValues(headers?.[HeaderTypesExtended.XForwardedFor])) {
+			hops.push(...value.split(","));
+		}
+
+		if (hops.length === 0) {
+			const realIps = this.getHeaderValues(headers?.[HeaderTypesExtended.XRealIp]);
+			const realIp = this.normaliseIp(realIps[realIps.length - 1]);
+			return Is.undefined(this.ipFamily(realIp)) ? clientIp : realIp;
+		}
+
+		for (let i = hops.length - 1; i >= 0; i--) {
+			const hop = this.normaliseIp(hops[i]);
+			if (!Is.stringValue(hop) || Is.undefined(this.ipFamily(hop))) {
+				// A malformed hop cannot be trusted, so stop at the last trusted proxy
+				return clientIp;
+			}
+			clientIp = hop;
+			if (!this.isTrustedProxy(hop)) {
+				return hop;
+			}
+		}
+
+		return clientIp;
 	}
 
 	/**
@@ -632,11 +738,16 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 	 * Build the context ids for an incoming request.
 	 * @param requestOrigin The origin the request was received on.
 	 * @param headers The request headers.
+	 * @param remoteAddress The address of the immediate peer.
 	 * @returns The context ids.
 	 */
-	protected buildContextIds(requestOrigin: string, headers?: IHttpHeaders): IContextIds {
+	protected buildContextIds(
+		requestOrigin: string,
+		headers?: IHttpHeaders,
+		remoteAddress?: string
+	): IContextIds {
 		return {
-			[HttpContextIdKeys.IpAddress]: HeaderHelper.extractClientIps(headers).join("|"),
+			[HttpContextIdKeys.IpAddress]: this.resolveClientIp(remoteAddress, headers),
 			[HttpContextIdKeys.UserAgent]: HeaderHelper.extractUserAgent(headers),
 			[HttpContextIdKeys.CorrelationId]: HeaderHelper.extractCorrelationId(headers),
 			[HttpContextIdKeys.RemoteRequest]: RandomHelper.generateUuidV7("compact"),
@@ -837,6 +948,98 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 			HttpErrorHelper.buildResponse(httpResponse, error, httpStatusCode, this._includeErrorStack);
 			await postProcessEmit(requestTopic, httpResponse, processorState);
 		}
+	}
+
+	/**
+	 * Add a trusted proxy address or CIDR range.
+	 * @param entry The address or range.
+	 * @throws GeneralError If the entry is not a valid address or range.
+	 * @internal
+	 */
+	private addTrustedProxy(entry: string): void {
+		const parts = entry.split("/");
+		const [address, prefix] = parts;
+		const family = this.ipFamily(address);
+		const prefixLength = Is.stringValue(prefix) ? Number(prefix) : undefined;
+		if (
+			Is.undefined(family) ||
+			parts.length > 2 ||
+			(!Is.undefined(prefix) && !/^\d{1,3}$/.test(prefix)) ||
+			(!Is.undefined(prefix) &&
+				(!Is.integer(prefixLength) ||
+					prefixLength < 0 ||
+					prefixLength > (family === "ipv4" ? 32 : 128)))
+		) {
+			throw new GeneralError(BaseServer.CLASS_NAME, "invalidTrustedProxy", {
+				trustedProxy: entry
+			});
+		}
+		this._trustedProxies ??= new BlockList();
+		if (Is.integer(prefixLength)) {
+			this._trustedProxies.addSubnet(address, prefixLength, family);
+		} else {
+			this._trustedProxies.addAddress(address, family);
+		}
+	}
+
+	/**
+	 * Get the family of an IP address.
+	 * @param address The address.
+	 * @returns The family, or undefined when it is not an IP address.
+	 * @internal
+	 */
+	private ipFamily(address?: string): "ipv4" | "ipv6" | undefined {
+		if (!Is.stringValue(address)) {
+			return undefined;
+		}
+		if (isIP(address) === 4) {
+			return "ipv4";
+		}
+		return isIP(address) === 6 ? "ipv6" : undefined;
+	}
+
+	/**
+	 * Whether the address is a trusted proxy.
+	 * @param address The address to check.
+	 * @returns True if the address is trusted.
+	 * @internal
+	 */
+	private isTrustedProxy(address: string): boolean {
+		if (this._trustAllProxies) {
+			return true;
+		}
+		const family = this.ipFamily(address);
+		return !Is.undefined(family) && (this._trustedProxies?.check(address, family) ?? false);
+	}
+
+	/**
+	 * Normalise an IP address, removing the IPv4 mapped IPv6 prefix.
+	 * @param address The address to normalise.
+	 * @returns The normalised address.
+	 * @internal
+	 */
+	private normaliseIp(address?: string): string | undefined {
+		const trimmed = address?.trim();
+		if (Is.stringValue(trimmed) && trimmed.toLowerCase().startsWith("::ffff:")) {
+			const ipv4 = trimmed.slice(7);
+			if (isIP(ipv4) === 4) {
+				return ipv4;
+			}
+		}
+		return trimmed;
+	}
+
+	/**
+	 * Get the values of a header as an array.
+	 * @param value The header value.
+	 * @returns The header values.
+	 * @internal
+	 */
+	private getHeaderValues(value?: string | string[]): string[] {
+		if (Is.array(value)) {
+			return value;
+		}
+		return Is.stringValue(value) ? [value] : [];
 	}
 
 	/**

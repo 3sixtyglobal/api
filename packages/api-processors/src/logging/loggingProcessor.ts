@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type {
 	IBaseRoute,
@@ -23,6 +24,20 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 	public static readonly CLASS_NAME: string = nameof<LoggingProcessor>();
 
 	/**
+	 * The property names obfuscated by default, which covers passwords, session tokens and the
+	 * key material in identity exports.
+	 */
+	public static readonly DEFAULT_OBFUSCATE_PROPERTIES: string[] = [
+		"password",
+		"privateKey",
+		"mnemonic",
+		"^seed$",
+		"documentSignature",
+		"^token$",
+		"refreshToken"
+	];
+
+	/**
 	 * The component for logging the information.
 	 * @internal
 	 */
@@ -41,7 +56,7 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 	private readonly _fullBase64: boolean;
 
 	/**
-	 * List of property names to obfuscate, defaults to "password".
+	 * List of property names to obfuscate, defaults to DEFAULT_OBFUSCATE_PROPERTIES.
 	 * @internal
 	 */
 	private readonly _obfuscateProperties: string[];
@@ -60,7 +75,9 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 		this._logging = ComponentFactory.getIfExists(options?.loggingComponentType);
 		this._includeBody = options?.config?.includeBody ?? false;
 		this._fullBase64 = options?.config?.fullBase64 ?? false;
-		this._obfuscateProperties = options?.config?.obfuscateProperties ?? ["password"];
+		this._obfuscateProperties = options?.config?.obfuscateProperties ?? [
+			...LoggingProcessor.DEFAULT_OBFUSCATE_PROPERTIES
+		];
 		this._excludePaths = options?.config?.excludePaths ?? ["/logging"];
 	}
 

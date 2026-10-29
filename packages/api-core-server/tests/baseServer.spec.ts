@@ -25,6 +25,7 @@ import { HeaderTypes, HttpMethod, HttpStatusCode, type IHttpHeaders, MimeTypes }
 import { BaseServer } from "../src/baseServer.js";
 import type { IBaseServerConstructorOptions } from "../src/models/IBaseServerConstructorOptions.js";
 import type { IServerCorsOptions } from "../src/models/IServerCorsOptions.js";
+import type { IServerCorsResponse } from "../src/models/IServerCorsResponse.js";
 
 class TestServer extends BaseServer<string> {
 	public static readonly CLASS_NAME: string = "TestServer";
@@ -132,8 +133,16 @@ class TestServer extends BaseServer<string> {
 		this.validateResponse(httpResponse);
 	}
 
-	public contextIds(requestOrigin: string, headers?: IHttpHeaders): IContextIds {
-		return this.buildContextIds(requestOrigin, headers);
+	public contextIds(
+		requestOrigin: string,
+		headers?: IHttpHeaders,
+		remoteAddress?: string
+	): IContextIds {
+		return this.buildContextIds(requestOrigin, headers, remoteAddress);
+	}
+
+	public corsResponse(cors: IServerCorsOptions, origin?: string): IServerCorsResponse | undefined {
+		return this.resolveCorsResponse(cors, origin);
 	}
 
 	public mimeTypeProcessors(): IMimeTypeProcessor[] {
@@ -791,6 +800,53 @@ describe("BaseServer", () => {
 		});
 	});
 
+	describe("resolveCorsResponse", () => {
+		test("answers a wildcard with * and no credentials when wildcard credentials are off", () => {
+			const server = new TestServer();
+			const cors = server.corsOptions({ corsWildcardCredentials: false });
+
+			expect(server.corsResponse(cors, "https://any.example")).toEqual({
+				allowOrigin: "*",
+				credentials: false
+			});
+			expect(server.corsResponse(cors)).toEqual({ allowOrigin: "*", credentials: false });
+		});
+
+		test("reflects a wildcard with credentials by default", () => {
+			const server = new TestServer();
+			const cors = server.corsOptions();
+
+			expect(server.corsResponse(cors, "https://any.example")).toEqual({
+				allowOrigin: "https://any.example",
+				credentials: true
+			});
+		});
+
+		test("allows credentials only for configured origins", () => {
+			const server = new TestServer();
+			const cors = server.corsOptions({
+				corsOrigins: ["*", "https://app.example"],
+				corsWildcardCredentials: false
+			});
+
+			expect(server.corsResponse(cors, "https://app.example")).toEqual({
+				allowOrigin: "https://app.example",
+				credentials: true
+			});
+			expect(server.corsResponse(cors, "https://other.example")).toEqual({
+				allowOrigin: "*",
+				credentials: false
+			});
+		});
+
+		test("does not allow an origin which is not configured", () => {
+			const server = new TestServer();
+			const cors = server.corsOptions({ corsOrigins: "https://app.example" });
+
+			expect(server.corsResponse(cors, "https://other.example")).toBeUndefined();
+		});
+	});
+
 	describe("validateResponse", () => {
 		test("accepts a valid response", () => {
 			const server = new TestServer();
@@ -892,6 +948,145 @@ describe("BaseServer", () => {
 			const contextIds = server.contextIds("http://request-origin:4000");
 
 			expect(contextIds[HttpContextIdKeys.PublicOrigin]).toEqual("https://example.com");
+		});
+
+		test("uses the socket address and ignores forwarding headers by default", async () => {
+			const server = new TestServer();
+			await server.build();
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-forwarded-for": "203.0.113.1", "x-real-ip": "203.0.113.2" },
+				"::ffff:192.0.2.10"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("192.0.2.10");
+		});
+
+		test("has no client IP without a socket address", async () => {
+			const server = new TestServer();
+			await server.build();
+
+			const contextIds = server.contextIds("http://request-origin:4000", {
+				"x-forwarded-for": "203.0.113.1"
+			});
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toBeUndefined();
+		});
+
+		test("uses the right-most untrusted hop when the peer is a trusted proxy", async () => {
+			const server = new TestServer();
+			await server.build(undefined, undefined, undefined, undefined, {
+				trustedProxies: "10.0.0.0/8, 192.0.2.10"
+			});
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-forwarded-for": ["198.51.100.66, 203.0.113.1", "10.1.2.3"] },
+				"192.0.2.10"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("203.0.113.1");
+		});
+
+		test("ignores forwarding headers when the peer is not trusted", async () => {
+			const server = new TestServer();
+			await server.build(undefined, undefined, undefined, undefined, {
+				trustedProxies: ["10.0.0.0/8"]
+			});
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-forwarded-for": "203.0.113.1" },
+				"192.0.2.10"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("192.0.2.10");
+		});
+
+		test("stops at a malformed hop", async () => {
+			const server = new TestServer();
+			await server.build(undefined, undefined, undefined, undefined, {
+				trustedProxies: ["10.0.0.0/8"]
+			});
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-forwarded-for": "203.0.113.1, not-an-ip, 10.0.0.2" },
+				"10.0.0.1"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("10.0.0.2");
+		});
+
+		test("uses the left-most hop when every hop is trusted", async () => {
+			const server = new TestServer();
+			await server.build(undefined, undefined, undefined, undefined, {
+				trustedProxies: "*"
+			});
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-forwarded-for": "203.0.113.1, 198.51.100.2" },
+				"192.0.2.10"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("203.0.113.1");
+		});
+
+		test("uses X-Real-IP from a trusted proxy when there is no X-Forwarded-For", async () => {
+			const server = new TestServer();
+			await server.build(undefined, undefined, undefined, undefined, {
+				trustedProxies: ["::1"]
+			});
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-real-ip": "203.0.113.7" },
+				"::1"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("203.0.113.7");
+		});
+
+		test("handles compressed IPv6 proxies and hops", async () => {
+			const server = new TestServer();
+			await server.build(undefined, undefined, undefined, undefined, {
+				trustedProxies: ["fd12:3456::/32"]
+			});
+
+			const contextIds = server.contextIds(
+				"http://request-origin:4000",
+				{ "x-forwarded-for": "2001:db8::1, fd12:3456::7" },
+				"fd12:3456::5"
+			);
+
+			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("2001:db8::1");
+		});
+
+		test("throws when a trusted proxy has a malformed prefix", async () => {
+			for (const trustedProxy of ["10.0.0.0/8/9", "10.0.0.0/1e1"]) {
+				const server = new TestServer();
+				await expect(
+					server.build(undefined, undefined, undefined, undefined, {
+						trustedProxies: [trustedProxy]
+					})
+				).rejects.toThrowError(
+					expect.objectContaining({ message: "baseServer.invalidTrustedProxy" })
+				);
+			}
+		});
+
+		test("throws when a trusted proxy is invalid", async () => {
+			const server = new TestServer();
+
+			await expect(
+				server.build(undefined, undefined, undefined, undefined, {
+					trustedProxies: ["10.0.0.0/33"]
+				})
+			).rejects.toThrowError(
+				expect.objectContaining({ message: "baseServer.invalidTrustedProxy" })
+			);
 		});
 	});
 

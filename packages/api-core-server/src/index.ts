@@ -4,4 +4,5 @@ export * from "./baseServer.js";
 export * from "./models/IBaseServerConstructorOptions.js";
 export * from "./models/IRestProcessorChains.js";
 export * from "./models/IServerCorsOptions.js";
+export * from "./models/IServerCorsResponse.js";
 export * from "./models/ISocketProcessorChains.js";
