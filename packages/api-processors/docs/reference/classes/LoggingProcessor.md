@@ -34,6 +34,15 @@ Options for the processor.
 
 Runtime name for the class.
 
+***
+
+### DEFAULT\_OBFUSCATE\_PROPERTIES {#default_obfuscate_properties}
+
+> `readonly` `static` **DEFAULT\_OBFUSCATE\_PROPERTIES**: `string`[]
+
+The property names obfuscated by default, which covers passwords, session tokens and the
+key material in identity exports.
+
 ## Methods
 
 ### className() {#classname}

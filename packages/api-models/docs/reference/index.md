@@ -72,6 +72,7 @@
 
 ## Type Aliases
 
+- [HeaderTypesExtended](type-aliases/HeaderTypesExtended.md)
 - [HealthCategory](type-aliases/HealthCategory.md)
 - [HealthStatus](type-aliases/HealthStatus.md)
 - [HttpContextIdKeys](type-aliases/HttpContextIdKeys.md)
@@ -88,6 +89,7 @@
 - [RestClientProcessorFactory](variables/RestClientProcessorFactory.md)
 - [RestRouteProcessorFactory](variables/RestRouteProcessorFactory.md)
 - [SocketRouteProcessorFactory](variables/SocketRouteProcessorFactory.md)
+- [HeaderTypesExtended](variables/HeaderTypesExtended.md)
 - [HealthCategory](variables/HealthCategory.md)
 - [HealthStatus](variables/HealthStatus.md)
 - [HttpContextIdKeys](variables/HttpContextIdKeys.md)

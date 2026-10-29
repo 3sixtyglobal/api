@@ -152,6 +152,30 @@ The socket processor chains resolved when the server is built.
 
 ***
 
+### \_trustedProxies? {#_trustedproxies}
+
+> `protected` `optional` **\_trustedProxies?**: `BlockList`
+
+The proxies trusted to set the forwarding headers.
+
+#### Inherited from
+
+`BaseServer._trustedProxies`
+
+***
+
+### \_trustAllProxies {#_trustallproxies}
+
+> `protected` **\_trustAllProxies**: `boolean`
+
+Whether any proxy is trusted to set the forwarding headers.
+
+#### Inherited from
+
+`BaseServer._trustAllProxies`
+
+***
+
 ### CLASS\_NAME {#class_name}
 
 > `readonly` `static` **CLASS\_NAME**: `string`
@@ -401,6 +425,100 @@ The resolved CORS options.
 
 ***
 
+### resolveCorsResponse() {#resolvecorsresponse}
+
+> `protected` **resolveCorsResponse**(`corsOptions`, `origin?`): `IServerCorsResponse` \| `undefined`
+
+Resolve the CORS response for a request origin, a wildcard is only combined with credentials
+while wildcard credentials are enabled.
+
+#### Parameters
+
+##### corsOptions
+
+`IServerCorsOptions`
+
+The resolved CORS options.
+
+##### origin?
+
+`string`
+
+The request origin.
+
+#### Returns
+
+`IServerCorsResponse` \| `undefined`
+
+The CORS response, or undefined if the origin is not allowed.
+
+#### Inherited from
+
+`BaseServer.resolveCorsResponse`
+
+***
+
+### resolveTrustedProxies() {#resolvetrustedproxies}
+
+> `protected` **resolveTrustedProxies**(`trustedProxies?`): `void`
+
+Resolve the trusted proxies from the configuration.
+
+#### Parameters
+
+##### trustedProxies?
+
+`string` \| `string`[]
+
+The trusted proxy addresses or CIDR ranges.
+
+#### Returns
+
+`void`
+
+#### Throws
+
+GeneralError If an entry is not a valid address or range.
+
+#### Inherited from
+
+`BaseServer.resolveTrustedProxies`
+
+***
+
+### resolveClientIp() {#resolveclientip}
+
+> `protected` **resolveClientIp**(`remoteAddress?`, `headers?`): `string` \| `undefined`
+
+Resolve the client IP address, the socket address is used unless it is a trusted proxy, in
+which case the right-most untrusted X-Forwarded-For hop, or X-Real-IP, is used.
+
+#### Parameters
+
+##### remoteAddress?
+
+`string`
+
+The address of the immediate peer.
+
+##### headers?
+
+`IHttpHeaders`
+
+The request headers.
+
+#### Returns
+
+`string` \| `undefined`
+
+The client IP address.
+
+#### Inherited from
+
+`BaseServer.resolveClientIp`
+
+***
+
 ### buildServerRequest() {#buildserverrequest}
 
 > `protected` **buildServerRequest**(`method`, `url`, `body`, `query?`, `pathParams?`, `headers?`): `IHttpServerRequest`
@@ -489,7 +607,7 @@ GeneralError If the status code or a header is invalid.
 
 ### buildContextIds() {#buildcontextids}
 
-> `protected` **buildContextIds**(`requestOrigin`, `headers?`): `IContextIds`
+> `protected` **buildContextIds**(`requestOrigin`, `headers?`, `remoteAddress?`): `IContextIds`
 
 Build the context ids for an incoming request.
 
@@ -506,6 +624,12 @@ The origin the request was received on.
 `IHttpHeaders`
 
 The request headers.
+
+##### remoteAddress?
+
+`string`
+
+The address of the immediate peer.
 
 #### Returns
 
