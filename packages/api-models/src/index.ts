@@ -22,6 +22,7 @@ export * from "./models/client/IRestClientProcessor.js";
 export * from "./models/client/IRestClientProcessorContext.js";
 export * from "./models/config/IBaseRestClientConfig.js";
 export * from "./models/config/IBaseSocketClientConfig.js";
+export * from "./models/headerTypesExtended.js";
 export * from "./models/healthCategory.js";
 export * from "./models/healthStatus.js";
 export * from "./models/httpContextIdKeys.js";

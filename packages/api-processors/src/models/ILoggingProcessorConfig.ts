@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 
 /**
@@ -16,7 +17,8 @@ export interface ILoggingProcessorConfig {
 	fullBase64?: boolean;
 
 	/**
-	 * List of property names to obfuscate, can be regex, defaults to "password".
+	 * List of property names to obfuscate, can be regex, defaults to password, privateKey,
+	 * mnemonic, seed, documentSignature, token and refreshToken.
 	 */
 	obfuscateProperties?: string[];
 

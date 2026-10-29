@@ -565,7 +565,11 @@ export class HonoWebServer extends BaseServer<Hono> {
 		);
 
 		const httpResponse: IHttpResponse = {};
-		const contextIds = this.buildContextIds(requestOrigin, httpServerRequest.headers);
+		const contextIds = this.buildContextIds(
+			requestOrigin,
+			httpServerRequest.headers,
+			(c.env as Partial<HttpBindings> | undefined)?.incoming?.socket?.remoteAddress
+		);
 		const processorState = {};
 
 		await this.runProcessorsRest(
@@ -868,11 +872,9 @@ export class HonoWebServer extends BaseServer<Hono> {
 			const headers = this.getRequestHeaders(c);
 			const origin = headers.origin;
 			const requestOrigin = Is.string(origin) ? origin : undefined;
-			const allowed =
-				corsOptions.hasWildcardOrigin ||
-				(Is.stringValue(requestOrigin) && corsOptions.origins.includes(requestOrigin));
+			const corsResponse = this.resolveCorsResponse(corsOptions, requestOrigin);
 
-			if (allowed && c.req.method === HttpMethod.OPTIONS) {
+			if (!Is.empty(corsResponse) && c.req.method === HttpMethod.OPTIONS) {
 				if (
 					!Is.stringValue(requestOrigin) ||
 					!Is.stringValue(headers["access-control-request-method"])
@@ -881,17 +883,20 @@ export class HonoWebServer extends BaseServer<Hono> {
 						vary: "Origin"
 					});
 				}
+				const preflightHeaders: { [name: string]: string } = {
+					vary: "Origin",
+					"access-control-allow-origin": corsResponse.allowOrigin ?? requestOrigin,
+					"access-control-expose-headers": exposeHeaders,
+					"access-control-allow-methods": allowMethods,
+					"access-control-allow-headers": allowHeaders,
+					"content-length": "0"
+				};
+				if (corsResponse.credentials) {
+					preflightHeaders["access-control-allow-credentials"] = "true";
+				}
 				return new Response(null, {
 					status: HttpStatusCode.noContent,
-					headers: {
-						vary: "Origin",
-						"access-control-allow-origin": requestOrigin,
-						"access-control-allow-credentials": "true",
-						"access-control-expose-headers": exposeHeaders,
-						"access-control-allow-methods": allowMethods,
-						"access-control-allow-headers": allowHeaders,
-						"content-length": "0"
-					}
+					headers: preflightHeaders
 				});
 			}
 
@@ -899,11 +904,13 @@ export class HonoWebServer extends BaseServer<Hono> {
 
 			const responseHeaders = c.res.headers;
 			responseHeaders.append("vary", "Origin");
-			if (allowed) {
-				if (Is.stringValue(requestOrigin)) {
-					responseHeaders.set("access-control-allow-origin", requestOrigin);
+			if (!Is.empty(corsResponse)) {
+				if (Is.stringValue(corsResponse.allowOrigin)) {
+					responseHeaders.set("access-control-allow-origin", corsResponse.allowOrigin);
 				}
-				responseHeaders.set("access-control-allow-credentials", "true");
+				if (corsResponse.credentials) {
+					responseHeaders.set("access-control-allow-credentials", "true");
+				}
 				responseHeaders.set("access-control-expose-headers", exposeHeaders);
 			}
 		});

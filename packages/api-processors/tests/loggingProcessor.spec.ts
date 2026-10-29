@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IHttpResponse, IHttpServerRequest } from "@3sixty/api-models";
 import { ComponentFactory } from "@3sixty/core";
@@ -140,6 +141,59 @@ describe("LoggingProcessor", () => {
 			await processor.pre(req2, res2, undefined, {}, state2);
 			await processor.post(req2, res2, undefined, {}, state2);
 			expect(logEntries).toHaveLength(2);
+		});
+	});
+
+	describe("obfuscation", () => {
+		test("obfuscates secrets and key material by default", async () => {
+			const logEntries: ILogEntry[] = [];
+			ComponentFactory.register("logging", () => makeLogger(logEntries));
+
+			const processor = new LoggingProcessor({
+				loggingComponentType: "logging",
+				config: { includeBody: true }
+			});
+
+			const request = makeRequest("/identity/did/export", HttpMethod.POST);
+			const response = makeResponse({
+				documentSignature: "c2lnbmF0dXJl",
+				keys: [{ id: "did", privateKey: "cHJpdmF0ZQ==", publicKey: "cHVibGlj" }],
+				account: { mnemonic: "word word word", seed: "c2VlZA==" },
+				token: "jwt",
+				refreshToken: "refresh",
+				tokenId: "visible"
+			});
+			const state: { [id: string]: unknown } = {};
+			await processor.pre(request, response, undefined, {}, state);
+			await processor.post(request, response, undefined, {}, state);
+
+			const logged = JSON.stringify(logEntries[1].data);
+			for (const secret of ["c2lnbmF0dXJl", "cHJpdmF0ZQ==", "word word word", "c2VlZA==", "jwt"]) {
+				expect(logged).not.toContain(`"${secret}"`);
+			}
+			expect(logged).not.toContain('refresh"');
+			expect(logged).toContain("cHVibGlj");
+			expect(logged).toContain("visible");
+		});
+
+		test("uses only the configured properties when set", async () => {
+			const logEntries: ILogEntry[] = [];
+			ComponentFactory.register("logging", () => makeLogger(logEntries));
+
+			const processor = new LoggingProcessor({
+				loggingComponentType: "logging",
+				config: { includeBody: true, obfuscateProperties: ["secret"] }
+			});
+
+			const request = makeRequest("/tasks", HttpMethod.POST);
+			const response = makeResponse({ secret: "hidden", password: "shown" });
+			const state: { [id: string]: unknown } = {};
+			await processor.pre(request, response, undefined, {}, state);
+			await processor.post(request, response, undefined, {}, state);
+
+			const logged = JSON.stringify(logEntries[1].data);
+			expect(logged).not.toContain("hidden");
+			expect(logged).toContain("shown");
 		});
 	});
 });

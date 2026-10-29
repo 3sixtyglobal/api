@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type { HttpMethod } from "@3sixty/web";
 
@@ -39,6 +40,21 @@ export interface IWebServerOptions {
 	 * @default ["*"]
 	 */
 	corsOrigins?: string | string[];
+
+	/**
+	 * Reflect any origin with credentials when the CORS origins include the wildcard. Set false to
+	 * answer a wildcard origin with "*" and no credentials, so credentials are only allowed for
+	 * explicitly configured origins.
+	 * @default true
+	 */
+	corsWildcardCredentials?: boolean;
+
+	/**
+	 * The proxies trusted to set the X-Forwarded-For and X-Real-IP headers, as IP addresses or CIDR
+	 * ranges, a string can be comma separated. Use "*" to trust any proxy. When the immediate peer is
+	 * not trusted, or no proxies are configured, the client IP is the socket address.
+	 */
+	trustedProxies?: string | string[];
 
 	/**
 	 * The public origin of the server, used for constructing the request URL.

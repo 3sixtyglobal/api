@@ -18,6 +18,11 @@ export interface IServerCorsOptions {
 	hasWildcardOrigin: boolean;
 
 	/**
+	 * Whether a wildcard origin reflects the request origin with credentials.
+	 */
+	wildcardCredentials?: boolean;
+
+	/**
 	 * The allowed methods.
 	 */
 	methods: HttpMethod[];

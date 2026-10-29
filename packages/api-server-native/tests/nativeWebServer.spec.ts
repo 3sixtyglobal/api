@@ -8,6 +8,7 @@ import {
 	HealthCategory,
 	HealthStatus,
 	HttpBodyLimit,
+	HttpContextIdKeys,
 	HttpErrorHelper,
 	type IHttpResponse,
 	type IMimeTypeProcessor,
@@ -1730,6 +1731,91 @@ describe("api-server-native", () => {
 		expect(allowed.headers.get("access-control-allow-credentials")).toEqual("true");
 		expect(allowed.headers.get("access-control-allow-methods")).toContain("POST");
 		expect(denied.headers.get("access-control-allow-origin")).toBeNull();
+	});
+
+	test("Can answer a wildcard CORS origin without credentials", async () => {
+		const server = new NativeWebServer();
+		await server.build([createOkProcessor()], [createPostRoute("/")], undefined, undefined, {
+			port,
+			corsWildcardCredentials: false
+		});
+		await server.start();
+
+		const preflight = await fetch(`http://localhost:${port}/`, {
+			method: "OPTIONS",
+			headers: { Origin: "http://any.test", "Access-Control-Request-Method": "POST" }
+		});
+		await preflight.arrayBuffer();
+		const response = await fetch(`http://localhost:${port}/`, {
+			method: "POST",
+			headers: { Origin: "http://any.test" }
+		});
+		await response.arrayBuffer();
+
+		await server.stop();
+
+		expect(preflight.status).toEqual(HttpStatusCode.noContent);
+		expect(preflight.headers.get("access-control-allow-origin")).toEqual("*");
+		expect(preflight.headers.get("access-control-allow-credentials")).toBeNull();
+		expect(response.headers.get("access-control-allow-origin")).toEqual("*");
+		expect(response.headers.get("access-control-allow-credentials")).toBeNull();
+	});
+
+	test("Can reflect a wildcard CORS origin with credentials by default", async () => {
+		const server = new NativeWebServer();
+		await server.build([createOkProcessor()], [createPostRoute("/")], undefined, undefined, {
+			port
+		});
+		await server.start();
+
+		const response = await fetch(`http://localhost:${port}/`, {
+			method: "POST",
+			headers: { Origin: "http://any.test" }
+		});
+		await response.arrayBuffer();
+
+		await server.stop();
+
+		expect(response.headers.get("access-control-allow-origin")).toEqual("http://any.test");
+		expect(response.headers.get("access-control-allow-credentials")).toEqual("true");
+	});
+
+	test("Can use the socket address as the client IP unless the peer is a trusted proxy", async () => {
+		const ipProcessor: IRestRouteProcessor = {
+			className: () => "IpProcessor",
+			pre: async (request, response, route, contextIds, processorState) => {
+				processorState.ip = contextIds[HttpContextIdKeys.IpAddress];
+			},
+			process: async (request, response, route, processorState) => {
+				response.statusCode = HttpStatusCode.ok;
+				response.body = { ip: processorState.ip };
+			}
+		};
+		const requestIp = async (): Promise<unknown> => {
+			const response = await fetch(`http://127.0.0.1:${port}/`, {
+				method: "POST",
+				headers: { "X-Forwarded-For": "203.0.113.1, 198.51.100.2", "X-Real-IP": "203.0.113.9" }
+			});
+			return response.json();
+		};
+
+		const untrusted = new NativeWebServer();
+		await untrusted.build([ipProcessor], [createPostRoute("/")], undefined, undefined, { port });
+		await untrusted.start();
+		const untrustedJson = await requestIp();
+		await untrusted.stop();
+
+		const trusted = new NativeWebServer();
+		await trusted.build([ipProcessor], [createPostRoute("/")], undefined, undefined, {
+			port,
+			trustedProxies: ["127.0.0.0/8", "::1"]
+		});
+		await trusted.start();
+		const trustedJson = await requestIp();
+		await trusted.stop();
+
+		expect(untrustedJson).toEqual({ ip: "127.0.0.1" });
+		expect(trustedJson).toEqual({ ip: "198.51.100.2" });
 	});
 
 	test("Can compress large responses and leave small ones uncompressed", async () => {
