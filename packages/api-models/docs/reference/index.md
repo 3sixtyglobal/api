@@ -19,6 +19,16 @@
 - [IServerReadyzResponse](interfaces/IServerReadyzResponse.md)
 - [IServerRootResponse](interfaces/IServerRootResponse.md)
 - [IServerSpecResponse](interfaces/IServerSpecResponse.md)
+- [ITenantCreateRequest](interfaces/ITenantCreateRequest.md)
+- [ITenantGetByApiKeyRequest](interfaces/ITenantGetByApiKeyRequest.md)
+- [ITenantGetByIdRequest](interfaces/ITenantGetByIdRequest.md)
+- [ITenantGetByOrganizationIdRequest](interfaces/ITenantGetByOrganizationIdRequest.md)
+- [ITenantGetByPublicOriginRequest](interfaces/ITenantGetByPublicOriginRequest.md)
+- [ITenantGetResponse](interfaces/ITenantGetResponse.md)
+- [ITenantListRequest](interfaces/ITenantListRequest.md)
+- [ITenantListResponse](interfaces/ITenantListResponse.md)
+- [ITenantRemoveRequest](interfaces/ITenantRemoveRequest.md)
+- [ITenantUpdateRequest](interfaces/ITenantUpdateRequest.md)
 - [IRestClientProcessor](interfaces/IRestClientProcessor.md)
 - [IRestClientProcessorContext](interfaces/IRestClientProcessorContext.md)
 - [IBaseRestClientConfig](interfaces/IBaseRestClientConfig.md)
@@ -69,6 +79,8 @@
 - [IServerInfo](interfaces/IServerInfo.md)
 - [ITenant](interfaces/ITenant.md)
 - [ITenantAdminComponent](interfaces/ITenantAdminComponent.md)
+- [ITenantCreate](interfaces/ITenantCreate.md)
+- [ITenantUpdate](interfaces/ITenantUpdate.md)
 
 ## Type Aliases
 
