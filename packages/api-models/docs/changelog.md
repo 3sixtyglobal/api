@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0-next.8](https://github.com/3sixtyglobal/api/compare/api-models-v0.20.0-next.7...api-models-v0.20.0-next.8) (2026-11-02)
+
+
+### Bug Fixes
+
+* skip published versions on publish re-runs and make the tenant api key optional ([#68](https://github.com/3sixtyglobal/api/issues/68)) ([c5ea40a](https://github.com/3sixtyglobal/api/commit/c5ea40abefabda1eb04d4db86eaa97af15c68afb))
+
 ## [0.20.0-next.7](https://github.com/3sixtyglobal/api/compare/api-models-v0.20.0-next.6...api-models-v0.20.0-next.7) (2026-11-02)
 
 
