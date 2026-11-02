@@ -24,8 +24,9 @@ Show the full base64 content for data, default to abbreviate.
 
 > `optional` **obfuscateProperties?**: `string`[]
 
-List of property names to obfuscate, can be regex, defaults to password, privateKey,
-mnemonic, seed, documentSignature, token and refreshToken.
+List of property names to obfuscate, can be regex, matched ignoring case, defaults to
+password, privateKey, mnemonic, seed, documentSignature, token, refreshToken, accessToken,
+idToken, secret, code, codeVerifier and apiKey.
 
 ***
 
