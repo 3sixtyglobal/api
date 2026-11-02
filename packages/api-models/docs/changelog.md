@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0-next.5](https://github.com/3sixtyglobal/api/compare/api-models-v0.20.0-next.4...api-models-v0.20.0-next.5) (2026-11-02)
+
+
+### Features
+
+* add tenant admin rest client ([#62](https://github.com/3sixtyglobal/api/issues/62)) ([507229c](https://github.com/3sixtyglobal/api/commit/507229cd2803ccfbf38b708f6f3952de94ee9894))
+
 ## [0.20.0-next.4](https://github.com/3sixtyglobal/api/compare/api-models-v0.20.0-next.3...api-models-v0.20.0-next.4) (2026-11-02)
 
 
