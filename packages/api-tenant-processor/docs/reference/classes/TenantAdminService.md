@@ -209,7 +209,7 @@ Create a tenant.
 
 ##### tenant
 
-`Omit`\<`ITenant`, `"id"` \| `"dateCreated"` \| `"dateModified"`\> & `object`
+`ITenantCreate`
 
 The tenant to store.
 
@@ -235,7 +235,7 @@ Update a tenant.
 
 ##### tenant
 
-`Partial`\<`Omit`\<`ITenant`, `"dateCreated"` \| `"dateModified"`\>\>
+`ITenantUpdate`
 
 The tenant to update.
 

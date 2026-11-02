@@ -13,21 +13,22 @@
 
 ## Interfaces
 
-- [ISingleTenantProcessorConfig](interfaces/ISingleTenantProcessorConfig.md)
-- [ISingleTenantProcessorConstructorOptions](interfaces/ISingleTenantProcessorConstructorOptions.md)
-- [ITenantAdminServiceConfig](interfaces/ITenantAdminServiceConfig.md)
-- [ITenantAdminServiceConstructorOptions](interfaces/ITenantAdminServiceConstructorOptions.md)
-- [ITenantProcessorConfig](interfaces/ITenantProcessorConfig.md)
-- [ITenantProcessorConstructorOptions](interfaces/ITenantProcessorConstructorOptions.md)
 - [ITenantCreateRequest](interfaces/ITenantCreateRequest.md)
 - [ITenantGetByApiKeyRequest](interfaces/ITenantGetByApiKeyRequest.md)
 - [ITenantGetByIdRequest](interfaces/ITenantGetByIdRequest.md)
+- [ITenantGetByOrganizationIdRequest](interfaces/ITenantGetByOrganizationIdRequest.md)
 - [ITenantGetByPublicOriginRequest](interfaces/ITenantGetByPublicOriginRequest.md)
 - [ITenantGetResponse](interfaces/ITenantGetResponse.md)
 - [ITenantListRequest](interfaces/ITenantListRequest.md)
 - [ITenantListResponse](interfaces/ITenantListResponse.md)
 - [ITenantRemoveRequest](interfaces/ITenantRemoveRequest.md)
 - [ITenantUpdateRequest](interfaces/ITenantUpdateRequest.md)
+- [ISingleTenantProcessorConfig](interfaces/ISingleTenantProcessorConfig.md)
+- [ISingleTenantProcessorConstructorOptions](interfaces/ISingleTenantProcessorConstructorOptions.md)
+- [ITenantAdminServiceConfig](interfaces/ITenantAdminServiceConfig.md)
+- [ITenantAdminServiceConstructorOptions](interfaces/ITenantAdminServiceConstructorOptions.md)
+- [ITenantProcessorConfig](interfaces/ITenantProcessorConfig.md)
+- [ITenantProcessorConstructorOptions](interfaces/ITenantProcessorConstructorOptions.md)
 
 ## Variables
 
@@ -42,6 +43,7 @@
 - [tenantById](functions/tenantById.md)
 - [tenantByApiKey](functions/tenantByApiKey.md)
 - [tenantByPublicOrigin](functions/tenantByPublicOrigin.md)
+- [tenantByOrganizationId](functions/tenantByOrganizationId.md)
 - [tenantRemove](functions/tenantRemove.md)
 - [tenantCreate](functions/tenantCreate.md)
 - [tenantUpdate](functions/tenantUpdate.md)

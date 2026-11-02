@@ -6,12 +6,6 @@ The tenant to create.
 
 ### body {#body}
 
-> **body**: `Omit`\<`ITenant`, `"id"` \| `"dateCreated"` \| `"dateModified"`\> & `object`
+> **body**: `ITenantCreate`
 
 The tenant to create.
-
-#### Type Declaration
-
-##### id?
-
-> `optional` **id?**: `string`

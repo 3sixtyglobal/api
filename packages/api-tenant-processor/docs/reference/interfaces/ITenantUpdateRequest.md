@@ -20,6 +20,6 @@ The id of the tenant to update.
 
 ### body {#body}
 
-> **body**: `Omit`\<`ITenant`, `"id"` \| `"dateCreated"` \| `"dateModified"`\>
+> **body**: `ITenantUpdate`
 
 The tenant to update.
