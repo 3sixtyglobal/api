@@ -16,6 +16,7 @@ Alongside the core API building blocks, the repository also includes entity stor
 - [api-service](packages/api-service/README.md) - Information and hosting service implementations with generated REST route handlers.
 - [api-rest-client](packages/api-rest-client/README.md) - REST client implementation for consuming information and hosting endpoints.
 - [api-tenant-processor](packages/api-tenant-processor/README.md) - Tenant resolution services and route handlers that derive tenant context from API keys.
+- [api-tenant-rest-client](packages/api-tenant-rest-client/README.md) - REST client implementation for managing tenants through the tenant admin endpoints.
 
 ## Contributing
 

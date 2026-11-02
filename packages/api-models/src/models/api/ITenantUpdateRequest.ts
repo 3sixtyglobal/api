@@ -1,6 +1,7 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
-import type { ITenant } from "@3sixty/api-models";
+import type { ITenantUpdate } from "../services/ITenantUpdate.js";
 
 /**
  * The tenant to update.
@@ -19,5 +20,5 @@ export interface ITenantUpdateRequest {
 	/**
 	 * The tenant to update.
 	 */
-	body: Omit<ITenant, "id" | "dateCreated" | "dateModified">;
+	body: ITenantUpdate;
 }

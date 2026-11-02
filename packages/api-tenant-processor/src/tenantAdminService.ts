@@ -10,6 +10,8 @@ import {
 	type IPlatformComponent,
 	type ITenant,
 	type ITenantAdminComponent,
+	type ITenantCreate,
+	type ITenantUpdate,
 	TenantEventType
 } from "@3sixty/api-models";
 import { ContextIdKeys, ContextIdStore, type IContextIds } from "@3sixty/context";
@@ -247,9 +249,7 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 	 * @param tenant The tenant to store.
 	 * @returns The tenant id.
 	 */
-	public async create(
-		tenant: Omit<ITenant, "id" | "dateCreated" | "dateModified"> & { id?: string }
-	): Promise<string> {
+	public async create(tenant: ITenantCreate): Promise<string> {
 		Guards.objectValue<ITenant>(TenantAdminService.CLASS_NAME, nameof(tenant), tenant);
 		Guards.stringValue(
 			TenantAdminService.CLASS_NAME,
@@ -348,9 +348,7 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 	 * @param tenant The tenant to update.
 	 * @returns A promise that resolves when the tenant has been updated.
 	 */
-	public async update(
-		tenant: Partial<Omit<ITenant, "dateCreated" | "dateModified">>
-	): Promise<void> {
+	public async update(tenant: ITenantUpdate): Promise<void> {
 		Guards.objectValue<ITenant>(TenantAdminService.CLASS_NAME, nameof(tenant), tenant);
 		Guards.stringHexLength(TenantAdminService.CLASS_NAME, nameof(tenant.id), tenant.id, 32);
 		Guards.stringValue(

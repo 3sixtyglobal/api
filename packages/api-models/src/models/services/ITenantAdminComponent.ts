@@ -1,8 +1,11 @@
 // Copyright 2025 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@3sixty/core";
 import type { EntityCondition } from "@3sixty/entity";
 import type { ITenant } from "./ITenant.js";
+import type { ITenantCreate } from "./ITenantCreate.js";
+import type { ITenantUpdate } from "./ITenantUpdate.js";
 
 /**
  * Configuration for the tenant admin component
@@ -13,16 +16,14 @@ export interface ITenantAdminComponent extends IComponent {
 	 * @param tenant The tenant to store.
 	 * @returns The tenant id.
 	 */
-	create(
-		tenant: Omit<ITenant, "id" | "dateCreated" | "dateModified"> & { id?: string }
-	): Promise<string>;
+	create(tenant: ITenantCreate): Promise<string>;
 
 	/**
 	 * Update a tenant.
 	 * @param tenant The tenant to update.
 	 * @returns A promise that resolves when the tenant has been updated.
 	 */
-	update(tenant: Partial<Omit<ITenant, "dateCreated" | "dateModified">>): Promise<void>;
+	update(tenant: ITenantUpdate): Promise<void>;
 
 	/**
 	 * Get a tenant by its id.
