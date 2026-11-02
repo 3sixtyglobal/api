@@ -4,21 +4,9 @@ The details of a tenant to create.
 
 ## Extends
 
-- `Omit`\<[`ITenant`](ITenant.md), `"id"` \| `"dateCreated"` \| `"dateModified"`\>
+- `Omit`\<[`ITenant`](ITenant.md), `"id"` \| `"apiKey"` \| `"dateCreated"` \| `"dateModified"`\>
 
 ## Properties
-
-### apiKey {#apikey}
-
-> **apiKey**: `string`
-
-The api key for the tenant.
-
-#### Inherited from
-
-[`ITenant`](ITenant.md).[`apiKey`](ITenant.md#apikey)
-
-***
 
 ### label {#label}
 
@@ -73,3 +61,11 @@ Optional list of organization aliases that can are used for legacy lookups.
 > `optional` **id?**: `string`
 
 The unique identifier for the tenant, generated when not provided.
+
+***
+
+### apiKey? {#apikey}
+
+> `optional` **apiKey?**: `string`
+
+The API key of the tenant, generated when not provided.
