@@ -308,7 +308,7 @@
 						"content": {
 							"text/plain": {
 								"schema": {
-									"$ref": "#/components/schemas/ServerLivezResponse"
+									"$ref": "#/components/schemas/LivenessStatus"
 								},
 								"examples": {
 									"livezResponseOK": {
@@ -631,6 +631,19 @@
 					}
 				]
 			},
+			"LivenessStatus": {
+				"description": "The liveness status of the server.",
+				"anyOf": [
+					{
+						"const": "alive",
+						"description": "The server is running."
+					},
+					{
+						"const": "dead",
+						"description": "The server is not running."
+					}
+				]
+			},
 			"ServerFavIconResponse": {
 				"type": "array",
 				"items": {
@@ -674,17 +687,6 @@
 					"name",
 					"version"
 				]
-			},
-			"ServerLivezResponse": {
-				"anyOf": [
-					{
-						"const": "alive"
-					},
-					{
-						"const": "dead"
-					}
-				],
-				"description": "The livez information for the server."
 			},
 			"ServerReadyzResponse": {
 				"anyOf": [

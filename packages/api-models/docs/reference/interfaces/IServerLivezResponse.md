@@ -18,6 +18,6 @@ The headers for the response.
 
 ### body {#body}
 
-> **body**: `"alive"` \| `"dead"`
+> **body**: [`LivenessStatus`](../type-aliases/LivenessStatus.md)
 
 The livez information for the server.

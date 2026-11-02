@@ -146,13 +146,13 @@ The OpenAPI spec.
 
 ### livez() {#livez}
 
-> **livez**(): `Promise`\<\{ `status`: `"alive"` \| `"dead"`; \}\>
+> **livez**(): `Promise`\<\{ `status`: `LivenessStatus`; \}\>
 
 Is the server live.
 
 #### Returns
 
-`Promise`\<\{ `status`: `"alive"` \| `"dead"`; \}\>
+`Promise`\<\{ `status`: `LivenessStatus`; \}\>
 
 The liveness status of the server.
 

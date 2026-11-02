@@ -40,8 +40,9 @@ Runtime name for the class.
 
 > `readonly` `static` **DEFAULT\_OBFUSCATE\_PROPERTIES**: `string`[]
 
-The property names obfuscated by default, which covers passwords, session tokens and the
-key material in identity exports.
+The property names obfuscated by default, matched ignoring case, which covers passwords such
+as currentPassword and newPassword, session and provider tokens, provider codes and secrets,
+API keys and the key material in identity exports.
 
 ## Methods
 
