@@ -79,3 +79,11 @@ This package provides tenant resolution services and route handlers that derive 
 - [README](../packages/api-tenant-processor/README.md)
 - [Examples](../packages/api-tenant-processor/docs/examples.md)
 - [Changelog](../packages/api-tenant-processor/docs/changelog.md)
+
+## api-tenant-rest-client
+
+This package provides a REST client implementation for managing tenants through the tenant admin endpoints.
+
+- [README](../packages/api-tenant-rest-client/README.md)
+- [Examples](../packages/api-tenant-rest-client/docs/examples.md)
+- [Changelog](../packages/api-tenant-rest-client/docs/changelog.md)

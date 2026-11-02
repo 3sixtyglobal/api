@@ -36,6 +36,10 @@
 			"package-name": "api-rest-client",
 			"changelog-path": "docs/changelog.md"
 		},
+		"packages/api-tenant-rest-client": {
+			"package-name": "api-tenant-rest-client",
+			"changelog-path": "docs/changelog.md"
+		},
 		"packages/api-core-server": {
 			"package-name": "api-core-server",
 			"changelog-path": "docs/changelog.md"
@@ -65,6 +69,7 @@
 				"api-service",
 				"api-tenant-processor",
 				"api-rest-client",
+				"api-tenant-rest-client",
 				"api-core-server",
 				"api-server-fastify",
 				"api-server-hono",

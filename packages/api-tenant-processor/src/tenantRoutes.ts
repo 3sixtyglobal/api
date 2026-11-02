@@ -12,21 +12,22 @@ import {
 	type IRestRoute,
 	type ITag,
 	type ITenantAdminComponent,
+	type ITenantCreateRequest,
+	type ITenantGetByApiKeyRequest,
+	type ITenantGetByIdRequest,
+	type ITenantGetByOrganizationIdRequest,
+	type ITenantGetByPublicOriginRequest,
+	type ITenantGetResponse,
+	type ITenantListRequest,
+	type ITenantListResponse,
+	type ITenantRemoveRequest,
+	type ITenantUpdateRequest,
 	type IRouteAuthorization
 } from "@3sixty/api-models";
 import { ContextIdStore } from "@3sixty/context";
 import { Coerce, ComponentFactory, Guards, Is } from "@3sixty/core";
 import { nameof } from "@3sixty/nameof";
 import { HeaderTypes, HttpStatusCode, type IHttpHeaders } from "@3sixty/web";
-import type { ITenantCreateRequest } from "./models/api/ITenantCreateRequest.js";
-import type { ITenantGetByApiKeyRequest } from "./models/api/ITenantGetByApiKeyRequest.js";
-import type { ITenantGetByIdRequest } from "./models/api/ITenantGetByIdRequest.js";
-import type { ITenantGetByPublicOriginRequest } from "./models/api/ITenantGetByPublicOriginRequest.js";
-import type { ITenantGetResponse } from "./models/api/ITenantGetResponse.js";
-import type { ITenantListRequest } from "./models/api/ITenantListRequest.js";
-import type { ITenantListResponse } from "./models/api/ITenantListResponse.js";
-import type { ITenantRemoveRequest } from "./models/api/ITenantRemoveRequest.js";
-import type { ITenantUpdateRequest } from "./models/api/ITenantUpdateRequest.js";
 
 /**
  * The source used when communicating about these routes.
@@ -183,6 +184,58 @@ export function generateRestRoutesTenants(
 		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
 	};
 
+	const tenantGetByOrganizationIdRoute: IRestRoute<
+		ITenantGetByOrganizationIdRequest,
+		ITenantGetResponse
+	> = {
+		operationId: "tenantGetByOrganizationId",
+		summary: "Get the tenant by organization id",
+		tag: tagsTenants[0].name,
+		method: "GET",
+		path: `${baseRouteName}/organization/:organizationId`,
+		handler: async (httpRequestContext, request) =>
+			tenantByOrganizationId(httpRequestContext, componentName, request),
+		requestType: {
+			type: nameof<ITenantGetByOrganizationIdRequest>(),
+			examples: [
+				{
+					id: "tenantGetByOrganizationIdRequestExample",
+					request: {
+						pathParams: {
+							organizationId: "org-1"
+						},
+						query: {
+							includeLegacy: "true"
+						}
+					}
+				}
+			]
+		},
+		responseType: [
+			{
+				type: nameof<ITenantGetResponse>(),
+				examples: [
+					{
+						id: "tenantGetByOrganizationIdResponse",
+						description: "The response for the get tenant by organization id request.",
+						response: {
+							body: {
+								id: "2a39d6e62d98aa5372432f2e5d2208d4",
+								apiKey: "ad7a5b0b816ca314b69c813ae1368232",
+								label: "node",
+								dateCreated: "2026-01-19T03:59:35.742Z",
+								dateModified: "2026-01-19T03:59:35.742Z",
+								publicOrigin: "https://example.com:4321",
+								organizationId: "org-1"
+							}
+						}
+					}
+				]
+			}
+		],
+		defaultAuthorization: DEFAULT_AUTHORIZATION_READER
+	};
+
 	const tenantGetByPublicOriginRoute: IRestRoute = {
 		operationId: "tenantGetByPublicOrigin",
 		summary: "Get the tenant by public origin",
@@ -318,6 +371,7 @@ export function generateRestRoutesTenants(
 		tenantCreateRoute,
 		tenantGetByIdRoute,
 		tenantGetByApiKeyRoute,
+		tenantGetByOrganizationIdRoute,
 		tenantGetByPublicOriginRoute,
 		tenantRemoveRoute,
 		tenantUpdateRoute
@@ -455,6 +509,41 @@ export async function tenantByPublicOrigin(
 }
 
 /**
+ * Get the tenant by organization id.
+ * @param httpRequestContext The request context for the API.
+ * @param componentName The name of the component to use in the routes.
+ * @param request The request.
+ * @returns The response object with additional http response properties.
+ */
+export async function tenantByOrganizationId(
+	httpRequestContext: IHttpRequestContext,
+	componentName: string,
+	request: ITenantGetByOrganizationIdRequest
+): Promise<ITenantGetResponse> {
+	Guards.stringValue(
+		ROUTES_SOURCE,
+		nameof(request.pathParams.organizationId),
+		request.pathParams.organizationId
+	);
+	const component = ComponentFactory.get<ITenantAdminComponent>(componentName);
+
+	const result = await component.getTenantByOrganizationId(
+		request.pathParams.organizationId,
+		Coerce.boolean(request.query?.includeLegacy)
+	);
+
+	if (!Is.stringValue(result.publicOrigin)) {
+		const contextIds = await ContextIdStore.getContextIds();
+		const publicOrigin = contextIds?.[HttpContextIdKeys.PublicOrigin];
+		result.publicOrigin ??= publicOrigin;
+	}
+
+	return {
+		body: result
+	};
+}
+
+/**
  * Remove the tenant by id.
  * @param httpRequestContext The request context for the API.
  * @param componentName The name of the component to use in the routes.
@@ -490,7 +579,7 @@ export async function tenantCreate(
 	request: ITenantCreateRequest,
 	baseRouteName: string
 ): Promise<ICreatedResponse> {
-	Guards.stringValue(ROUTES_SOURCE, nameof(request.body), request.body);
+	Guards.objectValue(ROUTES_SOURCE, nameof(request.body), request.body);
 	const component = ComponentFactory.get<ITenantAdminComponent>(componentName);
 
 	const createdId = await component.create(request.body);
@@ -524,10 +613,10 @@ export async function tenantUpdate(
 	request: ITenantUpdateRequest
 ): Promise<INoContentResponse> {
 	Guards.stringValue(ROUTES_SOURCE, nameof(request.pathParams.id), request.pathParams.id);
-	Guards.stringValue(ROUTES_SOURCE, nameof(request.body), request.body);
+	Guards.objectValue(ROUTES_SOURCE, nameof(request.body), request.body);
 	const component = ComponentFactory.get<ITenantAdminComponent>(componentName);
 
-	await component.update(request.body);
+	await component.update({ ...request.body, id: request.pathParams.id });
 
 	return {
 		statusCode: HttpStatusCode.noContent

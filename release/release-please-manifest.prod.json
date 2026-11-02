@@ -8,5 +8,6 @@
 	"packages/api-server-native": "0.11.0",
 	"packages/api-service": "0.11.0",
 	"packages/api-rest-client": "0.11.0",
+	"packages/api-tenant-rest-client": "0.11.0",
 	"packages/api-tenant-processor": "0.11.0"
 }
