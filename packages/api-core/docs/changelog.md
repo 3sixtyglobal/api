@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.20.0-next.6](https://github.com/3sixtyglobal/api/compare/api-core-v0.20.0-next.5...api-core-v0.20.0-next.6) (2026-11-02)
+
+
+### Features
+
+* authorization ([#51](https://github.com/3sixtyglobal/api/issues/51)) ([023ef94](https://github.com/3sixtyglobal/api/commit/023ef94925114e88522cbe6f703d9b05a202bc6d))
+* publish packages under the [@3sixty](https://github.com/3sixty) namespace ([91b1822](https://github.com/3sixtyglobal/api/commit/91b1822dba38f70692087ad4643572531d6634dc))
+* release to next [skip ci] ([#54](https://github.com/3sixtyglobal/api/issues/54)) ([800b37b](https://github.com/3sixtyglobal/api/commit/800b37bbd673bbaedbdbc8dcfdf29f39a292e2c0))
+* release to next [skip ci] ([#65](https://github.com/3sixtyglobal/api/issues/65)) ([2b1681b](https://github.com/3sixtyglobal/api/commit/2b1681bfc4b3c5561573b95b4515700343d04694))
+* updated ts compile ([d9a5c86](https://github.com/3sixtyglobal/api/commit/d9a5c86ec7dd1faf3045b5cd1e0d38a4b331313d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @3sixty/api-models bumped from 0.20.0-next.5 to 0.20.0-next.6
+
 ## [0.20.0-next.5](https://github.com/3sixtyglobal/api/compare/api-core-v0.20.0-next.4...api-core-v0.20.0-next.5) (2026-11-02)
 
 
