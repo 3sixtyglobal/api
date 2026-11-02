@@ -27,6 +27,7 @@ export * from "./models/healthCategory.js";
 export * from "./models/healthStatus.js";
 export * from "./models/httpContextIdKeys.js";
 export * from "./models/IHealth.js";
+export * from "./models/livenessStatus.js";
 export * from "./models/protocol/IHttpRequest.js";
 export * from "./models/protocol/IHttpRequestContext.js";
 export * from "./models/protocol/IHttpRequestPathParams.js";

@@ -1,17 +1,19 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
-import type {
-	IHttpRequestContext,
-	IInformationComponent,
-	INoContentRequest,
-	IRestRoute,
-	IServerFavIconResponse,
-	IServerInfoResponse,
-	IServerLivezResponse,
-	IServerReadyzResponse,
-	IServerRootResponse,
-	IServerSpecResponse,
-	ITag
+import {
+	type IHttpRequestContext,
+	type IInformationComponent,
+	type INoContentRequest,
+	type IRestRoute,
+	type IServerFavIconResponse,
+	type IServerInfoResponse,
+	type IServerLivezResponse,
+	type IServerReadyzResponse,
+	type IServerRootResponse,
+	type IServerSpecResponse,
+	type ITag,
+	LivenessStatus
 } from "@3sixty/api-models";
 import { ComponentFactory, Is } from "@3sixty/core";
 import { nameof } from "@3sixty/nameof";
@@ -134,7 +136,7 @@ export function generateRestRoutesInformation(
 							headers: {
 								[HeaderTypes.ContentType]: MimeTypes.PlainText
 							},
-							body: "alive"
+							body: LivenessStatus.Alive
 						}
 					},
 					{
@@ -144,7 +146,7 @@ export function generateRestRoutesInformation(
 							headers: {
 								[HeaderTypes.ContentType]: MimeTypes.PlainText
 							},
-							body: "dead"
+							body: LivenessStatus.Dead
 						}
 					}
 				]

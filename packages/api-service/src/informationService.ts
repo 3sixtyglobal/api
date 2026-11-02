@@ -1,7 +1,8 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import { readFile } from "node:fs/promises";
-import type { IInformationComponent, IServerInfo } from "@3sixty/api-models";
+import { type IInformationComponent, type IServerInfo, LivenessStatus } from "@3sixty/api-models";
 import { Factory, Guards, Is } from "@3sixty/core";
 import { nameof } from "@3sixty/nameof";
 import type { IInformationServiceConstructorOptions } from "./models/IInformationServiceConstructorOptions.js";
@@ -125,9 +126,9 @@ export class InformationService implements IInformationComponent {
 	 * @returns The liveness status of the server.
 	 */
 	public async livez(): Promise<{
-		status: "alive" | "dead";
+		status: LivenessStatus;
 	}> {
-		return { status: "alive" };
+		return { status: LivenessStatus.Alive };
 	}
 
 	/**

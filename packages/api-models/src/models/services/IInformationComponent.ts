@@ -1,7 +1,9 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import type { IComponent } from "@3sixty/core";
 import type { IServerInfo } from "./IServerInfo.js";
+import type { LivenessStatus } from "../livenessStatus.js";
 
 /**
  * The information component for the server.
@@ -35,7 +37,7 @@ export interface IInformationComponent extends IComponent {
 	 * Is the server live.
 	 * @returns The livez status of the server.
 	 */
-	livez(): Promise<{ status: "alive" | "dead" }>;
+	livez(): Promise<{ status: LivenessStatus }>;
 
 	/**
 	 * Is the server ready.

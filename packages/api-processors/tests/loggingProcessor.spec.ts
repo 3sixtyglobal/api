@@ -161,19 +161,39 @@ describe("LoggingProcessor", () => {
 				account: { mnemonic: "word word word", seed: "c2VlZA==" },
 				token: "jwt",
 				refreshToken: "refresh",
-				tokenId: "visible"
+				tokenId: "visible",
+				currentPassword: "old-pass",
+				newPassword: "new-pass",
+				clientSecret: "client-secret",
+				code: "provider-code",
+				codeVerifier: "verifier",
+				apiKey: "api-key",
+				encoding: "visible-encoding"
 			});
 			const state: { [id: string]: unknown } = {};
 			await processor.pre(request, response, undefined, {}, state);
 			await processor.post(request, response, undefined, {}, state);
 
 			const logged = JSON.stringify(logEntries[1].data);
-			for (const secret of ["c2lnbmF0dXJl", "cHJpdmF0ZQ==", "word word word", "c2VlZA==", "jwt"]) {
+			for (const secret of [
+				"c2lnbmF0dXJl",
+				"cHJpdmF0ZQ==",
+				"word word word",
+				"c2VlZA==",
+				"jwt",
+				"old-pass",
+				"new-pass",
+				"client-secret",
+				"provider-code",
+				"verifier",
+				"api-key"
+			]) {
 				expect(logged).not.toContain(`"${secret}"`);
 			}
 			expect(logged).not.toContain('refresh"');
 			expect(logged).toContain("cHVibGlj");
 			expect(logged).toContain("visible");
+			expect(logged).toContain("visible-encoding");
 		});
 
 		test("uses only the configured properties when set", async () => {
