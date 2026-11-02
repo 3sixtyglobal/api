@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.20.0-next.4](https://github.com/3sixtyglobal/api/compare/api-core-server-v0.20.0-next.3...api-core-server-v0.20.0-next.4) (2026-11-02)
+
+
+### Miscellaneous Chores
+
+* **api-core-server:** Synchronize repo versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @3sixty/api-models bumped from 0.20.0-next.3 to 0.20.0-next.4
+    * @3sixty/api-processors bumped from 0.20.0-next.3 to 0.20.0-next.4
+
 ## [0.20.0-next.3](https://github.com/3sixtyglobal/api/compare/api-core-server-v0.20.0-next.2...api-core-server-v0.20.0-next.3) (2026-10-29)
 
 
