@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.20.0-next.4](https://github.com/3sixtyglobal/api/compare/api-rest-client-v0.20.0-next.3...api-rest-client-v0.20.0-next.4) (2026-11-02)
+
+
+### Features
+
+* obfuscate more logged secrets and add LivenessStatus ([#59](https://github.com/3sixtyglobal/api/issues/59)) ([8343dae](https://github.com/3sixtyglobal/api/commit/8343dae4b5c02d2dc7462141742233ce16d6a2d3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @3sixty/api-core bumped from 0.20.0-next.3 to 0.20.0-next.4
+    * @3sixty/api-models bumped from 0.20.0-next.3 to 0.20.0-next.4
+
 ## [0.20.0-next.3](https://github.com/3sixtyglobal/api/compare/api-rest-client-v0.20.0-next.2...api-rest-client-v0.20.0-next.3) (2026-10-29)
 
 
