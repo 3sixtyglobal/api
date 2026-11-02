@@ -24,8 +24,9 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 	public static readonly CLASS_NAME: string = nameof<LoggingProcessor>();
 
 	/**
-	 * The property names obfuscated by default, which covers passwords, session tokens and the
-	 * key material in identity exports.
+	 * The property names obfuscated by default, matched ignoring case, which covers passwords such
+	 * as currentPassword and newPassword, session and provider tokens, provider codes and secrets,
+	 * API keys and the key material in identity exports.
 	 */
 	public static readonly DEFAULT_OBFUSCATE_PROPERTIES: string[] = [
 		"password",
@@ -34,7 +35,13 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 		"^seed$",
 		"documentSignature",
 		"^token$",
-		"refreshToken"
+		"refreshToken",
+		"accessToken",
+		"idToken",
+		"secret",
+		"^code$",
+		"codeVerifier",
+		"apiKey"
 	];
 
 	/**
@@ -56,10 +63,11 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 	private readonly _fullBase64: boolean;
 
 	/**
-	 * List of property names to obfuscate, defaults to DEFAULT_OBFUSCATE_PROPERTIES.
+	 * The patterns of the property names to obfuscate, ignoring case, defaults to
+	 * DEFAULT_OBFUSCATE_PROPERTIES.
 	 * @internal
 	 */
-	private readonly _obfuscateProperties: string[];
+	private readonly _obfuscateProperties: RegExp[];
 
 	/**
 	 * Request URL path prefixes to skip logging, defaults to ["/logging"].
@@ -75,9 +83,9 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 		this._logging = ComponentFactory.getIfExists(options?.loggingComponentType);
 		this._includeBody = options?.config?.includeBody ?? false;
 		this._fullBase64 = options?.config?.fullBase64 ?? false;
-		this._obfuscateProperties = options?.config?.obfuscateProperties ?? [
-			...LoggingProcessor.DEFAULT_OBFUSCATE_PROPERTIES
-		];
+		this._obfuscateProperties = (
+			options?.config?.obfuscateProperties ?? LoggingProcessor.DEFAULT_OBFUSCATE_PROPERTIES
+		).map(property => new RegExp(property, "i"));
 		this._excludePaths = options?.config?.excludePaths ?? ["/logging"];
 	}
 
@@ -249,10 +257,7 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 			}
 		} else if (!this._fullBase64 && Is.stringBase64(propValue) && propValue.length > 256) {
 			propValue = "<base64>";
-		} else if (
-			Is.string(propValue) &&
-			this._obfuscateProperties.some(op => new RegExp(op).test(propName))
-		) {
+		} else if (Is.string(propValue) && this._obfuscateProperties.some(op => op.test(propName))) {
 			propValue = "**************";
 		}
 

@@ -1,4 +1,5 @@
 // Copyright 2024 IOTA Stiftung.
+// Copyright 2026 3Sixty Trade Ltd.
 // SPDX-License-Identifier: Apache-2.0.
 import { BaseRestClient } from "@3sixty/api-core";
 import type {
@@ -11,7 +12,8 @@ import type {
 	IServerLivezResponse,
 	IServerReadyzResponse,
 	IServerRootResponse,
-	IServerSpecResponse
+	IServerSpecResponse,
+	LivenessStatus
 } from "@3sixty/api-models";
 import { nameof } from "@3sixty/nameof";
 
@@ -83,7 +85,7 @@ export class InformationRestClient extends BaseRestClient implements IInformatio
 	 * Is the server live.
 	 * @returns The liveness status of the server.
 	 */
-	public async livez(): Promise<{ status: "alive" | "dead" }> {
+	public async livez(): Promise<{ status: LivenessStatus }> {
 		const response = await this.fetch<INoContentRequest, IServerLivezResponse>("/livez", "GET");
 		return { status: response.body };
 	}

@@ -17,8 +17,9 @@ export interface ILoggingProcessorConfig {
 	fullBase64?: boolean;
 
 	/**
-	 * List of property names to obfuscate, can be regex, defaults to password, privateKey,
-	 * mnemonic, seed, documentSignature, token and refreshToken.
+	 * List of property names to obfuscate, can be regex, matched ignoring case, defaults to
+	 * password, privateKey, mnemonic, seed, documentSignature, token, refreshToken, accessToken,
+	 * idToken, secret, code, codeVerifier and apiKey.
 	 */
 	obfuscateProperties?: string[];
 
