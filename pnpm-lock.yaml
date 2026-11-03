@@ -242,7 +242,7 @@ importers:
   packages/api-core:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/core':
         specifier: next
@@ -297,10 +297,10 @@ importers:
   packages/api-core-server:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-processors
       '@3sixty/context':
         specifier: next
@@ -413,7 +413,7 @@ importers:
   packages/api-processors:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -471,10 +471,10 @@ importers:
   packages/api-rest-client:
     dependencies:
       '@3sixty/api-core':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-core
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/nameof':
         specifier: next
@@ -523,10 +523,10 @@ importers:
   packages/api-server-fastify:
     dependencies:
       '@3sixty/api-core-server':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-core-server
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -557,7 +557,7 @@ importers:
         version: 4.8.4(supports-color@10.2.2)
     devDependencies:
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-processors
       '@3sixty/logging-models':
         specifier: next
@@ -605,10 +605,10 @@ importers:
   packages/api-server-hono:
     dependencies:
       '@3sixty/api-core-server':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-core-server
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -633,7 +633,7 @@ importers:
         version: 4.8.4(supports-color@10.2.2)
     devDependencies:
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-processors
       '@3sixty/logging-models':
         specifier: next
@@ -681,10 +681,10 @@ importers:
   packages/api-server-native:
     dependencies:
       '@3sixty/api-core-server':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-core-server
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -706,7 +706,7 @@ importers:
         version: 4.8.4(supports-color@10.2.2)
     devDependencies:
       '@3sixty/api-processors':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-processors
       '@3sixty/logging-models':
         specifier: next
@@ -754,7 +754,7 @@ importers:
   packages/api-service:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/background-task-models':
         specifier: next
@@ -767,7 +767,7 @@ importers:
         version: 0.20.0-next.10
       '@3sixty/entity-storage-models':
         specifier: next
-        version: 0.20.0-next.3
+        version: 0.20.0-next.4
       '@3sixty/logging-models':
         specifier: next
         version: 0.20.0-next.2
@@ -824,7 +824,7 @@ importers:
   packages/api-tenant-processor:
     dependencies:
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/context':
         specifier: next
@@ -840,7 +840,7 @@ importers:
         version: 0.20.0-next.10
       '@3sixty/entity-storage-models':
         specifier: next
-        version: 0.20.0-next.3
+        version: 0.20.0-next.4
       '@3sixty/nameof':
         specifier: next
         version: 0.20.0-next.10
@@ -888,10 +888,10 @@ importers:
   packages/api-tenant-rest-client:
     dependencies:
       '@3sixty/api-core':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-core
       '@3sixty/api-models':
-        specifier: 0.20.0-next.8
+        specifier: 0.20.0-next.9
         version: link:../api-models
       '@3sixty/core':
         specifier: next
@@ -965,8 +965,8 @@ packages:
     resolution: {integrity: sha512-IYMUwAK6j4iIm7Kcp6TC1EtktwdXRPiFccHSXX4wqOzs+BUAHcnW6vIHVAE/KKLR2+K1pb5HWhqErSdPHkF/xw==}
     engines: {bun: '>=1.4.4', node: '>=24.0.0'}
 
-  '@3sixty/entity-storage-models@0.20.0-next.3':
-    resolution: {integrity: sha512-6bPWSIQ/99SPgyMQ2/OtFH2U+EFfCc+lkP+23+tMJVz25kIKQCtrtpgvyavLZr7mcbDQUMgmgoDhXQpPao26/Q==}
+  '@3sixty/entity-storage-models@0.20.0-next.4':
+    resolution: {integrity: sha512-rnKDqH03K9Vh+3rEImcwDBt+S79v1PFaDDokTnehUCKRMHeMqSPTKbL/vIrGr/74DhJ4WAPLuRcTQCf2BeyC2Q==}
     engines: {bun: '>=1.4.4', node: '>=24.0.0'}
 
   '@3sixty/entity@0.20.0-next.10':
@@ -4412,7 +4412,7 @@ snapshots:
       '@scure/bip39': 2.4.0
       micro-key-producer: 0.10.2
 
-  '@3sixty/entity-storage-models@0.20.0-next.3':
+  '@3sixty/entity-storage-models@0.20.0-next.4':
     dependencies:
       '@3sixty/context': 0.20.0-next.10
       '@3sixty/core': 0.20.0-next.10
