@@ -18,6 +18,11 @@ export const HttpContextIdKeys = {
 	UserAgent: "userAgent",
 
 	/**
+	 * The language the client prefers most, from its Accept-Language header, such as de-CH.
+	 */
+	Language: "language",
+
+	/**
 	 * Correlation ID of the request.
 	 */
 	CorrelationId: "correlationId",

@@ -963,6 +963,25 @@ describe("BaseServer", () => {
 			expect(contextIds[HttpContextIdKeys.IpAddress]).toEqual("192.0.2.10");
 		});
 
+		test("takes the most preferred language from the Accept-Language header", async () => {
+			const server = new TestServer();
+			await server.build();
+
+			expect(
+				server.contextIds("http://request-origin:4000", {
+					"accept-language": "en;q=0.8,de-CH,de;q=0.9"
+				})[HttpContextIdKeys.Language]
+			).toEqual("de-CH");
+			expect(
+				server.contextIds("http://request-origin:4000", { "accept-language": "***" })[
+					HttpContextIdKeys.Language
+				]
+			).toBeUndefined();
+			expect(
+				server.contextIds("http://request-origin:4000")[HttpContextIdKeys.Language]
+			).toBeUndefined();
+		});
+
 		test("has no client IP without a socket address", async () => {
 			const server = new TestServer();
 			await server.build();

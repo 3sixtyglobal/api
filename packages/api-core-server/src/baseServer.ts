@@ -749,6 +749,7 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 		return {
 			[HttpContextIdKeys.IpAddress]: this.resolveClientIp(remoteAddress, headers),
 			[HttpContextIdKeys.UserAgent]: HeaderHelper.extractUserAgent(headers),
+			[HttpContextIdKeys.Language]: HeaderHelper.extractAcceptLanguage(headers)?.[0]?.language,
 			[HttpContextIdKeys.CorrelationId]: HeaderHelper.extractCorrelationId(headers),
 			[HttpContextIdKeys.RemoteRequest]: RandomHelper.generateUuidV7("compact"),
 			[HttpContextIdKeys.LocalOrigin]: this._localOrigin,
