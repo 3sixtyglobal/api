@@ -18,6 +18,12 @@ IP address of the client.
 
 User agent of the client.
 
+### Language {#language}
+
+> `readonly` **Language**: `"language"` = `"language"`
+
+The language the client prefers most, from its Accept-Language header, such as de-CH.
+
 ### CorrelationId {#correlationid}
 
 > `readonly` **CorrelationId**: `"correlationId"` = `"correlationId"`
