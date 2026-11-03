@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.20.0-next.9](https://github.com/3sixtyglobal/api/compare/api-server-fastify-v0.20.0-next.8...api-server-fastify-v0.20.0-next.9) (2026-11-03)
+
+
+### Miscellaneous Chores
+
+* **api-server-fastify:** Synchronize repo versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @3sixty/api-core-server bumped from 0.20.0-next.8 to 0.20.0-next.9
+    * @3sixty/api-models bumped from 0.20.0-next.8 to 0.20.0-next.9
+  * devDependencies
+    * @3sixty/api-processors bumped from 0.20.0-next.8 to 0.20.0-next.9
+
 ## [0.20.0-next.8](https://github.com/3sixtyglobal/api/compare/api-server-fastify-v0.20.0-next.7...api-server-fastify-v0.20.0-next.8) (2026-11-02)
 
 

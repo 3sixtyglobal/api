@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.20.0-next.9](https://github.com/3sixtyglobal/api/compare/api-core-server-v0.20.0-next.8...api-core-server-v0.20.0-next.9) (2026-11-03)
+
+
+### Features
+
+* add the language context id from accept-language ([#72](https://github.com/3sixtyglobal/api/issues/72)) ([eb8d197](https://github.com/3sixtyglobal/api/commit/eb8d197505758b6f3ff5f57c383b2c393fe1f01c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @3sixty/api-models bumped from 0.20.0-next.8 to 0.20.0-next.9
+    * @3sixty/api-processors bumped from 0.20.0-next.8 to 0.20.0-next.9
+
 ## [0.20.0-next.8](https://github.com/3sixtyglobal/api/compare/api-core-server-v0.20.0-next.7...api-core-server-v0.20.0-next.8) (2026-11-02)
 
 
