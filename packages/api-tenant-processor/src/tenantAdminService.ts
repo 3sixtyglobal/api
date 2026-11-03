@@ -20,6 +20,7 @@ import {
 	BaseError,
 	ComponentFactory,
 	Converter,
+	DurationConstants,
 	GeneralError,
 	Guards,
 	type IError,
@@ -52,7 +53,7 @@ export class TenantAdminService implements ITenantAdminComponent, IHealthProvide
 	 * The default time to keep a tenant lookup in the cache.
 	 * @internal
 	 */
-	private static readonly _DEFAULT_CACHE_TTL_MS: number = 30000;
+	private static readonly _DEFAULT_CACHE_TTL_MS: number = 30 * DurationConstants.MsPerSecond;
 
 	/**
 	 * The cache key prefix for tenants looked up by id.

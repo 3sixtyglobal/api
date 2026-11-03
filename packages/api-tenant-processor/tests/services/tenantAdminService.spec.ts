@@ -12,6 +12,7 @@ import {
 	AlreadyExistsError,
 	ComponentFactory,
 	Converter,
+	DurationConstants,
 	LfuCache,
 	NotFoundError
 } from "@3sixty/core";
@@ -846,12 +847,15 @@ describe("TenantAdminService", () => {
 			const start = Date.now();
 			vi.mocked(mockStorage.get).mockResolvedValue(EXISTING_TENANT);
 
-			const service = new TenantAdminService({ config: { tenantCacheTtlMs: 60000 } });
+			const service = new TenantAdminService({
+				config: { tenantCacheTtlMs: DurationConstants.MsPerMinute }
+			});
 
 			await service.get(TENANT_ID);
 
 			// Steady traffic inside the lifetime keeps hitting the same entry.
-			vi.setSystemTime(start + 30000);
+			const thirtySecondsMs = 30 * DurationConstants.MsPerSecond;
+			vi.setSystemTime(start + thirtySecondsMs);
 			await service.get(TENANT_ID);
 			expect(mockStorage.get).toHaveBeenCalledTimes(1);
 

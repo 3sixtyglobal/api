@@ -8,7 +8,7 @@ import type {
 	IHttpServerRequest
 } from "@3sixty/api-models";
 import type { IContextIds } from "@3sixty/context";
-import { Coerce, ComponentFactory, Is, ObjectHelper } from "@3sixty/core";
+import { Coerce, ComponentFactory, DurationConstants, Is, ObjectHelper } from "@3sixty/core";
 import type { ILoggingComponent } from "@3sixty/logging-models";
 import { nameof } from "@3sixty/nameof";
 import { HeaderTypes, HttpStatusCode, MimeTypes } from "@3sixty/web";
@@ -206,7 +206,7 @@ export class LoggingProcessor implements IBaseRouteProcessor {
 		const now = process.hrtime.bigint();
 		const start = Coerce.bigint(processorState.requestStart) ?? now;
 		const elapsed = now - start;
-		const elapsedMicroSeconds = Math.floor(Number(elapsed) / 1000);
+		const elapsedMicroSeconds = Math.floor(Number(elapsed) / DurationConstants.NsPerUs);
 
 		if (Is.number(response.statusCode) && response.statusCode >= HttpStatusCode.badRequest) {
 			await this._logging?.log({

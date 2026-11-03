@@ -4,7 +4,7 @@ import { HealthStatus, type IHealth } from "@3sixty/api-models";
 import type { IBackgroundTask } from "@3sixty/background-task-models";
 import { TaskStatus } from "@3sixty/background-task-models";
 import { ContextIdStore } from "@3sixty/context";
-import { ComponentFactory, Factory, GeneralError } from "@3sixty/core";
+import { ComponentFactory, DurationConstants, Factory, GeneralError } from "@3sixty/core";
 import { ModuleHelper } from "@3sixty/modules";
 import { HealthService } from "../src/healthService.js";
 
@@ -76,12 +76,16 @@ describe("HealthService", () => {
 		});
 
 		test("creates an instance with custom healthCheckInterval", () => {
-			expect(new HealthService({ config: { healthCheckInterval: 60000 } })).toBeDefined();
+			expect(
+				new HealthService({ config: { healthCheckInterval: DurationConstants.MsPerMinute } })
+			).toBeDefined();
 		});
 
 		test("creates an instance with custom healthCheckApplicationInterval", () => {
 			expect(
-				new HealthService({ config: { healthCheckApplicationInterval: 300000 } })
+				new HealthService({
+					config: { healthCheckApplicationInterval: 5 * DurationConstants.MsPerMinute }
+				})
 			).toBeDefined();
 		});
 	});
@@ -104,7 +108,7 @@ describe("HealthService", () => {
 	describe("start", () => {
 		async function startAndTick(service: HealthService): Promise<void> {
 			await service.start();
-			await vi.advanceTimersByTimeAsync(30000);
+			await vi.advanceTimersByTimeAsync(30 * DurationConstants.MsPerSecond);
 		}
 
 		test("does not collect health when no engine core factory is registered", async () => {
@@ -411,7 +415,7 @@ describe("HealthService", () => {
 				const service = new HealthService();
 				await startAndTick(service);
 				await completeTask([]);
-				await vi.advanceTimersByTimeAsync(300000);
+				await vi.advanceTimersByTimeAsync(5 * DurationConstants.MsPerMinute);
 				expect(mockCreate).toHaveBeenCalledTimes(2);
 			});
 
@@ -419,7 +423,7 @@ describe("HealthService", () => {
 				const service = new HealthService();
 				await startAndTick(service);
 				await completeTask([], TaskStatus.Failed);
-				await vi.advanceTimersByTimeAsync(300000);
+				await vi.advanceTimersByTimeAsync(5 * DurationConstants.MsPerMinute);
 				expect(mockCreate).toHaveBeenCalledTimes(2);
 			});
 
@@ -454,7 +458,7 @@ describe("HealthService", () => {
 			mockGetRegisteredComponents.mockResolvedValue([
 				makeComponent({ source: "db", status: HealthStatus.Error })
 			]);
-			await vi.advanceTimersByTimeAsync(30000);
+			await vi.advanceTimersByTimeAsync(30 * DurationConstants.MsPerSecond);
 
 			expect((await service.healthStatus()).components).toEqual([]);
 		});

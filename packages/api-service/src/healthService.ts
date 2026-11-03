@@ -9,7 +9,14 @@ import {
 import type { IBackgroundTask, IBackgroundTaskComponent } from "@3sixty/background-task-models";
 import { TaskStatus } from "@3sixty/background-task-models";
 import type { IContextIds } from "@3sixty/context";
-import { BaseError, ComponentFactory, Factory, type IComponent, Is } from "@3sixty/core";
+import {
+	BaseError,
+	ComponentFactory,
+	DurationConstants,
+	Factory,
+	type IComponent,
+	Is
+} from "@3sixty/core";
 import type { ILoggingComponent } from "@3sixty/logging-models";
 import { ModuleHelper } from "@3sixty/modules";
 import { nameof } from "@3sixty/nameof";
@@ -119,10 +126,11 @@ export class HealthService implements IHealthComponent {
 	 */
 	constructor(options?: IHealthServiceConstructorOptions) {
 		this._healthInfo = { status: HealthStatus.Ok, components: [] };
-		this._healthCheckInterval = options?.config?.healthCheckInterval ?? 60000;
+		this._healthCheckInterval =
+			options?.config?.healthCheckInterval ?? DurationConstants.MsPerMinute;
 		this._healthApplicationCheckInterval =
-			options?.config?.healthCheckApplicationInterval ?? 300000;
-		this._initialInterval = options?.config?.initialInterval ?? 2000;
+			options?.config?.healthCheckApplicationInterval ?? 5 * DurationConstants.MsPerMinute;
+		this._initialInterval = options?.config?.initialInterval ?? 2 * DurationConstants.MsPerSecond;
 		this._includeErrorStack = options?.config?.includeErrorStack;
 		this._backgroundTaskComponent = ComponentFactory.get<IBackgroundTaskComponent>(
 			options?.backgroundTaskComponentType ?? "background-task"

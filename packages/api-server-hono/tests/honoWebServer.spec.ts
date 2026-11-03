@@ -23,6 +23,7 @@ import {
 } from "@3sixty/api-processors";
 import {
 	ComponentFactory,
+	DurationConstants,
 	GeneralError,
 	GuardError,
 	Is,
@@ -1387,7 +1388,7 @@ describe("api-server-hono", () => {
 		const start = Date.now();
 		await server.stop();
 
-		expect(Date.now() - start).toBeLessThan(1000);
+		expect(Date.now() - start).toBeLessThan(DurationConstants.MsPerSecond);
 	});
 
 	test("Can serve concurrent websocket clients without crossing their responses", async () => {
