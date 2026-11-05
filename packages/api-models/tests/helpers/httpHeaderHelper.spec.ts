@@ -405,7 +405,7 @@ describe("HttpHeaderHelper", () => {
 
 		it("should set content-type to JSON when Accept is some other value", () => {
 			const headers: IHttpHeaders = {};
-			HttpHeaderHelper.buildJsonContentType(headers, { accept: "text/html" });
+			HttpHeaderHelper.buildJsonContentType(headers, { accept: MimeTypes.Html });
 			expect(headers["content-type"]).toBe(MimeTypes.Json);
 		});
 

@@ -20,7 +20,7 @@ export interface IBaseRouteProcessor<T = IBaseRoute, R = IHttpServerRequest> ext
 	 * @param processorState The state handed through the processors.
 	 * @param componentTypes The component types for the request.
 	 * @param componentTypes.loggingComponentType The logging component type.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	pre?(
 		request: R,
@@ -42,7 +42,7 @@ export interface IBaseRouteProcessor<T = IBaseRoute, R = IHttpServerRequest> ext
 	 * @param processorState The state handed through the processors.
 	 * @param componentTypes The component types for the request.
 	 * @param componentTypes.loggingComponentType The logging component type.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	post?(
 		request: R,

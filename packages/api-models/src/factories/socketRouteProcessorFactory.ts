@@ -6,6 +6,5 @@ import type { ISocketRouteProcessor } from "../models/server/ISocketRouteProcess
 /**
  * Factory for creating implementation of socket route processor types.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const SocketRouteProcessorFactory =
 	Factory.createFactory<ISocketRouteProcessor>("socket-route-processor");

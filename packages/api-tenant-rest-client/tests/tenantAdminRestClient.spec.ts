@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 import type { ITenant } from "@3sixty/api-models";
 import { ComparisonOperator } from "@3sixty/entity";
-import { HeaderTypes, HttpMethod } from "@3sixty/web";
+import { HeaderTypes, HttpMethod, MimeTypes } from "@3sixty/web";
 import { TenantAdminRestClient } from "../src/tenantAdminRestClient.js";
 import {
 	createdResponse,
@@ -154,7 +154,7 @@ describe("TenantAdminRestClient", () => {
 			fetchMock.mockResolvedValueOnce({
 				...jsonResponse([TEST_TENANT]),
 				headers: new Headers({
-					[HeaderTypes.ContentType]: "application/json",
+					[HeaderTypes.ContentType]: MimeTypes.Json,
 					[HeaderTypes.Link]: `<${ENDPOINT}/tenants?cursor=next-page>; rel="next"`
 				})
 			});

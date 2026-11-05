@@ -38,7 +38,7 @@ class TestServer extends BaseServer<string> {
 
 	public closed: boolean;
 
-	public listenError: Error | undefined;
+	public listenError?: Error;
 
 	public boundAddresses: { address: string; family?: string; port: number }[];
 
@@ -854,7 +854,7 @@ describe("BaseServer", () => {
 			expect(() =>
 				server.checkResponse({
 					statusCode: HttpStatusCode.created,
-					headers: { [HeaderTypes.ContentType]: "application/json", "set-cookie": ["a=1", "b=2"] }
+					headers: { [HeaderTypes.ContentType]: MimeTypes.Json, "set-cookie": ["a=1", "b=2"] }
 				})
 			).not.toThrow();
 			expect(() => server.checkResponse({})).not.toThrow();

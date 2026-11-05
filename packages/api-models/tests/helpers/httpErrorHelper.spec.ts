@@ -12,7 +12,7 @@ import {
 	UnprocessableError,
 	ValidationError
 } from "@3sixty/core";
-import { HttpStatusCode } from "@3sixty/web";
+import { HttpStatusCode, MimeTypes } from "@3sixty/web";
 import { ForbiddenError } from "../../src/errors/forbiddenError.js";
 import { TooManyRequestsError } from "../../src/errors/tooManyRequestsError.js";
 import { HttpErrorHelper } from "../../src/helpers/httpErrorHelper.js";
@@ -147,7 +147,7 @@ describe("HttpErrorHelper", () => {
 		HttpErrorHelper.buildResponse(response, error, HttpStatusCode.badRequest, false);
 		expect(response.statusCode).toBe(HttpStatusCode.badRequest);
 		expect(response.body).toEqual(error);
-		expect(response.headers?.["content-type"]).toContain("application/json");
+		expect(response.headers?.["content-type"]).toContain(MimeTypes.Json);
 	});
 
 	it("should include the stack in the response body when requested", () => {

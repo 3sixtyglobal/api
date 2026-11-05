@@ -109,7 +109,7 @@ export function generateRestRoutesInformation(
 		responseType: [
 			{
 				type: nameof<IServerFavIconResponse>(),
-				mimeType: "image/x-icon"
+				mimeType: MimeTypes.Ico
 			}
 		],
 		skipAuth: true,
@@ -328,7 +328,7 @@ export async function serverFavIcon(
 	if (Is.uint8Array(favIcon)) {
 		return {
 			headers: {
-				[HeaderTypes.ContentType]: "image/x-icon"
+				[HeaderTypes.ContentType]: MimeTypes.Ico
 			},
 			body: favIcon
 		};

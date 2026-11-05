@@ -82,7 +82,7 @@ function createPostRoute(path: string, bodyLimit?: string): IRestRoute {
 async function postJsonBody(path: string, byteLength: number): Promise<Response> {
 	return fetch(`http://localhost:${port}${path}`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": MimeTypes.Json },
 		body: JSON.stringify({ data: "x".repeat(byteLength - 11) })
 	});
 }
@@ -105,7 +105,7 @@ async function postDeclaredLength(
 				port,
 				path,
 				method: "POST",
-				headers: { "Content-Type": "application/json", "Content-Length": byteLength }
+				headers: { "Content-Type": MimeTypes.Json, "Content-Length": byteLength }
 			},
 			response => {
 				let data = "";
@@ -1165,7 +1165,7 @@ describe("api-server-hono", () => {
 
 		await fetch(`http://localhost:${port}/`, {
 			method: "POST",
-			headers: { "Content-Type": "application/jwt" },
+			headers: { "Content-Type": MimeTypes.Jwt },
 			body: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"
 		});
 
@@ -1381,7 +1381,7 @@ describe("api-server-hono", () => {
 		await fetch(`http://localhost:${port}/`);
 		await fetch(`http://localhost:${port}/`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: { "Content-Type": MimeTypes.Json },
 			body: JSON.stringify({ data: 1 })
 		});
 
@@ -1594,7 +1594,7 @@ describe("api-server-hono", () => {
 
 		const response = await fetch(`http://localhost:${port}/`, {
 			method: "POST",
-			headers: { "Content-Type": "application/xml" },
+			headers: { "Content-Type": MimeTypes.Xml },
 			body: "<a/>"
 		});
 		const json = await response.json();
@@ -1614,7 +1614,7 @@ describe("api-server-hono", () => {
 
 		const response = await fetch(`http://localhost:${port}/`, {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
+			headers: { "Content-Type": MimeTypes.Json },
 			body: "{ not json"
 		});
 		const json = await response.json();
@@ -1648,7 +1648,7 @@ describe("api-server-hono", () => {
 
 		const response = await fetch(`http://localhost:${port}/`, {
 			method: "POST",
-			headers: { "Content-Type": "text/plain" },
+			headers: { "Content-Type": MimeTypes.PlainText },
 			body: "hello"
 		});
 		await response.arrayBuffer();
@@ -2192,7 +2192,7 @@ describe("api-server-hono", () => {
 		);
 		await server.start();
 
-		const json = { "content-type": "application/json" };
+		const json = { "content-type": MimeTypes.Json };
 		const cases: {
 			name: string;
 			method: string;
@@ -2256,7 +2256,7 @@ describe("api-server-hono", () => {
 				name: "form encoded body",
 				method: "POST",
 				path: "/echo",
-				headers: { "content-type": "application/x-www-form-urlencoded" },
+				headers: { "content-type": MimeTypes.FormUrlEncoded },
 				body: "a=1",
 				status: 415
 			},
@@ -2569,7 +2569,7 @@ describe("api-server-hono", () => {
 				port,
 				path: "/upload",
 				method: "POST",
-				headers: { "content-type": "application/json", "content-length": 1000 }
+				headers: { "content-type": MimeTypes.Json, "content-length": 1000 }
 			});
 			request.on("error", () => resolve());
 			request.write('{"data":"partial');

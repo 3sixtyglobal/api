@@ -4,7 +4,6 @@
 /**
  * The liveness status of the server.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const LivenessStatus = {
 	/**
 	 * The server is running.

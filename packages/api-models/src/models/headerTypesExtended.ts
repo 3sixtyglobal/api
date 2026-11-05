@@ -4,7 +4,6 @@
 /**
  * Http header types used by the servers which are not in the common header types.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const HeaderTypesExtended = {
 	/**
 	 * The client and proxy addresses a request was forwarded through.

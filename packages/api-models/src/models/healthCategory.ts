@@ -4,7 +4,6 @@
 /**
  * The category of a health check.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const HealthCategory = {
 	/**
 	 * Connectivity health check for infrastructure connectors.

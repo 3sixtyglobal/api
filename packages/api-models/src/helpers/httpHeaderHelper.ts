@@ -25,8 +25,8 @@ export class HttpHeaderHelper {
 		headers: IHttpHeaders,
 		url: string,
 		publicOrigin: string | undefined,
-		cursor: string | undefined
-	): asserts headers is IHttpHeaders & { [HeaderTypes.Link]: string | undefined } {
+		cursor?: string | undefined
+	): asserts headers is IHttpHeaders & { [HeaderTypes.Link]?: string } {
 		if (Is.stringValue(cursor)) {
 			const baseUrl = HttpUrlHelper.replaceOrigin(url, publicOrigin);
 			const cursorUrl = HttpUrlHelper.addQueryStringParam(baseUrl, "cursor", cursor);

@@ -4,7 +4,6 @@
 /**
  * The type of event that occurred for a tenant.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const TenantEventType = {
 	/**
 	 * The tenant was created.

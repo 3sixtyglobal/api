@@ -19,6 +19,7 @@
 		"changelog.md"
 	],
 	"words": [
+		"3sixtyglobal",
 		"abbrev",
 		"autorelease",
 		"cutoff",
@@ -29,10 +30,10 @@
 		"livez",
 		"nameof",
 		"openapi",
+		"pver",
 		"readyz",
 		"requestor",
 		"Stiftung",
-		"pver",
 		"teardown"
 	],
 	"ignoreRegExpList": [

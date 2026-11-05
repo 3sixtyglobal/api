@@ -50,7 +50,7 @@ export class SocketRouteProcessor implements ISocketRouteProcessor {
 	 * @param request The server request object containing the socket id and other parameters.
 	 * @param route The route being requested, if a matching one was found.
 	 * @param loggingComponentType The logging component type for the request.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	public async connected(
 		request: ISocketServerRequest,
@@ -78,7 +78,7 @@ export class SocketRouteProcessor implements ISocketRouteProcessor {
 	 * @param request The server request object containing the socket id and other parameters.
 	 * @param route The route being requested, if a matching one was found.
 	 * @param loggingComponentType The logging component type for the request.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	public async disconnected(
 		request: ISocketServerRequest,

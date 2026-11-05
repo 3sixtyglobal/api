@@ -130,7 +130,9 @@ export abstract class BaseRestClient {
 		let parsedEndpoint: URL | undefined;
 		try {
 			parsedEndpoint = new URL(config.endpoint);
-		} catch {}
+		} catch {
+			// Not a valid URL, parsedEndpoint stays undefined.
+		}
 
 		if (Is.empty(parsedEndpoint)) {
 			this._endpointOrigin = StringHelper.trimTrailingSlashes(config.endpoint);

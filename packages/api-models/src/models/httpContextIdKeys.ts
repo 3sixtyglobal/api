@@ -5,7 +5,6 @@
 /**
  * HTTP definition of some context keys.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const HttpContextIdKeys = {
 	/**
 	 * IP address of the client.

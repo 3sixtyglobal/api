@@ -16,7 +16,9 @@ export class HttpUrlHelper {
 		try {
 			const convertedUrl = new URL(url);
 			return convertedUrl.origin;
-		} catch {}
+		} catch {
+			// Not a valid URL, return undefined.
+		}
 	}
 
 	/**
@@ -29,7 +31,9 @@ export class HttpUrlHelper {
 		try {
 			const convertedUrl = new URL(url);
 			return convertedUrl.pathname;
-		} catch {}
+		} catch {
+			// Not a valid URL, return undefined.
+		}
 	}
 
 	/**
@@ -42,7 +46,9 @@ export class HttpUrlHelper {
 		try {
 			const convertedUrl = new URL(url);
 			return convertedUrl.search;
-		} catch {}
+		} catch {
+			// Not a valid URL, return undefined.
+		}
 	}
 
 	/**
@@ -54,7 +60,9 @@ export class HttpUrlHelper {
 		try {
 			const convertedUrl = new URL(url);
 			return `${convertedUrl.pathname}${convertedUrl.search}`;
-		} catch {}
+		} catch {
+			// Not a valid URL, return undefined.
+		}
 	}
 
 	/**
@@ -113,7 +121,9 @@ export class HttpUrlHelper {
 			parsedUrl.host = newParsedUrl.host;
 			parsedUrl.port = newParsedUrl.port;
 			return parsedUrl.toString();
-		} catch {}
+		} catch {
+			// Not a valid URL, return it unchanged.
+		}
 
 		return url;
 	}
@@ -137,7 +147,9 @@ export class HttpUrlHelper {
 			return isRelative
 				? `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`
 				: parsedUrl.toString();
-		} catch {}
+		} catch {
+			// Not a valid URL, return it unchanged.
+		}
 
 		return url;
 	}
@@ -156,7 +168,9 @@ export class HttpUrlHelper {
 		try {
 			const parsedUrl = new URL(url);
 			return parsedUrl.searchParams.get(key) ?? undefined;
-		} catch {}
+		} catch {
+			// Not a valid URL, return undefined.
+		}
 
 		return undefined;
 	}

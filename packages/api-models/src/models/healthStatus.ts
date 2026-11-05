@@ -4,7 +4,6 @@
 /**
  * The health status of the component.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const HealthStatus = {
 	/**
 	 * OK.

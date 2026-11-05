@@ -69,13 +69,13 @@ export class HealthService implements IHealthComponent {
 	 * Timer for the regular health check.
 	 * @internal
 	 */
-	private _healthTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+	private _healthTimer?: ReturnType<typeof globalThis.setTimeout>;
 
 	/**
 	 * Timer for the application health lifecycle.
 	 * @internal
 	 */
-	private _healthApplicationTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+	private _healthApplicationTimer?: ReturnType<typeof globalThis.setTimeout>;
 
 	/**
 	 * Whether the service has been started.
@@ -118,7 +118,7 @@ export class HealthService implements IHealthComponent {
 	 * verified when the service is started.
 	 * @internal
 	 */
-	private _excludeCloneComponents: string[] | undefined;
+	private _excludeCloneComponents?: string[];
 
 	/**
 	 * Create a new instance of HealthService.

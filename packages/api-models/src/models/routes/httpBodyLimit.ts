@@ -4,7 +4,6 @@
 /**
  * The names of the well-known body size limits for routes.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const HttpBodyLimit = {
 	/**
 	 * The server default limit.

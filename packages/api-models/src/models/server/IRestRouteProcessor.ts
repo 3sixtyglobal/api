@@ -17,7 +17,7 @@ export interface IRestRouteProcessor extends IBaseRouteProcessor<IRestRoute> {
 	 * @param processorState The state handed through the processors.
 	 * @param componentTypes The component types for the request.
 	 * @param componentTypes.loggingComponentType The logging component type.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	process?(
 		request: IHttpServerRequest,

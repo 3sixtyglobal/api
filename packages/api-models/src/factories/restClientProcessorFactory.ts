@@ -6,6 +6,5 @@ import type { IRestClientProcessor } from "../models/client/IRestClientProcessor
 /**
  * Factory for creating implementation of REST client processor types.
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export const RestClientProcessorFactory =
 	Factory.createFactory<IRestClientProcessor>("rest-client-processor");

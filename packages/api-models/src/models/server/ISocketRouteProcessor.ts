@@ -17,7 +17,7 @@ export interface ISocketRouteProcessor extends IBaseRouteProcessor<
 	 * @param request The server request object containing the socket id and other parameters.
 	 * @param route The route being requested, if a matching one was found.
 	 * @param loggingComponentType The logging component type for the request.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	connected?(
 		request: ISocketServerRequest,
@@ -30,7 +30,7 @@ export interface ISocketRouteProcessor extends IBaseRouteProcessor<
 	 * @param request The server request object containing the socket id and other parameters.
 	 * @param route The route being requested, if a matching one was found.
 	 * @param loggingComponentType The logging component type for the request.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	disconnected?(
 		request: ISocketServerRequest,
@@ -46,7 +46,7 @@ export interface ISocketRouteProcessor extends IBaseRouteProcessor<
 	 * @param processorState The state handed through the processors.
 	 * @param responseEmitter The function to emit a response.
 	 * @param loggingComponentType The logging component type for the request.
-	 * @returns Promise that resolves when the request is processed.
+	 * @returns A promise that resolves when the request is processed.
 	 */
 	process?(
 		request: ISocketServerRequest,
