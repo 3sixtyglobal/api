@@ -21,6 +21,7 @@ import {
 import type { IContextIds } from "@3sixty/context";
 import { ComponentFactory, NotImplementedError, UnauthorizedError } from "@3sixty/core";
 import type { ILogEntry, ILoggingComponent } from "@3sixty/logging-models";
+import { nameof } from "@3sixty/nameof";
 import { HeaderTypes, HttpMethod, HttpStatusCode, type IHttpHeaders, MimeTypes } from "@3sixty/web";
 import { BaseServer } from "../src/baseServer.js";
 import type { IBaseServerConstructorOptions } from "../src/models/IBaseServerConstructorOptions.js";
@@ -28,7 +29,7 @@ import type { IServerCorsOptions } from "../src/models/IServerCorsOptions.js";
 import type { IServerCorsResponse } from "../src/models/IServerCorsResponse.js";
 
 class TestServer extends BaseServer<string> {
-	public static readonly CLASS_NAME: string = "TestServer";
+	public static readonly CLASS_NAME: string = nameof<TestServer>();
 
 	public listening: boolean;
 
