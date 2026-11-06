@@ -32,7 +32,11 @@ import {
 	type IWebServer,
 	type IWebServerOptions
 } from "@3sixty/api-models";
-import { JsonLdMimeTypeProcessor } from "@3sixty/api-processors";
+import {
+	FormUrlEncodedMimeTypeProcessor,
+	JsonLdMimeTypeProcessor,
+	JwtMimeTypeProcessor
+} from "@3sixty/api-processors";
 import { ContextIdStore, type IContextIds } from "@3sixty/context";
 import { BaseError, ComponentFactory, GeneralError, Is, RandomHelper, Url } from "@3sixty/core";
 import type { ILoggingComponent } from "@3sixty/logging-models";
@@ -42,8 +46,7 @@ import {
 	HeaderTypes,
 	HttpMethod,
 	HttpStatusCode,
-	type IHttpHeaders,
-	MimeTypes
+	type IHttpHeaders
 } from "@3sixty/web";
 import type { IBaseServerConstructorOptions } from "./models/IBaseServerConstructorOptions.js";
 import type { IRestProcessorChains } from "./models/IRestProcessorChains.js";
@@ -152,15 +155,23 @@ export abstract class BaseServer<T> implements IWebServer<T>, IHealthProviderCom
 		this._started = false;
 		this._restChains = { pre: [], process: [], post: [] };
 		this._socketChains = { connected: [], disconnected: [], pre: [], process: [], post: [] };
-		this._mimeTypeProcessors = options?.mimeTypeProcessors ?? [];
+		this._mimeTypeProcessors = [...(options?.mimeTypeProcessors ?? [])];
 		this._includeErrorStack = options?.includeErrorStack ?? false;
 		this._trustAllProxies = false;
 
-		const hasJsonLd = this._mimeTypeProcessors.some(processor =>
-			processor.getTypes().includes(MimeTypes.JsonLd)
-		);
-		if (!hasJsonLd) {
-			this._mimeTypeProcessors.push(new JsonLdMimeTypeProcessor());
+		// JSON-LD, JWT and form bodies are always parsed, a supplied processor for the same type is used instead.
+		for (const defaultProcessor of [
+			new JsonLdMimeTypeProcessor(),
+			new JwtMimeTypeProcessor(),
+			new FormUrlEncodedMimeTypeProcessor()
+		]) {
+			const types = defaultProcessor.getTypes();
+			const supplied = this._mimeTypeProcessors.some(processor =>
+				processor.getTypes().some(type => types.includes(type))
+			);
+			if (!supplied) {
+				this._mimeTypeProcessors.push(defaultProcessor);
+			}
 		}
 	}
 

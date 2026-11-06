@@ -6,6 +6,7 @@ export * from "./data/socketRouteProcessor.js";
 export * from "./identity/contextIdProcessor.js";
 export * from "./identity/staticContextIdProcessor.js";
 export * from "./logging/loggingProcessor.js";
+export * from "./mimeType/formUrlEncodedMimeTypeProcessor.js";
 export * from "./mimeType/jsonLdMimeTypeProcessor.js";
 export * from "./mimeType/jwtMimeTypeProcessor.js";
 export * from "./models/IContextIdProcessorConfig.js";
