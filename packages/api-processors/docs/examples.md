@@ -130,6 +130,20 @@ console.log(mediaTypes[0]); // application/jwt
 console.log(typeof handled); // string
 ```
 
+## FormUrlEncodedMimeTypeProcessor
+
+```typescript
+import { FormUrlEncodedMimeTypeProcessor } from '@3sixty/api-processors';
+
+const form = new FormUrlEncodedMimeTypeProcessor();
+
+const body = new TextEncoder().encode('grant_type=authorization_code&code=Splx%2FlOB&a=1&a=2');
+const fields = await form.handle(body);
+
+console.log(form.getTypes()[0]); // application/x-www-form-urlencoded
+console.log(fields); // { grant_type: 'authorization_code', code: 'Splx/lOB', a: ['1', '2'] }
+```
+
 ## RestRouteProcessor
 
 ```typescript

@@ -1110,12 +1110,32 @@ describe("BaseServer", () => {
 	});
 
 	describe("mime type processors", () => {
-		test("adds a JSON-LD processor when none is supplied", () => {
+		test("adds the JSON-LD, JWT and form processors when none are supplied", () => {
 			const server = new TestServer();
 
 			const types = server.mimeTypeProcessors().flatMap(processor => processor.getTypes());
 
-			expect(types).toContain(MimeTypes.JsonLd);
+			expect(types).toEqual([MimeTypes.JsonLd, MimeTypes.Jwt, MimeTypes.FormUrlEncoded]);
+		});
+
+		test("uses a supplied processor in place of the default for its type", () => {
+			const supplied: IMimeTypeProcessor[] = [
+				{
+					className: () => "SuppliedForm",
+					getTypes: () => [MimeTypes.FormUrlEncoded],
+					handle: async () => ({})
+				}
+			];
+
+			const server = new TestServer({ mimeTypeProcessors: supplied });
+
+			expect(server.mimeTypeProcessors().map(processor => processor.className())).toEqual([
+				"SuppliedForm",
+				"JsonLdMimeTypeProcessor",
+				"JwtMimeTypeProcessor"
+			]);
+			// The supplied list is not changed.
+			expect(supplied).toHaveLength(1);
 		});
 
 		test("does not add a second JSON-LD processor when one is supplied", () => {
@@ -1127,7 +1147,7 @@ describe("BaseServer", () => {
 
 			const server = new TestServer({ mimeTypeProcessors: [supplied] });
 
-			expect(server.mimeTypeProcessors()).toHaveLength(1);
+			expect(server.mimeTypeProcessors()).toHaveLength(3);
 			expect(server.mimeTypeProcessors()[0].className()).toEqual("SuppliedJsonLd");
 		});
 	});

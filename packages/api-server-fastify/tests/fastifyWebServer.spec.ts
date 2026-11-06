@@ -2254,7 +2254,8 @@ describe("api-server-fastify", () => {
 				path: "/echo",
 				headers: { "content-type": MimeTypes.FormUrlEncoded },
 				body: "a=1",
-				status: 415
+				status: 200,
+				responseBody: { body: { a: "1" } }
 			},
 			{
 				name: "upper case JSON content type",

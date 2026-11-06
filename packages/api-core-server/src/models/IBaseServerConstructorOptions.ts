@@ -13,7 +13,8 @@ export interface IBaseServerConstructorOptions {
 	loggingComponentType?: string;
 
 	/**
-	 * The mime type processors to use for the request bodies.
+	 * The mime type processors to use for the request bodies, as well as the JSON-LD, JWT and form
+	 * processors added by default, which a supplied processor for the same type replaces.
 	 */
 	mimeTypeProcessors?: IMimeTypeProcessor[];
 
