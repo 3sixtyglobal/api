@@ -24,7 +24,7 @@ Runtime name for the class.
 
 ### buildCursor() {#buildcursor}
 
-> `static` **buildCursor**(`headers`, `url`, `publicOrigin`, `cursor`): asserts headers is IHttpHeaders & \{ link: string \| undefined \}
+> `static` **buildCursor**(`headers`, `url`, `publicOrigin`, `cursor?`): `asserts headers is IHttpHeaders & { link?: string }`
 
 Set the Link header with a next cursor relation when a cursor is present.
 
@@ -48,15 +48,15 @@ The request URL used as the base for the link.
 
 The public origin to substitute into the URL, if any.
 
-##### cursor
+##### cursor?
 
-`string` \| `undefined`
+`string`
 
 The cursor value; when undefined or empty the header is not set.
 
 #### Returns
 
-asserts headers is IHttpHeaders & \{ link: string \| undefined \}
+`asserts headers is IHttpHeaders & { link?: string }`
 
 ***
 
