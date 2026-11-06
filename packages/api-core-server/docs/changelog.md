@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.20.0-next.10](https://github.com/3sixtyglobal/api/compare/api-core-server-v0.20.0-next.9...api-core-server-v0.20.0-next.10) (2026-11-06)
+
+
+### Features
+
+* parse form url encoded request bodies by default ([#75](https://github.com/3sixtyglobal/api/issues/75)) ([c427bb3](https://github.com/3sixtyglobal/api/commit/c427bb3eb94d5c6b54fb68cc4255412688bd4453))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @3sixty/api-models bumped from 0.20.0-next.9 to 0.20.0-next.10
+    * @3sixty/api-processors bumped from 0.20.0-next.9 to 0.20.0-next.10
+
 ## [0.20.0-next.9](https://github.com/3sixtyglobal/api/compare/api-core-server-v0.20.0-next.8...api-core-server-v0.20.0-next.9) (2026-11-03)
 
 
