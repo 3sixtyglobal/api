@@ -60,7 +60,7 @@ The logging component type.
 
 `Promise`\<`void`\>
 
-Promise that resolves when the request is processed.
+A promise that resolves when the request is processed.
 
 #### Inherited from
 
@@ -120,7 +120,7 @@ The logging component type.
 
 `Promise`\<`void`\>
 
-Promise that resolves when the request is processed.
+A promise that resolves when the request is processed.
 
 #### Inherited from
 
@@ -158,7 +158,7 @@ The logging component type for the request.
 
 `Promise`\<`void`\>
 
-Promise that resolves when the request is processed.
+A promise that resolves when the request is processed.
 
 ***
 
@@ -192,7 +192,7 @@ The logging component type for the request.
 
 `Promise`\<`void`\>
 
-Promise that resolves when the request is processed.
+A promise that resolves when the request is processed.
 
 ***
 
@@ -244,4 +244,4 @@ The logging component type for the request.
 
 `Promise`\<`void`\>
 
-Promise that resolves when the request is processed.
+A promise that resolves when the request is processed.
